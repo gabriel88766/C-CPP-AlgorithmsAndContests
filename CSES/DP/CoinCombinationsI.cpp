@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int N  = 1e6+5;
+const int MOD = 1e9+7;
+
+int dp[N];
+
+int main() {
+   int n,S,aux,k,mincur;
+   dp[0]=1;
+   cin >> n >> S;
+   vector <int> v;
+   for(int i=0;i<n;i++){
+       cin >> aux;
+       v.push_back(aux);
+   }
+   sort(v.begin(),v.end());
+   for(int i=1;i<=S;i++){
+       mincur=0;
+       for(int j=0;j<v.size();j++){
+           k = i-v[j];
+           if(k>=0){
+               mincur += dp[k];
+               if(mincur>=MOD) mincur -=MOD;
+           }
+       }
+       dp[i] = mincur;
+   }
+
+  cout << dp[S];
+}
