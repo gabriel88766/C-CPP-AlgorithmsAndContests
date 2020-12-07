@@ -10,14 +10,10 @@ string match;
 int cont2=0;
 
 void weird_search(){
-    mycount++;
    if(cont==48){
        cont2++;
         return;
    }
-   //if((posx>1 || posy<5) && visited[0][5] && visited[1][5] && visited[1][6] && (!visited[0][6])) return;
-  // if((posx<5 || posy<5) && visited[5][5] && visited[6][5] && visited[5][6] && (!visited[6][6])) return;
-   //if((posx<5 || posy>1) && visited[5][0] && visited[5][1] && visited[6][1] && (!visited[6][0])) return;
 
    if(visited[1][7]) return;
    if(posy>1){
@@ -76,7 +72,6 @@ void weird_search(){
 int main(){
 ios_base::sync_with_stdio(0),cin.tie(0);
 visited[1][1]=true;
-char hasst = false;
 cin >> match;
 for(int i=0;i<9;i++) visited[0][i] = true, visited[i][0] = true, visited[8][i] = true, visited[i][8] = true;
 
