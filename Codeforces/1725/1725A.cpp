@@ -7,5 +7,6 @@ int main(){
     cin.tie(NULL);
     long long int n,m;
     cin >> n >> m;
-    cout << (m-1)*n;
+    if(m != 1) cout << (m-1)*n;
+    else cout << n-1;
 }
