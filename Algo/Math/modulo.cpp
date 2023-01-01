@@ -1,13 +1,33 @@
-long long binpow(long long int a, long long int b, long long int m){
+ll binpow(ll a, ll b, ll m){
     a %= m;
-    long long int res = 1;
+    ll ans = 1;
     while(b > 0){
         if(b & 1) 
-            res = (res * a) % m;
+            ans = (ans * a) % m;
         a = (a * a) % m;
         b >>= 1;
     }
-    return res;
+    return ans;
+}
+
+//when 4e18 > m > 1e9
+ll binmul(ll a, ll  b, ll  m){
+    a %= m;
+    ll ans = 1;
+    while(b > 0){
+        if(b & 1) 
+            ans = (ans + a) % m;
+        a = (a + a) % m;
+        b >>= 1;
+    }
+    return ans;
+}
+//for m prime, b^(m-1) == 1 (mod m) => a/b = a*1/b == a*b^(m-2) (mod m)
+//if m is not prime, change m-2 to phi(m)-1 (case m = 1e9+6, 5e8+1)
+//if phi(m) is determined at exec time, add a new param.
+//remember a^k == a^(k mod(m-1)) mod m
+ll divmod(ll a, ll b, ll m){
+    return (a * binpow(b, m-2, m)) % m;
 }
 
 //inv, if m = prime, and division, 4/3 = 4 * inv 3 mod p
