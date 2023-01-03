@@ -8,7 +8,7 @@ const int MOD = 1e9+7;
 int dp[N];
 
 int main() {
-   int n,S,aux,k,mincur;
+   int n,S,aux,k,cursum;
    dp[0]=1;
    cin >> n >> S;
    vector <int> v;
@@ -18,15 +18,15 @@ int main() {
    }
    sort(v.begin(),v.end());
    for(int i=1;i<=S;i++){
-       mincur=0;
+       cursum=0;
        for(int j=0;j<v.size();j++){
            k = i-v[j];
            if(k>=0){
-               mincur += dp[k];
-               if(mincur>=MOD) mincur -=MOD;
+               cursum += dp[k];
+               if(cursum>=MOD) cursum -=MOD;
            }
        }
-       dp[i] = mincur;
+       dp[i] = cursum;
    }
 
   cout << dp[S];

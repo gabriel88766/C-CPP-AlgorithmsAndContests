@@ -1,51 +1,41 @@
 #include <bits/stdc++.h>
-
+typedef long long int ll;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
+const int INF_INT = 0x3f3f3f3f;
 using namespace std;
 
-unsigned int matrix[100005][102];
-const int MOD = 1e9+7;
+ll dp[100005][105];
 
+//cout << fixed << setprecision(6)
 int main(){
-ios_base::sync_with_stdio(0),cin.tie(0);
-//freopen("test_input.txt", "r", stdin);
-int n,k;
-cin >> n >> k;
-vector<unsigned int> v(n,0);
-for(int i=0;i<n;i++){
-    cin >> v[i];
-}
-if(!v[0]){
-    for(int i=1;i<=100;i++){
-        matrix[0][i]=1;
-    }
-}else{
-    matrix[0][v[0]]=1;
-}
-for(int i=1;i<n;i++){
-    if(v[i]==0) {
-        matrix[i][1] = (matrix[i-1][1]+matrix[i-1][2])%MOD;
-        for(int j=2;j<k;j++){
-            matrix[i][j] = (matrix[i-1][j]+matrix[i-1][j+1]+matrix[i-1][j-1])%MOD;
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int n, m;
+    cin >> n >> m;
+    vector<ll> nums(n);
+    for(int i=0;i<n;i++) cin >> nums[i];
+
+    for(int i = 0; i < n; i++){
+        if(nums[i]){ 
+            if(i != 0) dp[i][nums[i]] = (dp[i-1][nums[i]-1] + dp[i-1][nums[i]] + dp[i-1][nums[i]+1]) % MOD;
+            else dp[i][nums[i]] = 1;
+        }else {
+            if(i != 0){
+                for(int j=1; j<=m; j++){
+                    dp[i][j] = (dp[i-1][j-1] + dp[i-1][j] + dp[i-1][j+1]) % MOD;
+                }
+            }else{
+                for(int j=1;j<=m;j++) dp[i][j] = 1;
+            }
         }
-        matrix[i][k] = (matrix[i-1][k]+matrix[i-1][k-1])%MOD;
+    }
+
+    if(nums[n-1]){
+        cout << dp[n-1][nums[n-1]];
     }else{
-        if(v[i]==1) matrix[i][1] = (matrix[i-1][1]+matrix[i-1][2])%MOD;
-        else if(v[i]==k) matrix[i][k] = (matrix[i-1][k]+matrix[i-1][k-1])%MOD;
-        else{
-            matrix[i][v[i]] = (matrix[i-1][v[i]]+matrix[i-1][v[i]+1]+matrix[i-1][v[i]-1])%MOD;
-
-        }
+        ll ans = 0;
+        for(int i=1;i<=m;i++) ans = (ans + dp[n-1][i] ) % MOD;
+        cout << ans;
     }
-}
 
-if(v[n-1]){
-    cout << matrix[n-1][v[n-1]];
-}else{
-    unsigned int  ans=0;
-    for(int i=1;i<=100;i++){
-        ans+= matrix[n-1][i];
-        ans%=MOD;
-    }
-    cout << ans;
-}
 }
