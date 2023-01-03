@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 typedef long long int ll;
-const ll MAX_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
-const int MAX_INT = 0x3f3f3f3f;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
+const int INF_INT = 0x3f3f3f3f;
 using namespace std;
 
 //cout << fixed << setprecision(6)
