@@ -9,5 +9,17 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); test input
-
+    int t, n, ans, aux;
+    cin >> t;
+    while(t--){
+        cin >> n;
+        ans = 0;
+        for(int i=0;i<n;i++){
+            cin >> aux;
+            aux &= 3;
+            ans ^= aux;
+        }
+        if(ans) cout << "first\n";
+        else cout << "second\n";
+    }
 }
