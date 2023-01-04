@@ -8,7 +8,6 @@ using namespace std;
 
 const int N = 2e6;
 
-vector<int> tree[N];
 int nodeOfvaluetree[N][10];
 int orderleaf[N];
 vector<int> adj[400000];
@@ -28,8 +27,7 @@ void make_tree(){
     for(int i=1;i<=9;i++){
         if(!isUsed[i]){
             isUsed[i] = true;
-            tree[cur].push_back(++cntnodes);
-            nodeOfvaluetree[cur][i] = cntnodes;
+            nodeOfvaluetree[cur][i] = ++cntnodes;
             h++;
             make_tree();
             h--;
@@ -70,7 +68,6 @@ int main(){
     cin.tie(NULL);
     //freopen("in", "r", stdin); test input
     make_tree();
-    cout << cntnodes << endl;
     vector<int> v = {1,2,3,4,5,6,7,8,9};
     vector<int> s;
     for(int i = 0;i<9;i++){
