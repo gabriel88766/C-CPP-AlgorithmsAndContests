@@ -1,1 +1,2 @@
-Most of codes are found here https://cp-algorithms.com/
+Most of codes here are writed based on other online sources like https://cp-algorithms.com/ \
+The goal of this repository is not to do copy and paste of other sources, but try to implement my own version.
