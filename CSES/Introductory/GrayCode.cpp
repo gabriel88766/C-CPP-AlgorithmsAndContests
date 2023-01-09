@@ -6,6 +6,7 @@ using namespace std;
 
 char ans[20];
 int n;
+//hard way.
 void changeandprint(int pos, int parity){
     if((n-1) == pos){
         ans[pos] = ans[pos] = '0' ? '1' : '0';
@@ -30,11 +31,23 @@ void changeandprint(int pos, int parity){
     }
     cout << ans << "\n";
 }
+//easy way, MAGIC!
+int g(int n){
+    return n ^ (n >> 1);
+}
+
+int reverse_g(int g){
+    int ans = 0;
+    for(; g; g >>= 1)
+        ans ^= g;
+    return ans;
+}
 
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); test input
+    /* Old code
     int pos, aux, parity;
     cin >> n;
     for(int i=0;i<n; i++){
@@ -53,5 +66,20 @@ int main(){
             aux <<= 1;
         }
         changeandprint(pos, (aux % 8) > 4 ? 1 : 0);
+    }*/
+
+
+    //easy way
+    int n;
+    cin >> n;
+    for(int i=0; i < (1 << n); i++){
+        int cur = g(i);
+        for(int j = (n-1);j >= 0; j--){ 
+            if (cur & (1 << j)) cout << "1";
+            else cout << "0";
+        }
+        cout << "\n";
     }
+
+
 }
