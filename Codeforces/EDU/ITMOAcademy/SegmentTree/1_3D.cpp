@@ -45,7 +45,7 @@ int main(){
     } 
     for(int i=1;i<=n;i++){
         if(opened[u[i]] == i){
-            ans[u[i]] = query(i, closed[u[i]] - 1);
+            ans[u[i]] = closed[u[i]] - opened[u[i]] - 2 * query(i, closed[u[i]] - 1) - 1;
             update(closed[u[i]], 0);
         }
     }
