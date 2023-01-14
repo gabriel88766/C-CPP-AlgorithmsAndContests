@@ -6,12 +6,13 @@ using namespace std;
 
 //mp maps current position to original index, c is the class of the prefix
 
-const int N = 4e5+3; 
+const int N = 3e5+3; 
+int  n, c;
 
-vector<int> suffix_array(string s){
+vector<int> suffix_array(string &s){
     s += "$";
-    int n = s.size(), c=-1;
-    vector<int> mp(n), cnt(max(n, 256)), mp2(256), aux(n); 
+    n = s.size(), c=-1;
+    vector<int> mp(n), cnt(max(n+1, 256)), mp2(256), aux(n); 
     vector<pair<int,int>> cs(n); // class,class <int,int>
 
     for(int i=0;i<n;i++) cnt[s[i]]++;
@@ -49,15 +50,45 @@ vector<int> suffix_array(string s){
 }
 
 
-
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); test input
     string s;
-    cin >> s;
+    int q;
+    cin >> s >> q;
     vector<int> ind = suffix_array(s);
-    for(int i=0;i<ind.size();i++) cout << ind[i] << " ";
+    for(int i=0;i<q;i++){
+        string t;
+        cin >> t;
+        int lo = 0, hi = n-1, mid;
+        char match = false;
+        if(t.size() <= s.size()){ //
+            while(lo != hi){
+                mid = (lo+hi)/2;
+                for(int j=0; j < t.size(); j++){
+                    if(t[j] < s[ind[mid] + j]){
+                        hi = mid; break;
+                    }else if(t[j] > s[ind[mid] + j]){
+                        lo = mid+1; break;
+                    }else{
+                        if(j == (t.size() - 1)){
+                            match = true;
+                            break;
+                        }   
+                    }
+                }
+                if(match) break;
+            }
+        }
+        for(int j=0; j < t.size(); j++){
+            if(t[j] == s[ind[lo] + j]){
+                if(j == (t.size()-1)) match = true;
+            }else break;
+        }
+        if(match) cout << "Yes\n";
+        else cout << "No\n";
+    }
     
 }
