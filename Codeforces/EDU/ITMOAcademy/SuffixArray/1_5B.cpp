@@ -1,6 +1,14 @@
-const int N = 2e5+3; 
-int n, c;
-// n log n
+#include <bits/stdc++.h>
+typedef long long int ll;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
+const int INF_INT = 0x3f3f3f3f;
+using namespace std;
+
+//mp maps current position to original index, c is the class of the prefix
+
+const int N = 4e5+3; 
+int  n, c;
+
 vector<int> suffix_array(string &s){
     s += "$";
     n = s.size(), c=-1;
@@ -23,7 +31,7 @@ vector<int> suffix_array(string &s){
             cs[j].second = cs[mindex].first;
             cnt[cs[j].second + 1]++;
         }
-        //begin raddix_sort of pair O(n)
+        //begin raddix_sort of pair
         for(int j=2; j<=(c+1); j++) cnt[j] += cnt[j-1];
         for(int j=0; j<n; j++) aux[cnt[cs[j].second]++] = j;
         fill(cnt.begin(), cnt.begin() + c + 2, 0);
@@ -40,7 +48,7 @@ vector<int> suffix_array(string &s){
     }
     return mp;
 }
-//longest common prefix in O(n)
+
 vector<int> lcp(string &s, vector<int> &sa){
     vector<int> ans(n - 1, 0);
     vector<int> invmp(n, 0);
@@ -59,11 +67,28 @@ vector<int> lcp(string &s, vector<int> &sa){
     return ans;
 }
 
-//for suffix array, 1 => 2, 2 => 4 ...
+// longest common substring
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    string s, v, ans;
+    int oldlen, maxsz=0, ians;
+    cin >> s;
+    oldlen = s.size();
+    s += "#"; //s[oldlen] = '#'
+    cin >> v;
+    s += v;
+    vector<int> sa = suffix_array(s);
+    vector<int> lc = lcp(s, sa);
+    for(int i=0;i<lc.size();i++){
+        if(lc[i] > maxsz){
+            if((sa[i] > oldlen && sa[i+1] < oldlen) || (sa[i] < oldlen && sa[i+1] > oldlen)){
+                maxsz = lc[i];
+                ians = min(sa[i], sa[i+1]);
+            }
+        }
+    }
+    cout << s.substr(ians, maxsz);
 
 
-
-//lcp, iterate in order of length.
-//evaluate pos(i), j = pos(i) + 1  equals k => pos(i+1) and pos(j+1) equals k-1 
-//and so between pos(i+1) and pos(i+1) + 1 at least k-1 
-//so its not necessary to make k = 0
+}

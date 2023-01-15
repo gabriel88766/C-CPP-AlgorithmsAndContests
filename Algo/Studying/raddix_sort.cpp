@@ -1,10 +1,7 @@
 #include <bits/stdc++.h>
-typedef long long int ll;
-const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
-const int INF_INT = 0x3f3f3f3f;
 using namespace std;
 
-const int N = 2e5;
+const int N = 2e5+3;
 int ans[N], cnt[N], aux[N];
 
 void raddix_sort(vector<pair<int,int>> &v, int bounds){ //for pairs
@@ -16,13 +13,6 @@ void raddix_sort(vector<pair<int,int>> &v, int bounds){ //for pairs
     for(int i=0; i<n; i++) cnt[v[i].first+1]++; 
     for(int i=2; i<=(bounds+1); i++) cnt[i] += cnt[i-1];
     for(int i=0;i<n;i++) ans[cnt[v[aux[i]].first]++] = aux[i];    
-}
-
-
-void test(vector<int> &v, vector<int> &mp){
-    for(int j=0;j<5;j++){
-        ans[mp[j]] = v[j];
-    }
 }
 
 //cout << fixed << setprecision(6)
