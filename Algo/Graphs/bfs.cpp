@@ -4,7 +4,7 @@ int d[N], p[N];
 vector<int> adj[N];
 
 void bfs(int src){
-    memset(d, 63, sizeof(d)); //this line must be skipped if multiples bfs
+    memset(d, 63, sizeof(d)); //this line must be done in main and skipped if multiples bfs
     queue<int> q;
     q.push(src); 
     d[src] = 0;

@@ -3,4 +3,8 @@ Labyrinth  => BFS 2d and store PATH
 BuildingRoads => DSU, connected components
 MessageRoute => BFS and store PATH
 BuildingTeams => Bipartite with BFS
-RoundTrip => Cyclefinding DFS, can be used floyd cycle finding, DFS looks worse
+RoundTrip => Cyclefinding - DFS
+
+
+
+RoundTripII => Cyclefinding - DFS in directed graph. (Something like this in Tarjan)

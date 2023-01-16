@@ -15,7 +15,6 @@ bool dfs(int u, int p){
     par[u] = p;
     color[u] = 1;
     for(auto v : adj[u]){
-        if(v == p) continue;
         if(color[v] == 1){
             match = v;
             par[v] = u;
@@ -38,7 +37,6 @@ int main(){
         int a,b;
         cin >> a >> b;
         adj[a].push_back(b);
-        adj[b].push_back(a);
     }
     for(int i=1;i<=n;i++){
         if(!color[i] && dfs(i, 0)) break;
@@ -52,6 +50,7 @@ int main(){
             cur = par[cur];
             ans.push_back(cur);
         }while(cur != match);
+        reverse(ans.begin(), ans.end());
         cout << ans.size() << "\n";
         for(auto i : ans) cout << i << " ";
     }
