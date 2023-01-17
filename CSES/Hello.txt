@@ -1,6 +1,10 @@
 In this folder, I put my solutions of every problem that 
 I tried in this problemset:
 
-https://cses.fi/problemset/list/ - 200 problems
+https://cses.fi/problemset/list/ - 300 problems
 
 All solutions here got Accepted verdict.
+
+completed 
+Introductory - 19 problems
+SortingAndSearching - 35 problems

@@ -1,56 +1,37 @@
 #include <bits/stdc++.h>
+typedef long long int ll;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
+const int INF_INT = 0x3f3f3f3f;
 using namespace std;
 
-#define st first
-#define nd second
-#define mp make_pair
-#define pb push_back
-#define cl(x, v) memset((x), (v), sizeof(x))
-#define gcd(x,y) __gcd((x),(y))
-
-typedef long long ll;
-typedef long double ld;
-
-typedef pair<int, int> pii;
-typedef pair<int, pii> piii;
-typedef pair<ll, ll> pll;
-typedef vector<int> vi;
-
-const ld EPS = 1e-9, PI = acosl(-1.);
-const int INF = 0x3f3f3f3f, MOD = 1e9+7, MOD2 = 2e9+11;
-const int N = 2e5+5;
-//vector<vector<int>> matrix(row,vector<int>(col));
-// cout << setprecision(10) << fixed << variableLD;
-int n,m,ans,bp,ep;
+const int N = 2e5+3;
 vector<int> adj[N];
-int  sub[N];
+bool visited[N];
+int sz[N];
 
-void dfs(int u=1,int p=0){
+void dfs(int u, int p){
+    //sz[u]++;
+    visited[u] = true;
     for(auto v : adj[u]){
-        if(v!=p) dfs(v,u);
+        if(!visited[v]){
+            dfs(v, u);
+            sz[u] += sz[v] + 1;
+        }
     }
-    sub[p] += (sub[u]+1);
 }
 
-int main() {
-  ios_base::sync_with_stdio(0), cin.tie(0);
-  cin >> n;
-  for(int i=2;i<=n;i++){
-      int aux;
-      cin >> aux;
-      adj[aux].push_back(i);
-      adj[i].push_back(aux);
-  }
-  dfs();
-  for(int i=1;i<=n;i++){
-    cout << sub[i] << " ";
-  }
-
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); test input
+    int n;
+    cin >> n;
+    for(int i=2;i<=n;i++){
+        int a;
+        cin >> a;
+        adj[a].push_back(i);
+    }
+    dfs(1, 0);
+    for(int i=1;i<=n;i++) cout << sz[i] << " ";
 }
-
-
-
-
-
-
-
