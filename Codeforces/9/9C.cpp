@@ -11,5 +11,20 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); test input
-
+    int n, ans = 0, curpot=1;
+    bool all1 = false;
+    string s;
+    cin >> s;
+    for(int i=0;i<s.size();i++){
+        if(all1) s[i] = '1';
+        if(s[i] - '0' >= 2){
+            s[i] = '1';
+            all1 = true;
+        }
+    }
+    for(int i=(s.size()-1);i>=0;i--){
+        if(s[i] == '1') ans += curpot;
+        curpot <<=1;
+    }
+    cout << ans;
 }

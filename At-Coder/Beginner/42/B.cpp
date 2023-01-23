@@ -11,5 +11,16 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); test input
-
+    int n,l;
+    vector<string> v;
+    string ans;
+    cin >> n >> l;
+    for(int i=0;i<n;i++){
+        string s;
+        cin >> s;
+        v.push_back(s);
+    }
+    sort(v.begin(), v.end());
+    for(int i=0;i<n;i++) ans += v[i];
+    cout << ans;
 }

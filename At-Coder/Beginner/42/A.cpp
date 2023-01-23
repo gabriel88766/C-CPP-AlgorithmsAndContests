@@ -11,5 +11,16 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); test input
-
+    int count[11];
+    count[5] = 0;
+    count[7] = 0;
+    int in;
+    cin >> in;
+    count[in]++;
+    cin >> in;
+    count[in]++;
+    cin >> in;
+    count[in]++;
+    if(count[5] == 2 && count[7] == 1) cout << "YES";
+    else cout << "NO";
 }

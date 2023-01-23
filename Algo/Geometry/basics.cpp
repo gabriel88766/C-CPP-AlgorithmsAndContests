@@ -5,16 +5,22 @@ struct Point{
     Point(){}
     Point(long double x, long double y) { this->x = x; this->y = y;}
     Point operator -() {return Point(-x, -y);}
-    Point operator -(Point p) { return Point(x - p.x, y - p.y);}
-    Point operator +(Point p) { return Point(x + p.x, y + p.y);}
+    Point operator -(Point &p) { return Point(x - p.x, y - p.y);}
+    Point operator +(Point &p) { return Point(x + p.x, y + p.y);}
     Point operator *(long double d){ return Point(x * d, y * d);}
     Point operator /(long double d){ return Point(x/d, y/d);}
 
     long double abs() {return sqrtl(x*x+y*y); }
     long double dist(Point p){ return (*this-p).abs();}
 
+    long double dot(Point p){ return x*p.x + y*p.y;}
+    long double cross(Point p){ return x*p.y - y*p.x;} //if pos, p is in left of vector (x, y), right otherwise
     Point rot(long double g){// g degrees
         g *= PI/180;
         return Point(x * cosl(g) - y * sinl(g), x * sinl(g) + y * cosl(g));
     }
 };
+
+Point intersectLines(Point a1, Point dir1, Point a2, Point dir2){
+    return a1 + d1 * ((a2-a1).cross(d2) / d1.cross(d2)); 
+}
