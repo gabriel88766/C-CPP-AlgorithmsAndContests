@@ -15,7 +15,7 @@ void init(){
     for(int i=1;i<N;i++) for(int j=0;j<nMOD;j++) pot[i][j] = (pot[i-1][j] * pVal) % MOD[j];
 }
 
-struct Hash{ //dont support substrings yet.
+struct Hash{ //dont support substrings. see version 2
     unsigned long long int hash[nMOD];
     int len = 0;
     Hash(){
@@ -43,7 +43,7 @@ struct Hash{ //dont support substrings yet.
         for(int i=0;i<nMOD;i++) if(hash[i] != h.hash[i]) return false;
         return true;
     }
-    void removeLast(char c){ //removeFirst needs modular division, O(log n) or some other shift strategy
+    void removeLast(char c){ //removeFirst needs modular division, O(log n) or preprocessing
         len--;
         for(int i=0;i<nMOD;i++){
             hash[i] += c * MOD[i]; //anti "overflow"

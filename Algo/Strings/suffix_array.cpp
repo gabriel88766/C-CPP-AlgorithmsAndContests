@@ -1,3 +1,4 @@
+//lexicography order of all suffixes.
 const int N = 2e5+3; 
 int n, c;
 // n log n
@@ -40,7 +41,7 @@ vector<int> suffix_array(string &s){
     }
     return mp;
 }
-//longest common prefix in O(n)
+//longest common prefix in O(n), between 2 consecutive indexes of suffix array
 vector<int> lcp(string &s, vector<int> &sa){
     vector<int> ans(n - 1, 0);
     vector<int> invmp(n, 0);

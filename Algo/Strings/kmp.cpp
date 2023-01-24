@@ -1,4 +1,4 @@
-int pi[5000005]; //Lenght of greater prefix also suffix
+int pi[5000005]; //Lenght of greater prefix also suffix of substr (0, i) 
 
 //Knuth-Morris-Pratt
 void kmp_pre(string s){

@@ -45,7 +45,7 @@ struct Hash{ //1-indexed
         }
         len = s.size();
     }
-    ull *subHash(ull *ans, int l, int r){
+    ull *subHash(ull *ans, int l, int r){ //O(1)
         for(int i=0;i<nMOD;i++) ans[i] = ((hash[r][i]-hash[l-1][i]+MOD[i]) * invpot[l][i]) % MOD[i];
         return ans;
     }
