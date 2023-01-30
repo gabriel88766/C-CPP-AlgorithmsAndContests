@@ -1,6 +1,14 @@
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
+using namespace std;
+
+typedef long double type;
 //features will be added soon.
 //looks like type is necessary 600D(codeforces)
-typedef long double type;
 bool ge(type a, type b){
     return a + EPS > b;
 }
@@ -46,4 +54,25 @@ type distanceToSeg(Point a, Point b, Point x){
     Point y = intersectLines(a, b-a, x, (b-a).rot(90));
     if(y.onSeg(a,b)) return x.dist(y);
     else return min(x.dist(a), x.dist(b));
+}
+
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); test input
+    type x,y,x1,x2,y1,y2,d,mind;
+    cin >> x >> y >> x1 >> y1 >> x2 >> y2;
+    Point a(x,y), p1(x1,y1), p2(x1,y2), p3(x2,y2), p4(x2,y1); //p1=p2 and p4, p3=p2 and p4
+    Point dir;
+    //test 4 distances
+    d = distanceToSeg(p1, p2, a);
+    mind = d;
+    d = distanceToSeg(p1, p4, a);
+    mind = min(mind,d);
+    d = distanceToSeg(p3, p2, a);
+    mind = min(mind,d);
+    d = distanceToSeg(p3, p4, a);
+    mind = min(mind,d);
+    cout << fixed << setprecision(3) << mind;
 }

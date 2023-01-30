@@ -1,5 +1,14 @@
+//Unsolved.
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9, INF = 1e20; 
+using namespace std;
+
 //features will be added soon.
-//looks like type is necessary 600D(codeforces)
+//looks like long double is necessary 600D(codeforces)
 typedef long double type;
 bool ge(type a, type b){
     return a + EPS > b;
@@ -46,4 +55,46 @@ type distanceToSeg(Point a, Point b, Point x){
     Point y = intersectLines(a, b-a, x, (b-a).rot(90));
     if(y.onSeg(a,b)) return x.dist(y);
     else return min(x.dist(a), x.dist(b));
+}
+
+
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); test input
+    type aux1, aux2;
+    cin >> aux1 >> aux2;
+    Point a(aux1,aux2);
+    cin >> aux1 >> aux2;
+    Point b(aux1,aux2);
+    cin >> aux1 >> aux2;
+    Point c(aux1,aux2);
+    cin >> aux1 >> aux2;
+    Point d(aux1,aux2);
+    cout << fixed << setprecision(15);
+    //A to C
+    cout << a.dist(c) << "\n";
+    //A to CD
+    Point y = intersectLines(d, d-c, a, (d-c).rot(90));
+    if(y.onSeg(c,d)) cout << a.dist(y) << "\n";
+    else cout << min(a.dist(c), a.dist(d)) << "\n";
+    //A to half infinite ray CD
+    if(y.onSeg(c, c+(d-c)*3e4)) cout << a.dist(y) << "\n";
+    else cout << a.dist(c) << "\n";
+    //A to line CD
+    cout << a.dist(y) << "\n";
+    //AB to point C
+    y = intersectLines(a, b-a, c, (b-a).rot(90));
+    if(y.onSeg(a,b)) cout << c.dist(y) << "\n";
+    else cout << min(c.dist(a), c.dist(b)) << "\n";
+    //AB to seg CD
+    //fuck this shit!!
+    //check if paralel, if no, check if intersect.
+    cout << "\n";
+
+    //Line AB to C
+    y = intersectLines(a, b-a, c, (b-a).rot(90));
+    cout << y.dist(c) << "\n";
+    //line ab to seg cd
 }
