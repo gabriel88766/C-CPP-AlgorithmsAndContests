@@ -20,7 +20,7 @@ ll a,b,c,d;
 ll ans;
 cin >> a >> b >> c >> d;
 ans = (b-a+1) * (d-c+1);
-for(int i=2;i<=min(b-a+1,d-c+1);i++){
+for(int i=2;i<=min(b,d);i++){
     ll f = mi[i] * ((b/i) - (a-1)/i) * ((d/i)-(c-1)/i);
     ans += f;
 }
