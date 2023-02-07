@@ -2,8 +2,7 @@ ll binpow(ll a, ll b, ll m){
     a %= m;
     ll ans = 1;
     while(b > 0){
-        if(b & 1) 
-            ans = (ans * a) % m;
+        if(b & 1) ans = (ans * a) % m;
         a = (a * a) % m;
         b >>= 1;
     }
@@ -13,11 +12,14 @@ ll binpow(ll a, ll b, ll m){
 //when 4e18 > m > 1e9
 ll binmul(ll a, ll  b, ll  m){
     a %= m;
-    ll ans = 1;
-    while(b > 0){
-        if(b & 1) 
-            ans = (ans + a) % m;
-        a = (a + a) % m;
+    ll ans = 0;
+    while(b){
+        if(b & 1){
+            ans += a;
+            if(ans > m) ans -= m;
+        } 
+        a += a;
+        if(a > m) a -= m;
         b >>= 1;
     }
     return ans;

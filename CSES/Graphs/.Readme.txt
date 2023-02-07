@@ -4,7 +4,10 @@ BuildingRoads => DSU, connected components
 MessageRoute => BFS and store PATH
 BuildingTeams => Bipartite with BFS
 RoundTrip => Cyclefinding - DFS
+Monsters =>  BFS
+ShortestRoutesI => dijkstra
+ShortestRoutesII => Floyd-Warshall
 
-
+FlightDiscount => dijkstra, but with idea to change one edge, the key idea is something like problems with flows, a new copied graph with all edges being a connection between graphs with w/2 weight
 
 RoundTripII => Cyclefinding - DFS in directed graph. (Something like this in Tarjan)

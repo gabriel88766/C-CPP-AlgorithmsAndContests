@@ -1,16 +1,15 @@
 #include <bits/stdc++.h>
 typedef long long int ll;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
-const int INF_INT = 0x3f3f3f3f;
+
 using namespace std;
 
-const int N = 1e5+3;
-
-char ispos = true;
-int c[N];
+const int N = 2e5+3;
+int c[N]; // 0 OR 1
 vector<int> adj[N];
+const int INF_INT = 0x3f3f3f3f;
 
-void bfs(int src){
+bool bfs_bipartite(int src){
     queue<int> q;
     q.push(src); 
     c[src] = 0;
@@ -18,13 +17,20 @@ void bfs(int src){
         int u = q.front();
         q.pop();
         for(auto v : adj[u]){
-            if(c[v] == c[u]) ispos=false;
+            if(c[v] == c[u]) return false;
             if(c[v] == INF_INT){
                 c[v] = c[u] ^ 1;
                 q.push(v);
             }
         }
     }
+    return true;
+}
+
+bool isbiparitite(int n){
+    memset(c, 63, sizeof(c));
+    for(int i=1;i<=n;i++) if(c[i] == INF_INT && !bfs_bipartite(i)) return false;
+    return true;
 }
 
 //cout << fixed << setprecision(6) //bipartite
@@ -33,7 +39,7 @@ int main(){
     cin.tie(NULL);
     //freopen("in", "r", stdin); test input
     int n, m;
-    memset(c, 63, sizeof(c));
+    
     cin >> n >> m;
     for(int i=0;i<m;i++){
         int a,b;
@@ -41,10 +47,7 @@ int main(){
         adj[a].push_back(b);
         adj[b].push_back(a);
     }
-    for(int i=1;i<=n;i++){
-        if(c[i] == INF_INT) bfs(i);
-    }
-    if(ispos) for(int i=1;i<=n;i++) cout << c[i] + 1 << " ";
+    if(isbiparitite(n)) for(int i=1;i<=n;i++) cout << c[i] + 1 << " ";
     else cout << "IMPOSSIBLE";
     
 }
