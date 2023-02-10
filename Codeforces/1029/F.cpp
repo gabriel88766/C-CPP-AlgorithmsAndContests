@@ -1,5 +1,12 @@
-//factoring in O(N^1/4 logN) + O(log^3(N)) (of miller rabin)
-//begin miller rabin:
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
+using namespace std;
+
+
 void binmul(ull &a, ull  b, ull  m){
     a %= m;
     ull ans = 0;
@@ -98,14 +105,13 @@ vector<pair<ull,ull>> fact(ull n){
     return f;
 }
 
-vector<ull> allDivs(ull n){ // O(#divs log #divs) , #divs <= 103680
-    auto f = fact(n);
+vector<ull> allDivs(vector<pair<ull,ull>> f){
     vector<ull> ans;
     ans.push_back(1);
     for(int i=0;i<f[0].second;i++) ans.push_back(ans.back()*f[0].first);
     for(int i=1;i<f.size();i++){
         auto aux = ans;
-        ull aux2 = 1;
+        ll aux2 = 1;
         for(int k=0;k<f[i].second;k++){
             aux2 *= f[i].first;
             for(int j=0;j<ans.size();j++){
@@ -114,6 +120,33 @@ vector<ull> allDivs(ull n){ // O(#divs log #divs) , #divs <= 103680
         }
         ans = aux;
     }
-    sort(ans.begin(),ans.end());
     return ans;
+}
+
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); test input
+    ll a, b, c;
+    vector<ull> da, db, dc;
+    cin >> a >> b;
+    c = a+b;
+    da = allDivs(fact(a));
+    db = allDivs(fact(b));
+    dc = allDivs(fact(c));
+    ll ans = INF_LL, per;
+    for(int i=0;i<dc.size();i++){
+        ll xa = dc[i], xb;
+        xb = c / dc[i];
+        per = 2 * xa + 2 * xb;
+        bool ok = false;
+        ll ya = *(upper_bound(da.begin(), da.end(), xa)-1);
+        if(a/ya < xb) ok = true;
+        ll yb = *(upper_bound(db.begin(), db.end(), xa)-1);
+        if(b/yb < xb) ok = true;
+
+        if(ok) ans = min(ans, per);
+    }
+    cout << ans;
 }
