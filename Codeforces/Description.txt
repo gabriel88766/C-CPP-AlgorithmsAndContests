@@ -1,1 +1,9 @@
-.
+These rounds are completed:
+1 (Beta)
+20 (Alpha)
+977 (Div 3)
+978 (Div 3)
+1077 (Div 3)
+1095 (Div 3)
+1102 (Div 3)
+1108 (Div 3)

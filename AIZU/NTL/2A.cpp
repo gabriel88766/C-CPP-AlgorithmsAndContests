@@ -1,4 +1,3 @@
-//to be improved, just a draft. (if needed)
 // tip: just use python! 
 #include <bits/stdc++.h>
 typedef long long int ll;
@@ -56,24 +55,6 @@ struct BigInt{
         }
         return ans;
     }
-    BigInt operator *(BigInt num){ //Slow O(N^2)
-        BigInt ans(20000);
-        for(int i=0;i<num.len;i++){
-            for(int j=0;j<len;j++){
-                ull cur = num.v[i] * v[j];
-                ans.v[i+j] += cur;
-                if(cur) ans.len = max(ans.len, i+j+1);
-                int x = 0;
-                while(ans.v[i+j+x] >= MAX_INT){
-                    ans.v[i+j+x+1] += ans.v[i+j+x] / MAX_INT;
-                    ans.v[i+j+x] %= MAX_INT;
-                    x++;
-                    ans.len = max(ans.len, i+j+x+1);
-                }
-            }
-        }
-        return ans;
-    }
     bool operator <(BigInt num){
         if(len < num.len) return true;
         else if(len > num.len) return false;
@@ -94,10 +75,30 @@ struct BigInt{
 };
 
 
-
 int main(){
-    string s;
-    s = "18446744073709551620";
-    BigInt t(s, 20000);
-    cout << t.v[2] << " " << t.v[1] << " " << t.v[0]; // 18 446744073 709551620
+    string s,t ;
+    cin >> s >> t;
+    bool ns = false, nt = false;
+    if(s[0] == '-'){
+        ns = true;
+        s = s.substr(1, s.size()-1);
+    }
+    if(t[0] == '-'){
+        nt = true;
+        t = t.substr(1, t.size()-1);
+    }
+    BigInt b1(s,20000), b2(t,20000);
+    if(nt && !ns){
+        if(b1 < b2) {cout << "-";(b2-b1).print();}
+        else (b1-b2).print();
+    }else if(!nt && ns){
+        if(b2 < b1) {cout << "-"; (b1-b2).print();}
+        else (b2-b1).print();
+    }else if(!nt && !ns){
+        (b1+b2).print();
+    }else{
+        cout << "-";
+        (b1+b2).print();
+    }
+    cout << "\n";
 }

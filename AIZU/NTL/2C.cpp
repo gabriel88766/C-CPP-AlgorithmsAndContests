@@ -1,4 +1,3 @@
-//to be improved, just a draft. (if needed)
 // tip: just use python! 
 #include <bits/stdc++.h>
 typedef long long int ll;
@@ -56,7 +55,7 @@ struct BigInt{
         }
         return ans;
     }
-    BigInt operator *(BigInt num){ //Slow O(N^2)
+    BigInt operator *(BigInt num){
         BigInt ans(20000);
         for(int i=0;i<num.len;i++){
             for(int j=0;j<len;j++){
@@ -94,10 +93,22 @@ struct BigInt{
 };
 
 
-
 int main(){
-    string s;
-    s = "18446744073709551620";
-    BigInt t(s, 20000);
-    cout << t.v[2] << " " << t.v[1] << " " << t.v[0]; // 18 446744073 709551620
+    string s,t ;
+    cin >> s >> t;
+    bool ns = false, nt = false;
+    if(s[0] == '-'){
+        ns = true;
+        s = s.substr(1, s.size()-1);
+    }
+    if(t[0] == '-'){
+        nt = true;
+        t = t.substr(1, t.size()-1);
+    }
+    if((nt && !ns) || (!nt && ns)){
+        if(s != "0" && t != "0") cout << "-";
+    }
+    BigInt b1(s,20000), b2(t,20000);
+    (b1*b2).print();
+    cout << "\n";
 }
