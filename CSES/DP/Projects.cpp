@@ -13,7 +13,7 @@ typedef pair<long long int,pair<long long int,long long int>> plll;
 
 int main(){
 ios_base::sync_with_stdio(0),cin.tie(0);
-freopen("test_input.txt", "r", stdin);
+//freopen("test_input.txt", "r", stdin);
 vector<plll> vp;
 vector<long long int> auxv(200005,INF);
 dp[0]=0;
