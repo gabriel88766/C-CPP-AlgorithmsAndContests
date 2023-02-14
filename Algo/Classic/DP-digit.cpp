@@ -11,7 +11,7 @@ ull dp[10001][2][101];
 
 int query(string ss, int k) {
     int n = ss.size();
- 
+    //memset(dp, 0, sizeof(dp)); //if more than 1 query
     //empty suffixes having sum=0
     dp[n][0][0] = 1;
     dp[n][1][0] = 1;
@@ -20,7 +20,7 @@ int query(string ss, int k) {
         for(int tight = 0; tight < 2 ; tight++) {
             for(int sum = 0; sum < k ; sum++) {
                 if(tight) {
-                    for(int d = 0; d <= ss[i] - '0' ; d++) {
+                    for(int d = 0; d <= ss[i] - '0' ; d++) { //10*k to avoid overflow and negatives.
                         dp[i][1][sum] +=   (d == ss[i]-'0') ? dp[i+1][1][(sum-d + 10*k)%k] : dp[i+1][0][(sum-d + 10*k)%k];
                         dp[i][1][sum] %= MOD;
                     }
