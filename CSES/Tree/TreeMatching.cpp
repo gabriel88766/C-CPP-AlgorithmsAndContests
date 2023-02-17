@@ -1,4 +1,4 @@
-
+// Same as old
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -37,14 +37,9 @@ void dfs(int u, int p){
     for(auto v : adj[u]){
         if(v != p){
             dfs(v,u);
-
         }
     }
 }
-
-
-
-
 
 int main(){
     ios_base::sync_with_stdio(0),cin.tie(0);

@@ -13,5 +13,8 @@ Cyclefinding => bellman ford negative cycle.
 
 RoundTripII => Cyclefinding - DFS in directed graph. (Something like this in Tarjan)
 CourseSchedule => Topological Sort.
+LongestFlightRoute => Topological Sort.
 
 RoadReparation => Kruskal MST
+
+FlightRoutesCheck => DFS transpose graph
