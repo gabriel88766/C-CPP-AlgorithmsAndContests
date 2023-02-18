@@ -11,17 +11,21 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); test input
-    ll lo=1, hi=1e12, mid, n;
+    int n;
     cin >> n;
-    ll goal = (n * n) / 2;
-    while(lo < hi){
-        mid = (lo+hi)/2;
-        ll cnt = 0;
-        for(int i=1;i<=n;i++){
-            cnt += min(mid/i, n);
-        }
-        if(cnt > goal) hi = mid;
-        else lo = mid + 1;
+    map<int,int> mp;
+    set<int> nums;
+    for(int i=0;i<n;i++){
+        int aux;
+        cin >> aux;
+        nums.insert(aux);
+        mp[aux]++;
     }
-    cout << lo << "\n";
+    int ans = 0;
+    for(auto u : nums){
+        int cur = 0;
+        cur += mp[u] + mp[u+1] + mp[u+2] + mp[u+3] + mp[u+4] + mp[u+5];
+        ans = max(ans, cur);
+    }
+    cout << ans;
 }
