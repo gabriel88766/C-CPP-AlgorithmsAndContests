@@ -9,4 +9,8 @@ x = 6; //00000000 00000000 00000000 00000110
 __builtin_clz(x); //29
 __builtin_ctz(x); //1
 __builtin_popcount(x); //2
-__builtin_popcountll(x); //for long long int
+__builtin_popcountll(x); //for long long int (ctz, clz)
+
+//some optimizations if needed
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")

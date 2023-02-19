@@ -35,20 +35,5 @@ ll divmod(ll a, ll b, ll m){
 //inv, if m = prime, and division, 4/3 = 4 * inv 3 mod p
 long long int x = 600,y = 2,p = 998244353;
 long long inv = binpow(y, p-2, p);
-long long div = (4 * inv) % p;
+long long div = (x * inv) % p;
 //cout << inv << " " << div; //must output 300
-
-//newton's binomial O(1) with O(N) pre processing
-ll fat[200005];
-void init(){
-    fat[0] = 1;
-    for(int i=1;i<=200004;i++){
-        fat[i] = (fat[i-1]*i) % MOD;
-    }
-}
-ll binnewton(ll a, ll b){//MOD shall be prime!
-    ll ans = fat[a];
-    ans = (ans * binpow(fat[b], MOD-2, MOD)) % MOD;
-    ans = (ans * binpow(fat[a-b], MOD-2, MOD))% MOD;
-    return ans;
-}

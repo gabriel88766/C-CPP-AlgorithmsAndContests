@@ -24,7 +24,7 @@ vector<int> cycle;
 bool negative_cycle_bellman(int n){
     int cur, x = -1;
     for(int i=0;i<=n;i++){
-        x=-1; //if x changed in last iteration, thus x is part of a negative cycle.
+        x=-1; //if x changed in last iteration, thus x belongs to  a negative cycle.
         for(auto edge : edges){
             if(dist[edge.v] > dist[edge.u] + edge.w){
                 dist[edge.v] = dist[edge.u] + edge.w;

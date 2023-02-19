@@ -1,27 +1,28 @@
 #include <bits/stdc++.h>
-
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-long long int dp[5005][5005][2], v[5005], ps[5005];
+const int N = 5005;
+ll dp[N][N][2], v[N]; //0 for first player, 1 for second player
 
-
+//cout << fixed << setprecision(6)
 int main(){
-    ios_base::sync_with_stdio(0),cin.tie(0);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); test input
     int n;
     cin >> n;
-    ps[0] = 0;
-    for(int i=1;i<=n;i++) {cin >> v[i]; ps[i] = ps[i-1] + v[i];}
-
-    for(int i=1;i<=n;i++){
-        dp[1][i][1] = 0;
-        dp[1][i][0] = v[i];
-    }
-    for(int i=2;i<=n;i++){
+    for(int i=1;i<=n;i++) cin >> v[i];
+    for(int i=1;i<=n;i++){ //init.
         for(int j=1;j<=(n-i+1);j++){
-            dp[i][j][0] = max(ps[j+i-1] - ps[j-1] - dp[i-1][j][1], ps[j+i-1] - ps[j-1] - dp[i-1][j+1][1] );
-            dp[i][j][1] = max(ps[j+i-1] - ps[j-1] - dp[i-1][j][0], ps[j+i-1] - ps[j-1] - dp[i-1][j+1][0] );
+            pair<ll,ll> p = max(make_pair(v[j] + dp[i-1][j+1][1], dp[i-1][j+1][0]), make_pair(v[j+i-1] + dp[i-1][j][1], dp[i-1][j][0]));
+            dp[i][j][0] = p.first;
+            dp[i][j][1] = p.second; 
         }
     }
-    if(!(n % 2)) cout << dp[n][1][1]; else cout << dp[n][1][0];
-
+    cout << dp[n][1][0];
 }

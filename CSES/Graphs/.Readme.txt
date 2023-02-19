@@ -18,3 +18,5 @@ LongestFlightRoute => Topological Sort.
 RoadReparation => Kruskal MST
 
 FlightRoutesCheck => DFS transpose graph
+
+HamiltonianFlights => DP tsp

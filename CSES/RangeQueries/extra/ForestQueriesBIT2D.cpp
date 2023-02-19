@@ -22,7 +22,7 @@ ll sum(int a, int b){ // sum in range [1, 1] to [a, b]
     return ans;
 }
 
-void add(int a, int b, ll value){ //add value to position b
+void add(int a, int b, ll value){ //add value to position [a,b]
     for(int i = a; i <= n; i += i & -i){
         for(int j = b; j <= n; j += j & -j){
             bit[i][j] += value;
