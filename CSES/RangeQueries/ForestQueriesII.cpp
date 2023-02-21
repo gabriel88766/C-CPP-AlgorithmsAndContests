@@ -4,7 +4,6 @@ const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
 const int INF_INT = 0x3f3f3f3f;
 using namespace std;
 
-
 //BIT 2D
 const int M = 1e3+5;
 
@@ -54,7 +53,16 @@ int main(){
     build();
     for(int i=0;i<q;i++){
         int a, b, c, d;
-        cin >> a >> b >> c >> d;
-        cout << sum(c,d) - sum(a-1, d) - sum(c, b-1) + sum(a-1, b-1) << "\n";
+        int t;
+        cin >> t;
+        if(t == 2){
+            cin >> a >> b >> c >> d;
+            cout << sum(c,d) - sum(a-1, d) - sum(c, b-1) + sum(a-1, b-1) << "\n";
+        }else{
+            cin >> a >> b;
+            int state = sum(a,b) - sum(a-1,b) - sum(a,b-1) + sum(a-1,b-1);
+            if(state == 1) add(a,b,-1);
+            else add(a,b,1);
+        }
     }
 }

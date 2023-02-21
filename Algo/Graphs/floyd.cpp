@@ -8,10 +8,12 @@ void floyd(){
     memset(dist, 63, sizeof(dist));
     for(int i=1;i<=n;i++) dist[i][i] = 0; 
     for(int i=1;i<=n;i++) for(int j=1;j<=n;j++)
-        dist[i][j] = min(dist[i][j], adj[i][j]);
+        dist[i][j] = min(dist[i][j], adj[i][j]); //caution here
     for(int k=1;k<=n;k++)
         for(int i=1;i<=n;i++)
             for(int j=1;j<=n;j++)
                 if(dist[i][k] < INF_LL && dist[k][j] < INF_LL)//for negative edge
                     dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);    
 }
+
+//remember to set adj[i][j] to INF, if i and j is not adjacent nodes.
