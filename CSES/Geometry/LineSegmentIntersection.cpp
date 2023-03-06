@@ -7,64 +7,84 @@ const long double PI = acosl(-1.), EPS = 1e-9;
 using namespace std;
 
 
+//features will be added soon.
+//looks like type is necessary 600D(codeforces)
+typedef long double type; //if long long int, EPS = 0
+bool ge(type a, type b){
+    return a + EPS >= b;
+}
+bool le(type a, type b){
+    return a - EPS <= b;
+}
+bool eq(type a, type b){
+    return ge(a,b) && le(a,b);
+}
 
-//cout << fixed << setprecision(6)
+struct Point{
+    type x, y;
+    Point(){}
+    Point(type x, type y) { this->x = x; this->y = y;}
+    Point operator -() {return Point(-x, -y);}
+    Point operator -(Point p) { return Point(x - p.x, y - p.y);}
+    Point operator +(Point p) { return Point(x + p.x, y + p.y);}
+    Point operator *(type d){ return Point(x * d, y * d);}
+    Point operator /(type d){ return Point(x/d, y/d);}
+
+    type abs() {return sqrtl(x*x+y*y); }
+    type dist(Point p){ return (*this-p).abs();}
+    type arg() { return atan2l(y, x); }
+
+    type dot(Point p){ return x*p.x + y*p.y;}
+    type cross(Point p){ return x*p.y - y*p.x;} //if pos, p is in left of vector (x, y), right otherwise
+    Point rot(type g){// g degrees
+        g *= PI/180;
+        return Point(x * cosl(g) - y * sinl(g), x * sinl(g) + y * cosl(g));
+    }
+
+    Point rot90(){ //can handle intergers.
+        return Point(-y, x);
+    }
+    bool onSeg(Point a, Point b){ //check if point on seg AB
+        type rot = ((*this - a).cross(b-a))/(b-a).abs();
+        if(!eq(rot, 0)) return false;
+        return ge(x, min(a.x, b.x)) && le(x, max(a.x, b.x)) && ge(y, min(a.y, b.y)) && le(y, max(a.y, b.y));
+    }
+};
+
+//if long long, d1.cross(d2) != 0, Point returned will have integers coordinates. test onSeg.
+Point intersectLines(Point a1, Point d1, Point a2, Point d2){ //If Long long, treat d1.cross(d2) == 0
+    return a1 + (d1 * ((a2-a1).cross(d2))) / d1.cross(d2); 
+}
+//ToLine => return x.dist(y);
+type distanceToSeg(Point a, Point b, Point x){
+    Point y = intersectLines(a, b-a, x, (b-a).rot(90));
+    if(y.onSeg(a,b)) return x.dist(y);
+    else return min(x.dist(a), x.dist(b));
+}
+
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    //freopen("in", "r", stdin); test input
-    int t;
-    const ll neg = 0x8000000000000000;
-    cin >> t;
-    while(t--){
-        ll x1,y1,x2,y2,x3,y3,x4,y4;
-        cin >> x1 >> y1 >> x2 >> y2 >> x3 >> y3 >> x4 >> y4;
-        pair<ll,ll> dir1, dir2, dir3;
-        char isOK = true;
-        //copy paste
-        dir1 = {x2-x1, y2-y1}, dir2 = {x3-x1, y3-y1}, dir3 ={x4-x1, y4-y1};
-        ll cross1 = dir1.first * dir2.second - dir1.second * dir2.first;
-        ll cross2 = dir1.first * dir3.second - dir1.second * dir3.first;
-        if(cross1 && cross2){
-            if((cross1 > 0 && cross2 > 0) || (cross1 < 0 && cross2 < 0)) isOK = false;
-        }else if(!cross1 && !cross2){
-            if(dir1.first){
-                if((dir1.first > 0 && dir2.first < 0) || (dir1.first < 0 && dir2.first > 0)){
-                    if((dir1.first > 0 && dir3.first < 0) || (dir1.first < 0 && dir3.first > 0)){
-                        isOK = false;
-                    }
-                }
-            }else{
-                if((dir1.second > 0 && dir2.second < 0) || (dir1.second < 0 && dir2.second > 0)){
-                    if((dir1.second > 0 && dir3.second < 0) || (dir1.second < 0 && dir3.second > 0)){
-                        isOK = false;
-                    }
-                }
-            }
-            dir1 = {x1-x2, y1-y2}, dir2 = {x3-x2, y3-y2}, dir3 ={x4-x2, y4-y2};
-            if(dir1.first){
-                if((dir1.first > 0 && dir2.first < 0) || (dir1.first < 0 && dir2.first > 0)){
-                    if((dir1.first > 0 && dir3.first < 0) || (dir1.first < 0 && dir3.first > 0)){
-                        isOK = false;
-                    }
-                }
-            }else{
-                if((dir1.second > 0 && dir2.second < 0) || (dir1.second < 0 && dir2.second > 0)){
-                    if((dir1.second > 0 && dir3.second < 0) || (dir1.second < 0 && dir3.second > 0)){
-                        isOK = false;
-                    }
-                }
-            }
+    //freopen("in", "r", stdin); //test input
+    int n;
+    cin >> n;
+    while(n--){
+        long double x,y;
+        cin >> x >> y;
+        Point a(x,y);
+        cin >> x >> y;
+        Point b(x,y);
+        cin >> x >> y;
+        Point c(x,y);
+        cin >> x >> y;
+        Point d(x,y);
+        if(eq((b-a).cross(d-c), 0)){
+            if(b.onSeg(c,d) || a.onSeg(c,d) || c.onSeg(a,b) || d.onSeg(a,b)) cout << "YES\n";
+            else cout << "NO\n";
+        }else{
+            Point y = intersectLines(a, b-a, c, d-c);
+            if(y.onSeg(a,b) && y.onSeg(c,d)) cout << "YES\n";
+            else cout << "NO\n";
         }
-        //swap x1,x3 and x2,x4 before copypaste
-        swap(x1,x3), swap(y1, y3), swap(x2, x4), swap(y2, y4);
-        dir1 = {x2-x1, y2-y1}, dir2 = {x3-x1, y3-y1}, dir3 ={x4-x1, y4-y1};
-        cross1 = dir1.first * dir2.second - dir1.second * dir2.first;
-        cross2 = dir1.first * dir3.second - dir1.second * dir3.first;
-        if(cross1 && cross2){
-            if((cross1 > 0 && cross2 > 0) || (cross1 < 0 && cross2 < 0)) isOK = false;
-        }
-        if(isOK) cout << "YES\n";
-        else cout << "NO\n";
     }
 }

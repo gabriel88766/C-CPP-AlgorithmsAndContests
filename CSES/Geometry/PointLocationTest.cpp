@@ -39,6 +39,7 @@ int main(){
         cin >> x1 >> y1 >> x2 >> y2 >> x3 >> y3;
         Point dir(x2-x1, y2-y1), dir2(x3-x1, y3-y1);
         long double res = dir.cross(dir2);
+        cout << res << "\n";
         if(abs(res) - EPS < 0) cout << "TOUCH\n";
         else if(res < 0) cout << "RIGHT\n";
         else cout << "LEFT\n";

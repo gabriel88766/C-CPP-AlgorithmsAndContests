@@ -7,16 +7,30 @@ RoundTrip => Cyclefinding - DFS
 Monsters =>  BFS
 ShortestRoutesI => dijkstra
 ShortestRoutesII => Floyd-Warshall
-
+High Score => Bellman ford, but not too easy idea.
 FlightDiscount => dijkstra, but with idea to change one edge, the key idea is something like problems with flows, a new copied graph with all edges being a connection between graphs with w/2 weight
 Cyclefinding => bellman ford negative cycle.
-
-RoundTripII => Cyclefinding - DFS in directed graph. (Something like this in Tarjan)
+FlightRoutes => Dijsktra but.. 10 distances
+RoundTripII => Cyclefinding - DFS in directed graph. 
 CourseSchedule => Topological Sort.
 LongestFlightRoute => Topological Sort.
-
+GameRoutes => toposort + DP
+Investigation => another dijkstra
+Planet QueriesI => sparse table
+Planet QueriesII => sparse table + some arrays of infos.
+PlanetCycles => floyd cycle finding + some DFS
 RoadReparation => Kruskal MST
-
+RoadConstruction => DSU
 FlightRoutesCheck => DFS transpose graph
+PlanetsAndKingdoms => SCC Tarjan
+GiantPizza => 2SAT
+CoinCollector => tarjan + DP
+
+
 
 HamiltonianFlights => DP tsp
+Knight's Tour => Warnsdorff’s algorithm, Heuristic to Hamiltonian Path
+Download Speed => Max flow
+Police Chase => Min Cut
+School Dance => Maximum matching
+Distinct Routes => Edge-disjoint paths.

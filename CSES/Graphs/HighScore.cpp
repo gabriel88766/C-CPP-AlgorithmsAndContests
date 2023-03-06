@@ -6,56 +6,37 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
  
-//O(nm), some notes, ideas to see what happened in nth iteration
-// find negative cycle if decrease in nth iterarion
-// for maximum algorithm, if increase, positive cycles
 const int N = 5005;
  
 struct Edge{
     ll u, v, w;
 };
 vector<Edge> edges;
+vector<int> invadj[N];
+vector<int> listv;
+bool vis[N];
 ll dist[N];
  
-bool infinite_cycle_bellman(int n){
-    int cur, x;
-    ll MIN_LL;
+void bellman(int n){ // true if not inf cycle
+    ll neginf;
     memset(dist, 192, sizeof(dist));
-    memset(&MIN_LL, 192, sizeof(MIN_LL));
+    memset(&neginf, 192, sizeof(ll));
     dist[1] = 0;
-    bool inf = false;
-    set<int> cyc;
-    for(int i=0;i<=(2*n);i++){
+    for(int i=0;i<=n;i++)
         for(auto edge : edges){
-            if(dist[edge.u] == MIN_LL) continue;
+            if(dist[edge.u] == neginf) continue;
             if(dist[edge.v] < dist[edge.u] + edge.w){
                 dist[edge.v] = dist[edge.u] + edge.w;
-                if(i >= n) cyc.insert(edge.v);
+                if(i == n) listv.push_back(edge.v);
             }   
         }
-    }
-    bool ok1=false, okn=false;
-    for(auto edge : edges){
-        if(edge.u == 1 && cyc.count(edge.v)) ok1 = true;
-        if(edge.v == n && cyc.count(edge.u)) okn = true;
-    }
-    if(ok1 && okn) inf= true;
-    return inf;
 }
- 
-vector<int> adj[N];
-bool vis[N];
 
 void dfs(int u){
     vis[u] = true;
-    for(auto i : adj[u]){
-        if(!vis[i]){
-            dfs(i);
-        }
-    }
+    for(auto x : invadj[u]) if(!vis[x]) dfs(x);
 }
- 
- 
+
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
@@ -67,8 +48,14 @@ int main(){
         ll a,b,w;
         cin >>a >> b >> w;
         edges.push_back({a,b,w});
+        invadj[b].push_back(a);
     }
-    if(infinite_cycle_bellman(n)){
-        cout << -1;
-    }else cout << dist[n];
+    bellman(n);
+    dfs(n);
+    bool ok = true;
+    for(auto x : listv){
+        if(vis[x]) ok = false;
+    }
+    if(ok) cout << dist[n];
+    else cout << "-1";
 }

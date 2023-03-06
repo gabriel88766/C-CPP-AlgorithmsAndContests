@@ -42,23 +42,37 @@ vector<int> find_cycle(int n){ //if returned vector is empty, then no cycle
 //(2)Topological sort O(V+E) directed graph
 const int N = 2e5+3;
 vector<int> topo;
-bool visited[N];
+bool vis[N];
 vector<int> adj[N];
 
 void dfs_topo(int u){
-    visited[u] = true;
+    vis[u] = true;
     for(auto i : adj[u]){
-        if(!visited[i]){
+        if(!vis[i]){
             dfs_topo(i);
         }
     }
     topo.push_back(u);
 }
 void topo_sort(int n){ 
-    for(int i=1;i<=n;i++) visited[i] = false;
-    for(int i=1;i<=n;i++) if(!visited[i]) dfs_topo(i);
+    for(int i=1;i<=n;i++) vis[i] = false;
+    for(int i=1;i<=n;i++) if(!vis[i]) dfs_topo(i);
     reverse(topo.begin(), topo.end());   
 }
+//Kahn
+int indg[N]; //indg[b] = qt[a] | a -> b
+queue<int> q;
+vector<int> topo;
+while(!q.empty()){ //priority queue for first lexicographical order,
+    int u = q.front(); //if(q.size() >= 2) then not unique.
+    q.pop();
+    for(auto x : adj[u]){
+        indg[x]--;
+        if(indg[x] == 0) q.push(x);
+    }
+    topo.push_back(u);
+}
+
 //(3) Bipartite check O(V+E)
 const int INF_INT = 0x3f3f3f3f;
 const int N = 2e5+3;
@@ -86,4 +100,21 @@ bool isbiparitite(int n){
     memset(c, 63, sizeof(c));
     for(int i=1;i<=n;i++) if(c[i] == INF_INT && !bfs_bipartite(i)) return false;
     return true;
+}
+//(4) Find bridges in O(V+E)
+const int N = 2e5+3;
+vector<int> adj[N];
+int dfs_low[N], dfs_num[N], cnt = 0;
+
+vector<pair<int,int>> bdg;
+void dfs(int u, int p = -1){ //connected undirected graph
+    dfs_low[u] = dfs_num[u] = ++cnt;
+    for(auto v : adj[u]){
+        if(p == v) continue;
+        if(!dfs_num[v]){
+            dfs(v, u);
+            if(dfs_low[v] > dfs_num[u]) bdg.emplace_back(u, v);
+        }
+        dfs_low[u] = min(dfs_low[v], dfs_low[u]);
+    }
 }
