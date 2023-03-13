@@ -30,35 +30,25 @@ int main(){
     cin.tie(NULL);
     //freopen("in", "r", stdin); test input
     cin >> n;
-    vector<ll> v(n+1), ps(n+1), lo(n+1, -1);
+    vector<ll> v(n+1), ps(n+1), dp(n+1, 0);
     ps[0] = 0;
-    set<pair<ll,ll>> nps;
-    nps.insert({0, 0});
     for(int i=1;i<=n;i++){
         cin >> v[i];
         ps[i] = ps[i-1] + v[i];
-        nps.insert({ps[i], i});
     }
-    ll lower = INF_LL;
-    for(int i=0;i<=n;i++){
-        if(ps[i] < lower){
-            auto it = nps.upper_bound({ps[i], i});
-            while(it != nps.end() && it->first < lower){
-                lo[it->second] = i;
-                ++it;
+    
+    for(int i=1;i<=n;i++){ //how to O(n^3) => O(n log n) ??
+        for(int j=0;j<i;j++){
+            for(int k=j+1;k<=i;k++){
+                if(ps[k-1] <= ps[i]){
+                    dp[i] = max(dp[i], dp[j] + i-k+1);
+                }
             }
-            lower = ps[i];
         }
     }
-    int ans = 0;
-    for(int i=1;i<=n;i++){
-        int l = lo[i];
-        if(l == -1) continue;
-        dp[i] = i-l;
-        if(l > 1) dp[i] += query(1, l-1);
-        update(i, dp[i]);
-    }
-    for(int i=1;i<=n;i++) cout << dp[i] << " ";
+    ll ans = 0;
+    for(int i=1;i<=n;i++) ans = max(ans, dp[i]);
+    cout << ans;
 
 }
  

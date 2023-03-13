@@ -11,5 +11,19 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-
+    int t;
+    cin >> t;
+    while(t--){
+        int a,b;
+        cin >> a >> b;
+        a = abs(a);
+        b = abs(b);
+        int ans = 2*min(a,b);
+        int diff = max(a,b) - min(a,b);
+        if(diff > 1){
+            ans++;
+            ans += (diff-1)*2;
+        }else ans += diff;
+        cout << ans << "\n";
+    }
 }

@@ -11,5 +11,18 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
+    int t;
+    cin >> t;
+    while(t--){
+        int n;
+        cin >> n;
+        vector<int> v(n+1), inv(2*n+1), b(n+1);
+        for(int i=1;i<=n;i++){
+            cin >> v[i];
+            inv[v[i]] = i;
+        }
 
+        for(int i)
+
+    }
 }

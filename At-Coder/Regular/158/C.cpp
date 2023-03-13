@@ -11,5 +11,16 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-
+    int t;
+    cin >> t;
+    while(t--){
+        int a,b,c;
+        cin >> a >> b >> c;
+        if(a % 2 == b % 2 && b % 2 == c % 2){
+            if((a+b+c) % 3) cout << "-1\n";
+            else{
+                
+            }
+        }else cout << "-1\n";
+    }
 }

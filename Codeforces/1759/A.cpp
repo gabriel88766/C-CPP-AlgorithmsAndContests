@@ -11,5 +11,19 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-
+    string cmp;
+    for(int i=0;i<50;i++) cmp += "Yes";
+    int t;
+    cin >> t;
+    while(t--){
+        string s;
+        cin >> s;
+        bool ok = false;
+        int n = s.size();
+        for(int i=0;i<3;i++){
+            if(cmp.substr(i, n) == s) ok = true;
+        }
+        if(ok) cout << "Yes\n";
+        else cout << "No\n";
+    }
 }

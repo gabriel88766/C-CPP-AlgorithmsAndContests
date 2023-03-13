@@ -31,7 +31,7 @@ vector<vector<ll>> multMatrix(vector<vector<ll>> a, vector<vector<ll>> b, ll m){
         for(int j=0;j<size;j++){
             ll cel = 0;
             for(int k=0;k<size;k++){
-                cel = (cel + a[i][k] * b[k][j]) % MOD;
+                cel = (cel + a[i][k] * b[k][j]) % m;
             }
             ans[i][j] = cel;
         }

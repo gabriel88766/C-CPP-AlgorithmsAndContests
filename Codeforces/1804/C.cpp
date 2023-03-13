@@ -11,5 +11,18 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-
+    int t;
+    cin >> t;
+    while(t--){
+        ll n, x, p;
+        cin >> n >> x >> p;
+        ll g = (n-x)%n;
+        bool ok = false;
+        for(ll i=1;i<=min(p, 2*n); i++){
+            ll cur = ((i*(i+1))/2) % n;
+            if(cur == g) ok = true;
+        }
+        if(ok) cout << "Yes\n";
+        else cout << "No\n";
+    }
 }
