@@ -20,33 +20,35 @@ int main(){
          mod[v[i]%m]++;
          mv[v[i]%m].push_back(i);
     }
-    int aux=-1, e = n/m;
-    if(mod[0] > e && mod[m-1] < e) aux = m-1;
-    if(aux != -1){
-        for(int i=0;i<(m-1);i++){
-            if(mod[i] < e && mod[i+1] > e) aux = i;
-        }
+    int k = n/m;
+    vector<pair<int,int>> movsm, movsv;
+    multiset<int> gr, lo;
+    for(int i=0;i<m;i++){
+        if(mod[i] > k) for(int j=0;j<(mod[i]-k);j++) gr.insert(i);
+        else if(mod[i] < k) for(int j=0;j<(k-mod[i]);j++) lo.insert(i);
     }
-    if(aux == -1){
-        cout << "0\n";
-        for(int i=1;i<=n;i++) cout << v[i] << " ";
-    }else{
-        vector<int> need;
-        ll totaldiff = 0;
-        for(int i = m+aux; i>= (aux+1); i--){
-            int j = i >= m ? i-m : i;
-            if(mod[j] > e){
-                for(int k = e+1; k<=mod[j];k++){
-                    totaldiff += need.back() - i;
-                    v[mv[j].back()] += need.back() - i;
-                    mv[j].pop_back();
-                    need.pop_back();
-                }
-            }else if(mod[j] < e){
-                for(int k=mod[j]+1;k<=e;k++) need.push_back(i);
-            }
-        }
-        cout << totaldiff << "\n";
-        for(int i=1;i<=n;i++) cout << v[i] << " ";
+
+    for(auto x : lo){
+        auto it = gr.lower_bound(x);
+        if(it == gr.begin()) it = gr.end();
+        --it;
+        int src = *it;
+        gr.erase(it);
+        movsm.push_back({src, x});
     }
+
+    ll cost = 0;
+    for(auto x : movsm){
+        int ind = mv[x.first].back();
+        mv[x.first].pop_back();
+        ll more;
+        if(x.second > x.first) more = x.second - x.first;
+        else more = m+x.second-x.first;
+        cost += more;
+        v[ind] += more;
+    }
+    cout << cost << "\n";
+    for(int i=1;i<=n;i++) cout << v[i] << " ";
+
+    
 }
