@@ -32,23 +32,13 @@ void tarjan(int u){ //SCC, cmp is in inverse topological order
 }
 
 bool vis[N];
-bool check(int src){
-    memset(vis, 0, sizeof(vis));
-    queue<int> q;
-    q.push(src); 
-    vis[src] = true;
-    while(!q.empty()){
-        int u = q.front();
-        q.pop();
-        for(auto v : adj[u]){
-            if(!vis[v]){
-                vis[v] = true;
-                q.push(v);
-            }
+void dfs(int u){
+    vis[u] = true;
+    for(auto i : adj[u]){
+        if(!vis[i]){
+            dfs(i);
         }
     }
-    for(int i=1;i<=n;i++) if(!vis[i]) return false;
-    return true;
 }
 
 //cout << fixed << setprecision(6)
@@ -63,24 +53,16 @@ int main(){
         cin >> a >> b;
         adj[a].emplace_back(b);
     }
-    for(int i=0;i<5005;i++){
-        if(check(s)){
-            cout << i << "\n";
-            break;
-        }
-        memset(dfs_low, 0, sizeof(dfs_low));
-        memset(dfs_num, 0, sizeof(dfs_num));
-        memset(visc, 0, sizeof(visc));
-        for(int j=0;j<=cntCmp;j++) cmp[j].clear();
-        cntT = cntCmp = 0;
-
-        for(int j=1;j<=n;j++) if(!visc[j]) tarjan(j);
-
-        for(int j=cntCmp; j>=1; j--){
-            if(!vis[cmp[j].back()]){
-                adj[s].push_back(cmp[j].back());
-                break;
-            }
+    
+    dfs(s);
+    int ans = 0;
+    for(int j=1;j<=n;j++) if(!visc[j]) tarjan(j);
+    for(int j=cntCmp; j>=1; j--){
+        if(!vis[cmp[j].back()]){
+            ans++;
+            dfs(cmp[j].back());
         }
     }
+    cout << ans;
+    
 }
