@@ -6,10 +6,34 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
+bool tryit(vector<int> &v){
+    stack<int> st;
+    int maxv = 0;
+    for(int i=0;i<v.size();i++){
+        maxv = max(maxv, v[i]);
+        if(!st.empty()){
+            int last = st.top();
+            if(v[i] == last) st.pop();
+            else if(v[i] < last) st.push(v[i]);
+            else return false;
+        }else st.push(v[i]);
+    }
+    if(st.size() == 0) return true;
+    else if(st.size() == 1 && st.top() >= maxv) return true;
+    else return false;
+}
+
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); test input
-
+    int n, aux;
+    cin >> n;
+    vector<int> v(n);
+    for(int i=0;i<n;i++){
+        cin >> v[i];
+    }
+    if(tryit(v)) cout << "YES\n";
+    else cout << "NO\n";
 }

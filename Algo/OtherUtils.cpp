@@ -1,3 +1,29 @@
+//min priority queue (dijkstra?)
+priority_queue<int, vector<int>, greater<int>> pq;
+
+int x = 5328; // 00000000000000000001010011010000
+cout << __builtin_clz(x) << "\n"; // 19
+cout << __builtin_ctz(x) << "\n"; // 4
+cout << __builtin_popcount(x) << "\n"; // 5
+cout << __builtin_parity(x) << "\n"; // 1
+
+//Snippet cordinate compresion
+sort(ind.begin(), ind.end());
+ind.erase(unique(ind.begin(), ind.end()), ind.end());
+
+//Struct with operator, remember const.
+struct Edge {
+	int a, b, w;
+	bool operator< (const Edge &y) const { return w < y.w; }
+};
+
+//Tips, Binary Search
+int mid = lo + (hi - lo) / 2; //when negative is allowed, 
+if(something) hi = mid; else lo = mid+1;
+//other type
+int mid = (lo + hi + 1) / 2;
+if(something) hi = mid-1, else lo = mid;
+
 // unordered_map or set
 struct custom_hash {
     size_t operator()(vector<int> const& vec) const {
@@ -23,12 +49,3 @@ struct custom_hash {
         return splitmix64(x + FIXED_RANDOM);
     }
 };
-
-//min priority queue (dijkstra?)
-priority_queue<int, vector<int>, greater<int>> pq;
-
-int x = 5328; // 00000000000000000001010011010000
-cout << __builtin_clz(x) << "\n"; // 19
-cout << __builtin_ctz(x) << "\n"; // 4
-cout << __builtin_popcount(x) << "\n"; // 5
-cout << __builtin_parity(x) << "\n"; // 1
