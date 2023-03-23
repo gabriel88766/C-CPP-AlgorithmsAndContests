@@ -16,6 +16,7 @@ void build(){
 }
 
 ll query(int a, int b){
+    if(a == b) return sparse[a][0]; //bug
     int pot = 32 - __builtin_clz(b - a) - 1; 
     return min(sparse[a][pot], sparse[b - (1 << pot) + 1][pot]);
 }
