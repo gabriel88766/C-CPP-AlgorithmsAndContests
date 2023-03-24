@@ -14,12 +14,14 @@ int main(){
     int t;
     cin >> t;
     while(t--){
-        ll n;
-        cin >> n;
-        ll ans = sqrt(n);
-        while((ans+1)*(ans+1) <= n) ans++;
-        while(ans*ans > n) ans--; 
-        if(ans * ans != n) ans++;
-        cout << ans -1 << "\n";
+        int a,b,c,d;
+        cin >> a >> b >> c >> d;
+        if(b > d) cout << "-1\n";
+        else{
+            int mv = d-b;
+            int x = a + mv;
+            if(x < c) cout << "-1\n";
+            else cout << (x-c)+mv << "\n";
+        }
     }
 }
