@@ -3,6 +3,7 @@ These rounds are completed:
 20 (Alpha)
 977 (Div 3)
 978 (Div 3)
+1066 (Div 3)
 1077 (Div 3)
 1092 (Div 3)
 1095 (Div 3)

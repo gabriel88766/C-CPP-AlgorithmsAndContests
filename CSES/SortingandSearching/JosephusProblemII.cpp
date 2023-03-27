@@ -1,61 +1,37 @@
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp> //required
 #include <ext/pb_ds/tree_policy.hpp> //required
-
 typedef long long int ll;
-const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
 const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
-
 
 using namespace __gnu_pbds; //required 
 template <typename T> using ordered_set =  tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>; 
 
+int find_js(int n, int st, int k){
+    int ans = (st + k+1) % n;
+    if(!ans) ans = n;
+    return ans;
+}
 
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    //freopen("in", "r", stdin); test input
-    int n, k;
-    set<int> s;
-    ordered_set<int> st;
+    //freopen("in", "r", stdin); //test input
+    ll n, k;
     cin >> n >> k;
-    k++;
-    for(int i=1;i<=n;i++) st.insert(i);
-    vector<int> orders; //easy to solve after this, find all orders
-    int size = n, cursz = n, curpos=0, cnt, rem = 0;
-    while(cursz){
-        cnt = 0;
-        curpos = -rem;
-        if((cursz - curpos) >= k){
-            curpos += k;
-            while(curpos <= cursz){
-                cnt++;
-                orders.push_back(curpos-cnt+1);
-                curpos += k;
-            }
-            curpos -= k;
-            rem = cursz - curpos;
-            if(rem >= cursz) rem -= cursz;
-            cursz -= cnt;
-        }else{
-            int aux = k - ((k/cursz) * cursz);
-            curpos += aux;
-            if(curpos > cursz) curpos -= cursz; 
-            if(curpos <= 0) curpos += cursz;
-            orders.push_back(curpos);
-            rem = cursz - curpos;
-            
-            cursz--;
-            if(rem >= cursz) rem -= cursz;
-        }
+    ll st = 0;
+    ordered_set<int> os;
+    for(int i=1;i<=n;i++) os.insert(i);
+    for(int i=n;i>=1;i--){
+        int nxt = find_js(i, st, k);
+        int ans = *os.find_by_order(nxt-1);
+        cout << ans << " ";
+        os.erase(ans);
+        st = nxt-1;
     }
-    for(auto i : orders){
-        auto k = *st.find_by_order(i-1);
-        cout << k << " ";
-        st.erase(k);
-    }
-    
-    
 }
