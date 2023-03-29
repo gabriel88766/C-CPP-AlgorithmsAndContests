@@ -27,7 +27,7 @@ ll query(int a, int b){
     }else{
         for(int i=a;i<l;i++) ans += v[i];
         for(int i=r;i<=b;i++) ans += v[i];
-        l /= 500, r /= 500;
+        l /= sqrtN, r /= sqrtN;
         for(int i=l;i<r;i++){
             ans += bl[i];
         }
