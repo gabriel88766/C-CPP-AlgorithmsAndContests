@@ -19,6 +19,7 @@ These rounds are completed:
 1703 (Div 4)
 1722 (Div 4)
 1742 (Div 4)
+1744 (Div 3)
 1760 (Div 4)
 1791 (Div 4)
 1800 (Div 3)
