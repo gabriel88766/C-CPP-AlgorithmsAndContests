@@ -6,7 +6,7 @@ void euler(){
     for(ll i=2; i < N; i++){
         if(phi[i] == i){
             for(ll j = i; j < N; j += i){
-                phi[j] -= phi[j]/i; //marking all multiples of i as not prime
+                phi[j] -= phi[j]/i; 
             }
         }
     }
