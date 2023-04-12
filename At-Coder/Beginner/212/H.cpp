@@ -25,39 +25,40 @@ struct Mint{
     Mint operator* (Mint u){ return Mint((v*u.v) % MOD);}
     Mint operator+ (Mint u){ return Mint((v+u.v >= MOD ? v+u.v-MOD : v+u.v));}
     Mint operator- (Mint u){ return Mint((v-u.v >= 0 ? v-u.v : v-u.v+MOD));}
-    Mint operator/ (ll u){ return Mint((v*binpow(u, MOD-2)));}
+    Mint operator/ (Mint u){ return Mint((v*binpow(u.v, MOD-2)));}
 };
 
 //change to ntt
-void ntt(vector<Mint> &a, int n, int s) { //31^(2^23) == 1, so, for example, if n = 2^16, w1 = 31^(2^7)
-    ll w1 = 31;
-    for(int i = n; i < (1 << 23); i <<= 1) w1 = (w1*w1)%MOD;
-    for (int i=0, j=0; i<n; i++) {
-        if (i>j) swap(a[i], a[j]);
-        for (int l=n/2; (j^=l) < l; l>>=1);
-    }
+void xorfft(vector<Mint> &a, int lo, int hi) { 
+    
+    if(lo == (hi-1)) return;
     //w1^n = 1
-    for(int i = 1; (1<<i) <= n; i++){
-        int M = 1 << i;
-        int K = M >> 1;
-        Mint wn(binpow(w1, n + s*(n/M))); 
-        for(int j = 0; j < n; j += M) {
-            Mint w(1LL);
-            for(int l = j; l < K + j; ++l){
-                Mint t = w*a[l + K];
-                a[l + K] = a[l] - t;
-                a[l] = a[l] + t;
-                w = wn*w;
-            }
-        }
+    int mid = lo + (hi-lo)/2;
+    xorfft(a, lo, mid);
+    xorfft(a, mid, hi);
+    for(int i = 0; lo+i < mid; i++){
+        Mint x = a[lo+i];
+        Mint y = a[mid+i];
+        a[lo+i] = x + y;
+        a[mid+i] = x - y;
     }
 }
 
 void multiply(vector<Mint> &a, vector<Mint> &b) {
-    ntt(a,n,1);
-    ntt(b,n,1);
+    xorfft(a,0,n);
+    xorfft(b,0,n);
     for (int i = 0; i < n; i++) a[i] = a[i]*b[i];
-    ntt(a,n,-1);
+    xorfft(a,0,n);
+    for (int i = 0; i < n; i++) a[i] = a[i]/n;
+}
+
+void inv(vector<Mint> &a){
+    vector<Mint> aux(n);
+    aux[0] = 1;
+    xorfft(a, 0, n);
+    xorfft(aux, 0, n);
+    for(int i=0;i<n;i++) a[i] = aux[i]/a[i];
+    xorfft(a, 0, n);
     for (int i = 0; i < n; i++) a[i] = a[i]/n;
 }
 
@@ -66,36 +67,40 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    /*int m, k;
+    int m, k;
     vector<int> v(k+1);
     cin >> m >> k;
     for(int i=1;i<=k;i++) cin >> v[i];
     n = 1 << 16;
-    vector<ll> a(n,0);
+    vector<Mint> a(n);
     for(int i=1;i<=k;i++){
-        a[v[i]] = 1;
+        a[v[i]].v = 1;
     }
-
-    ll ans = 0;
-    vector<ll> ansv(n,0);
+    vector<Mint> b = a;
+    b[0] = b[0] - 1;
+    for(int i=0;i<=8;i++) cout << b[i].v << " ";
+    auto x = b;
+    inv(b);
+    cout << "\n";
+    for(int i=0;i<=8;i++) cout << b[i].v << " ";
+    cout << "\n";
+    multiply(x,b);
+    for(int i=0;i<=8;i++) cout << x[i].v << " ";
+    cout << "\n\n";
+    Mint ans = 0;
+    vector<Mint> ansv(n,0);
     ansv[0] = 1;
-    while(m){
-        if(m & 1){
-            multiply(ansv, a);
-        }
-        m >>= 1;
-        multiply(a,a);
+    for(int i=1;i<=m+1;i++){
+        auto aux = a;
+        multiply(ansv, a);
+        a = aux;
     }
-    for(int i=1;i<n;i++) ans = (ans + ansv[i]) % MOD;
-    cout << ans;*/
-    n = 1 << 16;
-    vector<Mint> a(n, 0);
-    vector<Mint> b(n, 0);
-    a[1].v = 1, a[2].v = 3, a[3].v = 2;
-    b[1].v = 1, b[2].v = 3, b[3].v = 2;
-    for(int i=0;i<10;i++) cout << a[i].v << " ";
-    cout << "\n";
-    multiply(a,b);
-    for(int i=0;i<10;i++) cout << a[i].v << " ";
-    cout << "\n";
+    ansv[0] = ansv[0]-1;
+    multiply(ansv, b);
+    // for(int i=0;i<=8;i++) cout << ansv[i].v << " ";
+    // cout << "\n";
+    for(int i=1;i<n;i++) ans = ans + ansv[i];
+    
+    cout << ans.v;
+   
 }
