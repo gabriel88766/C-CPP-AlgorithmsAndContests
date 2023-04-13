@@ -37,3 +37,34 @@ long long int x = 600,y = 2,p = 998244353;
 long long inv = binpow(y, p-2, p);
 long long div = (x * inv) % p;
 //cout << inv << " " << div; //must output 300
+
+//Mint
+struct Mint{
+    ll v;
+    Mint(){ v = 0;}
+    Mint(ll u){ v = (u >= 0 ? u % MOD : u % MOD + MOD);}
+    Mint pow(ll u){
+        Mint ans = 1;
+        Mint aux = *this;
+        while(u){
+            if(u & 1) ans *= aux;
+            aux *= aux;
+            u >>= 1;
+        }
+        return ans;
+    }
+    friend Mint operator* (Mint a, Mint const &b){ return a *= b;}
+    friend Mint operator/ (Mint a, Mint const &b){ return a /= b;}
+    friend Mint operator+ (Mint a, Mint const &b){ return a += b;}
+    friend Mint operator- (Mint a, Mint const &b){ return a -= b;}
+    Mint operator*= (Mint u){ v = (u.v * v) % MOD; return *this;}
+    Mint operator+= (Mint u){ v = (v+u.v >= MOD ? v+u.v-MOD : v+u.v); return *this;}
+    Mint operator-= (Mint u){ v = (v-u.v < 0 ? v-u.v+MOD : v-u.v); return *this;}
+    Mint operator/= (Mint u){ (*this) *= u.pow(MOD-2); return *this;}
+    bool operator== (Mint u){ return v == u.v;}
+    bool operator!= (Mint u){ return v != u.v;}
+    friend ostream& operator<<(ostream& os, const Mint& num){
+        os << num.v;
+        return os;
+    }
+};

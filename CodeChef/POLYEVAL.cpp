@@ -1,4 +1,11 @@
-//version 2
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 786433; //1e9+7
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
+using namespace std;
+
 int n;
 struct Mint{
     ll v;
@@ -30,10 +37,10 @@ struct Mint{
     }
 };
 
-// if MOD 786433, w = 5 and change to 1 << 18
-void ntt(vector<Mint> &a, int n, int s) { //31^(2^23) == 1 (mod 998244353), so, for example, if n = 2^16, w1 = 31^(2^7)
-    Mint w1 = 31;
-    for(int i = n; i < (1 << 23); i <<= 1) w1 *= w1;
+//change to ntt
+void ntt(vector<Mint> &a, int n, int s) { 
+    Mint w1 = 5;
+    for(int i = n; i < (1 << 18); i <<= 1) w1 *= w1;
     for (int i=0, j=0; i<n; i++) {
         if (i>j) swap(a[i], a[j]);
         for (int l=n/2; (j^=l) < l; l>>=1);
@@ -55,10 +62,40 @@ void ntt(vector<Mint> &a, int n, int s) { //31^(2^23) == 1 (mod 998244353), so, 
     }
 }
 
-void multiply(vector<Mint> &a, vector<Mint> &b) {
-    ntt(a,n,1);
-    ntt(b,n,1);
-    for (int i = 0; i < n; i++) a[i] *= b[i];
-    ntt(a,n,-1);
-    for (int i = 0; i < n; i++) a[i] /= n;
+int pos[786433];
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); //test input
+    n = 1 << 18;
+    vector<Mint> a(n), b(n), c(n);
+    int m;
+    cin >> m;
+    for(int i=0;i<=m;i++){
+        if(i%3 == 0) cin >> a[i/3].v;
+        else if(i%3 == 1) cin >> b[i/3].v;
+        else cin >> c[i/3].v;
+    }
+    ll v0 = a[0].v;
+    ntt(a, n, 1);
+    ntt(b, n, 1);
+    ntt(c, n, 1);
+    Mint w = 1;
+    for(int i=0;i<n;i++){
+        pos[w.v] = i;
+        w *= 5;
+    }
+    int q;
+    cin >> q;
+    for(int i=0;i<q;i++){
+        ll k;
+        cin >> k;
+        if(k == 0){
+            cout << v0 << "\n";
+            continue;
+        }
+        Mint cubic = k*k*k;
+        cout << a[pos[cubic.v]] + b[pos[cubic.v]]*k + c[pos[cubic.v]]*k*k << "\n";
+    }
 }

@@ -1,11 +1,3 @@
-#include <bits/stdc++.h>
-typedef long long int ll;
-typedef unsigned long long int ull;
-const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
-const int INF_INT = 0x3f3f3f3f;
-const long double PI = acosl(-1.), EPS = 1e-9; 
-using namespace std;
-
 int n;
 struct Mint{
     ll v;
@@ -29,12 +21,19 @@ struct Mint{
     Mint operator+= (Mint u){ v = (v+u.v >= MOD ? v+u.v-MOD : v+u.v); return *this;}
     Mint operator-= (Mint u){ v = (v-u.v < 0 ? v-u.v+MOD : v-u.v); return *this;}
     Mint operator/= (Mint u){ (*this) *= u.pow(MOD-2); return *this;}
+    bool operator== (Mint u){ return v == u.v;}
+    bool operator!= (Mint u){ return v != u.v;}
     friend ostream& operator<<(ostream& os, const Mint& num){
         os << num.v;
         return os;
     }
 };
 
+//Worth to know;
+//Matrix to transform for Xor is (1,1) (1,-1), for OR (1,0) (1,1) and for AND (0,1) (1,1)
+//Remember n = 2^x
+// FWHT(A) + FWHT(B) + .... = FWHT(A + B + C + D + ...) for product it also holds(Linear Algebra)
+//FAST WALSH HADAMARD TRANSFORM
 void fwht(vector<Mint> &a, int lo, int hi) { 
     if(lo == (hi-1)) return;
     //w1^n = 1
@@ -49,41 +48,10 @@ void fwht(vector<Mint> &a, int lo, int hi) {
     } 
 }
 
-void multiply(vector<Mint> &a, vector<Mint> &b) { 
+void multiply(vector<Mint> &a, vector<Mint> &b) { //just one example of task, sometimes you don't want multiply!
     fwht(a,0,n);
     fwht(b,0,n);
     for (int i = 0; i < n; i++) a[i] = a[i]*b[i];
     fwht(a,0,n);
     for (int i = 0; i < n; i++) a[i] = a[i]/n;
-}
-
-//cout << fixed << setprecision(6)
-int main(){
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    //freopen("in", "r", stdin); //test input
-    int m, k;
-    cin >> m >> k;
-    vector<int> v(k+1);
-    for(int i=1;i<=k;i++) cin >> v[i];
-    n = 1 << 16;
-    vector<Mint> a(n);
-    for(int i=1;i<=k;i++){
-        a[v[i]].v = 1;
-    }
-    fwht(a, 0, n);
-    for(int i=0;i<n;i++){
-        if(a[i].v == 0) a[i] = 0;
-        else if(a[i].v == 1) a[i] = m;
-        else{
-            a[i] = (a[i].pow(m+1) - 1)/(a[i]-1) - 1;
-        }
-    }
-    fwht(a, 0, n);
-    for(int i=0;i<n;i++) a[i] /= n;
-    Mint ans = 0;
-    for(int i=1;i<n;i++) ans += a[i];
-
-    cout << ans;
-   
 }
