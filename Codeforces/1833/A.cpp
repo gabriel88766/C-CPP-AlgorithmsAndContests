@@ -16,25 +16,15 @@ int main(){
     while(t--){
         int n;
         cin >> n;
-        vector<int> v(n);
-        for(int i=0;i<n;i++) cin >> v[i];
-        int sign = 0;
-        int ans = 1;
+        string s;
+        cin >> s;
+        map<string, bool> mp;
         for(int i=1;i<n;i++){
-            int ns = v[i] - v[i-1];
-            if(ns > 0){
-                if(sign == -1){
-                    ans++;
-                }
-                sign = 1;
-            }else if(ns < 0){
-                if(sign == 1){
-                    ans++;
-                }
-                sign = -1;
-            }
+            string x;
+            x += s[i-1];
+            x += s[i];
+            mp[x] = true;
         }
-        if(sign) ans++;
-        cout << ans << "\n";
+        cout << mp.size() << "\n";
     }
 }

@@ -14,18 +14,25 @@ int main(){
     int t;
     cin >> t;
     while(t--){
-        int n;
-        cin >> n;
-        vector<int> ansv(n+1);
-        int ans = 0;
-        for(int i=1;i<=n;i++){
-            int aux;
-            cin >> aux;
-            ansv[aux] = abs(aux-i);
+        int n, k;
+        cin >> n >> k;
+        vector<ll> v(n), sl(k+1, 0), sm(k+1, 0);
+        for(int i=0;i<n;i++) cin >> v[i];
+        sort(v.begin(), v.end());
+        ll S = 0;
+        for(int i=0;i<n;i++) S += v[i];
+        for(int i=1;i<=k;i++){
+            sl[i] = sl[i-1];
+            sm[i] = sm[i-1];
+            sl[i] += v[2*i-2];
+            sl[i] += v[2*i-1];
+            sm[i] += v[n-i];
         }
-        for(int i=1;i<=n;i++){
-            ans = __gcd(ans, ansv[i]);
+        ll ans = 0;
+        for(int i=0;i<=k;i++){
+            ans = max(ans, S-sl[i] - sm[k-i]);
         }
         cout << ans << "\n";
+        
     }
 }

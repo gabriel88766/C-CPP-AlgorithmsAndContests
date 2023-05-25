@@ -16,25 +16,30 @@ int main(){
     while(t--){
         int n;
         cin >> n;
+
         vector<int> v(n);
         for(int i=0;i<n;i++) cin >> v[i];
-        int sign = 0;
-        int ans = 1;
-        for(int i=1;i<n;i++){
-            int ns = v[i] - v[i-1];
-            if(ns > 0){
-                if(sign == -1){
-                    ans++;
-                }
-                sign = 1;
-            }else if(ns < 0){
-                if(sign == 1){
-                    ans++;
-                }
-                sign = -1;
+        bool ok = false;
+
+        int lo = INF_INT, le = INF_INT;
+        for(int i=0;i<n;i++){
+            if(v[i] % 2) lo = min(lo, v[i]);
+            else le = min(le, v[i]);
+        }
+        //all odd
+        bool nok = false;
+        for(int i=0;i<n;i++){
+            if(v[i]%2) continue;
+            else{
+                //even
+                if(lo >= v[i]) nok = true; 
             }
         }
-        if(sign) ans++;
-        cout << ans << "\n";
+        if(!nok) ok = true;
+        //all even
+        if(lo == INF_INT) ok = true;
+
+        if(ok) cout << "YES\n";
+        else cout << "NO\n";
     }
 }
