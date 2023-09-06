@@ -16,36 +16,22 @@ int main(){
     while(t--){
         int n, k;
         cin >> n >> k;
-        multiset<ll> s[k];
-        for(int i=0;i<n;i++){
+        vector<int> v;
+        ll ans = 0;
+        for(ll i=0;i<n;i++){
             ll aux;
             cin >> aux;
-            s[aux%k].insert(aux);
+            ans += aux / k;
+            v.push_back(aux % k);
         }
-        ll ans = 0;
-        for(int i=0;i<k;i++){
-            for(int j=0;j<k;j++){
-                // (j + x) % k == i
-                int x = i - j;
-                if(x < 0) x += k;
-                if(x != j){
-                    while(s[x].size() && s[j].size()){
-                        ll sum = *s[x].begin();
-                        sum += *s[j].begin();
-                        s[x].erase(s[x].begin());
-                        s[j].erase(s[j].begin());
-                        ans += sum/k;
-                    }
-                }else{
-                    while(s[x].size() >= 2){
-                        ll sum = *s[x].begin();
-                        s[x].erase(s[x].begin());
-                        sum += *s[x].begin();
-                        s[x].erase(s[x].begin());
-                        ans += sum/k;
-                    }
-                }
-            }
+        int p1 = 0, p2 = n-1;
+        sort(v.begin(), v.end());
+        while(p1 < p2){
+            if(v[p1] + v[p2] >= k){
+                ans++;
+                p1++;
+                p2--;
+            }else p1++;
         }
         cout << ans << "\n";
     }
