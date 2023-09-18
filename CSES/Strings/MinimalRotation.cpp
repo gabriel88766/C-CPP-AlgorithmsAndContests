@@ -1,55 +1,10 @@
 #include <bits/stdc++.h>
-#pragma GCC optimize("O3,unroll-loops")
-#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 typedef long long int ll;
 typedef unsigned long long int ull;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
 const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
-
-const int N = 2e6+3; 
-int n, c;
-// n log n
-vector<int> suffix_array(string &s){
-    s += "$";
-    n = s.size(), c=-1;
-    vector<int> mp(n), cnt(max(n+1, 256)), mp2(256), aux(n); 
-    vector<pair<int,int>> cs(n); // class,class <int,int>
-
-    for(int i=0;i<n;i++) cnt[s[i]]++;
-    for(int i=0;i<256;i++){
-        if(cnt[i]) mp2[i] = ++c;
-        if(i) cnt[i] += cnt[i-1];
-    } 
-    for(int i=0;i<n;i++) mp[--cnt[s[i]]] = i; 
-    for(int i=0;i<n;i++) cs[i].first = mp2[s[i]];
-
-    for(int i=0;(1 << i) < n;i++){
-        fill(cnt.begin(), cnt.begin() + c + 2, 0);
-        int offset = 1 << i;
-        for(int j=0;j<n;j++){
-            int mindex = (j + offset) >= n ? j + offset - n : j + offset;
-            cs[j].second = cs[mindex].first;
-            cnt[cs[j].second + 1]++;
-        }
-        //begin raddix_sort of pair O(n)
-        for(int j=2; j<=(c+1); j++) cnt[j] += cnt[j-1];
-        for(int j=0; j<n; j++) aux[cnt[cs[j].second]++] = j;
-        fill(cnt.begin(), cnt.begin() + c + 2, 0);
-        for(int j=0; j<n; j++) cnt[cs[j].first+1]++; 
-        for(int j=2; j<=(c+1); j++) cnt[j] += cnt[j-1];
-        for(int j=0; j<n;j++) mp[cnt[cs[aux[j]].first]++] = aux[j]; 
-        //end raddix_sort
-        aux[mp[0]] = c = 0;
-        for(int j=1;j<n;j++){
-            if(cs[mp[j]] == cs[mp[j-1]]) aux[mp[j]] = c;
-            else aux[mp[j]] = ++c;
-        }
-        for(int j=0;j<n;j++) cs[j].first = aux[j];
-    }
-    return mp;
-}
 
 //cout << fixed << setprecision(6)
 int main(){
@@ -58,14 +13,52 @@ int main(){
     //freopen("in", "r", stdin); //test input
     string s;
     cin >> s;
-    string t = s + s;
-    auto v = suffix_array(t);
-    int ans;
-    for(int i=0;i<v.size();i++){
-        if(v[i] < s.size()){
-            ans = v[i];
+    int n = s.size();
+    string t = s+s;
+    bool ok = false;
+    int cur_l = 0;
+    vector<int> pos;
+    for(int i=0;i<n;i++) pos.push_back(i);
+
+    while(true){
+        vector<int> newpos;
+        char minl = 'z';
+        for(auto x : pos){
+            if(minl == t[x+cur_l]) newpos.push_back(x);
+            else if(minl > t[x+cur_l]){
+                newpos.clear();
+                minl = t[x+cur_l];
+                newpos.push_back(x);
+            }
+        }   
+        pos = newpos;
+        cur_l++;
+        if(pos.size() == 1) break;
+        int sz = 1, maxsz = 1;
+        vector<int> mxsz = {pos[0]};
+        for(int i = 1; i < 2*pos.size(); i++){
+            int p1 = i % pos.size();
+            int p2 = (i-1) % pos.size();
+            if((n + pos[p1] - pos[p2])%n == cur_l){
+                sz++;
+            }else{
+                sz = 1;
+                if(i >= pos.size()) break;
+            }
+            int p = (pos[p1]+n-cur_l*(sz-1)) % n;
+            if(sz > maxsz){
+                maxsz = sz;
+                mxsz.clear();
+                mxsz.push_back(p);
+            }else if(sz == maxsz){
+                mxsz.push_back(p);
+            }
+        }
+        pos = mxsz;
+        cur_l = maxsz*cur_l;
+        if(pos.size() == 1){
             break;
         }
     }
-    cout << t.substr(ans, s.size());
+    cout << t.substr(pos[0], n);
 }

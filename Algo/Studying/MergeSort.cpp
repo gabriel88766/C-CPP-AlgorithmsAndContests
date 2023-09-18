@@ -2,6 +2,7 @@
 using namespace std;
 typedef long long int ll;
 // a and b index to sort
+// Actually, you can use stable_sort instead of sort
 void mergesort(vector<ll> &v, int a, int b){
     if(a == b) return;
     else{
