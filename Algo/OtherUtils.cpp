@@ -49,3 +49,9 @@ struct custom_hash {
         return splitmix64(x + FIXED_RANDOM);
     }
 };
+
+//Inline/lambda function
+int f = 2;
+function<int(int,int)> fn = [&f](int a,int b){
+    return a+b+f;
+};
