@@ -32,11 +32,19 @@ int main(){
         vector<vector<int>> anc(n+1, vector<int>(20));
         vector<vector<int>> fst(n+1, vector<int>(30, 0));
         h[0] = -1;
-        function<void(int,int)> dfs = [&dfs, &adj, &anc, &h](int u, int p){
+        function<void(int,int)> dfs = [&dfs, &adj, &anc, &h, &a, &fst](int u, int p){
             h[u] = h[p] + 1;
             anc[u][0] = p;
+            for(int i=0;i<30;i++){
+                if((1 << i) & a[u]){
+                    fst[u][i] = u;
+                }
+            }
             for(auto v : adj[u]){
                 if(v != p){
+                    for(int i=0;i<30;i++){
+                        fst[v][i] = fst[u][i];
+                    }
                     dfs(v, u);
                 }
             }
@@ -56,39 +64,30 @@ int main(){
             }
             return anc[a][0];
         };
-        for(int i=1;i<=n;i++){
-            for(int j=0;j<30;j++){
-                if(a[i] & (1 << j)){
-                    fst[i][j] = i;
-                }
-            }
-        }
         for(int i=1;i<20;i++){
             for(int j=1;j<=n;j++){
                 anc[j][i] = anc[anc[j][i-1]][i-1];
-                for(int k=0;k<30;k++){
-                    if(!fst[j][k] && fst[anc[j][i-1]][k]) fst[j][k] = fst[anc[j][i-1]][k];
-                }
             }
         }
+        
         for(int i=1;i<=q;i++){
             int a, b;
             cin >> a >> b;
             int c = lca(a, b);
-            set<int> pos;
-            vector<pair<int,int>> chk;
-            int ans = 0;
+            vector<pair<int,int>> sum;
+            int ans = 0, tt = 0;
             for(int j=0;j<30; j++){
                 if(h[fst[a][j]] < h[c] && h[fst[b][j]] < h[c]){
                     //do nothing, impossible bit
                 }else{
+                    tt++;
                     int first, last;
                     if(h[fst[a][j]] >= h[c]){
                         first = h[a] - h[fst[a][j]];
                     }else{
                         int cur = b;
                         for(int k=19;k>=0;k--){
-                            while(h[fst[anc[cur][k]][j]] >= h[c]) cur = fst[anc[cur][k]][j];
+                            if(h[fst[anc[cur][k]][j]] >= h[c]) cur = fst[anc[cur][k]][j];
                         }
                         first = (h[a]-h[c]) + h[cur] - h[c];
                     }
@@ -97,22 +96,19 @@ int main(){
                     }else{
                         int cur = a;
                         for(int k=19;k>=0;k--){
-                            while(h[fst[anc[cur][k]][j]] >= h[c]) cur = fst[anc[cur][k]][j];
+                            if(h[fst[anc[cur][k]][j]] >= h[c]) cur = fst[anc[cur][k]][j];
                         }
                         last = h[a] - h[cur];
                     }
-                    chk.push_back({first, last});
-                    pos.insert(first);
-                    pos.insert(last);
+                    sum.push_back({first, 1});
+                    sum.push_back({last+1, -1});
                 }
             }
-            for(auto x : pos){
-                int cur = 0;
-                for(auto y : chk){
-                    if(x >= y.first && x <= y.second) cur += 2;
-                    else cur++;
-                }
-                ans = max(ans, cur);
+            sort(sum.begin(), sum.end());
+            int cur = 0;
+            for(auto x : sum){
+                cur += x.second;
+                ans = max(ans, tt+cur);
             }
             cout << ans << " ";
         }
