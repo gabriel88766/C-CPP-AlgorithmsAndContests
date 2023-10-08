@@ -13,50 +13,43 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    map<ll, ll> mp;
-    ll cur;
-    cin >> cur;
-    ll cnt = 0;
-    int c = 0;
-    do{
-        mp[cur] = cnt;
-        ll x = c > 100 ?  uniform_int_distribution<ll>(1, 1000000)(rng) : 1;
+    int cur, maxv = 1;
+    cin >> maxv;
+    for(int i=0;i<300;i++){
+        ll x = uniform_int_distribution<ll>(1, 1000000)(rng);
         cout << "+ " << x << "\n";
         cout.flush();
-        cnt += x;
         cin >> cur;
-        ++c;
-    }while(!mp.count(cur));
-    ll mult = cnt - mp[cur];
-    ll aux = mult;
-    vector<ll> fact;
-    for(ll i = 2; i * i <= mult; i++){
-        if(!(aux % i)){
-            fact.push_back(i);
-            while(!(aux % i)) aux /= i;
-        }
+        maxv = max(maxv, cur);
     }
-    if(aux != 1) fact.push_back(aux);
-    bool ok;
-    aux = mult;
-    do{
-        ok = false;
-        ll newv;
-        for(auto x : fact){
-            if(!(aux % x)){
-                ll newaux = aux / x;
-                cout << "+ " << newaux << "\n";
-                cout.flush();
-                cin >> newv;
-                if(newv == cur){
-                    ok = true;
-                    aux = newaux;
-                    break;
-                }
-                cur = newv;
-            }
+    map<int,int> ans;
+    ans[cur] = 1;
+    for(int i = 1; i< 300; i++){
+        cout << "+ " << 1 << "\n";
+        cout.flush();
+        cin >> cur;
+        if(ans.count(cur)){
+            cout << "! " << i << "\n";
+            cout.flush();
+            return 0;
         }
-    }while(ok);
-    cout << "! " << aux << "\n";
+        ans[cur] = i+1;
+    }
+    int dif = maxv + ans[cur];
+    cout << "+ " << maxv << "\n";
+    cout.flush();
+    cin >> cur;
+    if(ans.count(cur)){
+        cout << "! " << dif-ans[cur] << "\n";
+        cout.flush();
+    }
+    do{
+        ans[cur] = dif;
+        cout << "+ " << 300 << "\n";
+        cout.flush();
+        cin >> cur;
+        dif += 300;
+    } while(!ans.count(cur)); 
+    cout << "! " << dif-ans[cur] << "\n";
     cout.flush();
 }
