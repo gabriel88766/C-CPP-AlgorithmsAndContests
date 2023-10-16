@@ -14,3 +14,6 @@ __builtin_popcountll(x); //for long long int (ctz, clz)
 //some optimizations if needed
 #pragma GCC optimize("O3,unroll-loops")
 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+
+//run locally
+//bash -c 'ulimit -s 262144 && ulimit -v 1048576 && time "./a.out"'

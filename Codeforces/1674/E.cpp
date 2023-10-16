@@ -25,13 +25,14 @@ int main(){
     ans = min(ans, qt[0] + qt[1]);
     //2nd pos O...OXXO....O
     for(int i=1;i<n;i++){
-        int dif = abs(v[i] - v[i-1]);
-        if(v[i] > v[i-1]){
-            if(v[i] <= 2*dif){
-                ans = min(ans, v[i] %)
-            }
-        }else{
-
-        }
+        if(max(v[i], v[i-1]) <= 2*min(v[i], v[i-1])) ans = min(ans, (v[i-1]+v[i])/3 + ((v[i-1]+v[i])%3 ? 1 : 0));
+        else ans = min(ans, max(v[i], v[i-1])/2 + max(v[i], v[i-1])%2);
     }
+    //3rd pos O...XOX...O
+    for(int i=1;i<n-1;i++){
+        int dif = abs(v[i+1]-v[i-1]);
+        int minv = min(v[i+1], v[i-1]);
+        ans = min(ans, dif/2 + dif%2 + minv);
+    }
+    cout << ans << "\n";
 }
