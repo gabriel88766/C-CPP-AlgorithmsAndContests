@@ -16,10 +16,17 @@ void dfs(int u){
     }
 }
 
-int p[N], sz[N], str[N];
+int p[N], sz[N], a[N];
+set<pair<int,int>> adjl[N];
 
 void init(int n){
-    for(int i=1;i<=n;i++) {p[i] = i; sz[i] = 1; str[i]=0;}
+    for(int i=1;i<=n;i++) {
+        p[i] = i; sz[i] = 1;
+        adjl[i].clear();
+        for(auto v : adj[i]){
+            adjl[i].insert({a[v], v});
+        }
+    }
 }
 
 int get(int a){ 
@@ -32,8 +39,10 @@ void unite(int a, int b){
     if(a == b) return;
     if(sz[a] < sz[b]) swap(a,b);
     p[b] = a;
-    str[a] += str[b];
     sz[a] += sz[b];
+    for(auto x : adjl[b]){
+        adjl[a].insert(x);
+    }
 }
 
 //cout << fixed << setprecision(6)
@@ -46,7 +55,6 @@ int main(){
     while(t--){
         int n, m;
         cin >> n >> m;
-        vector<int> a(n+1);
         for(int i=1;i<=n;i++){
             cin >> a[i];
         }
@@ -58,6 +66,7 @@ int main(){
         }
         bool ok = true;
         dfs(1);
+        vector<int> ini;
         for(int i=1;i<=n;i++) if(!vis[i]) ok = false;
         if(!ok){
             cout << "NO\n";
@@ -66,38 +75,22 @@ int main(){
         }
         init(n);
 
-        priority_queue<pair<int,pair<int,int>>, vector<pair<int,pair<int,int>>>, greater<pair<int,pair<int,int>>>> pq;
-        for(int i=1;i<=n;i++) vis[i] = false;
         for(int i=1;i<=n;i++){
             if(a[i] == 0){
-                str[i] = 1;
-                vis[i] = true;
-                for(auto x : adj[i]){
-                    pq.push({a[x]-1, {i, x}});
-                }
+                ini.push_back(i);
             }
         }
         
-        while(!pq.empty()){
-            auto u = pq.top();
-            pq.pop();
-            if(str[get(u.second.first)] >= a[u.second.second]){
-                if(a[u.second.second]){
-                    str[get(u.second.first)]++;
-                    a[u.second.second] = 0;
-                }
-                unite(u.second.first, u.second.second);
-                if(!vis[u.second.second]){
-                    for(auto x : adj[u.second.second]){
-                        pq.push({a[x]-str[get(u.second.second)], {u.second.second, x}});
-                    }
-                    vis[u.second.second] = true;
-                }
+        for(auto x : ini){
+            while(adjl[get(x)].size() && adjl[get(x)].begin()->first <= sz[get(x)]){
+                auto val = *adjl[get(x)].begin();
+                adjl[get(x)].erase(val);
+                unite(val.second, get(x));
             }
         }
 
 
-        if(str[get(1)] != n) ok = false;
+        if(sz[get(1)] != n) ok = false;
         if(ok) cout << "YES\n";
         else cout << "NO\n";
         for(int i=1;i<=n;i++) { adj[i].clear(); vis[i] = false;}

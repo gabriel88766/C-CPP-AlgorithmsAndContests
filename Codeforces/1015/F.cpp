@@ -6,8 +6,8 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-ll dp[205][205];
-ll cur[205][205];
+ll dp[205][205][205];
+ll pr[205][2];
 
 //cout << fixed << setprecision(6)
 int main(){
@@ -18,49 +18,34 @@ int main(){
     string s;
     cin >> n >> s;
     int k = s.size();
-
-    int cnt=0, l=0;
-    for(int i=0;i<s.size();i++){
-        if(s[i] == '(') cnt++;
-        else cnt--;
-        if(cnt < 0) l = max(l, abs(cnt));
-    }
-
-
-    if(l == 0) { dp[k][cnt] = 1;}
-
-    for(int i=k+1;i<=2*n;i++){
-        for(int j=0;j+k<=i;j++){
-            memset(cur, 0, sizeof(cur));
-            cur[0][0] = 1;
-            for(int u=1;u<=j;u++){
-                for(int v=0;v<=u;v++){
-                    if(!v) cur[u][v] = cur[u-1][v+1];
-                    else cur[u][v] = (cur[u-1][v-1] + cur[u-1][v+1]) % MOD;
-                }
+    for(int i=0;i<k;i++){
+        string t = s.substr(0, i) + '(';
+        for(int j=0;j<t.size();j++){
+            if(t.substr(j, t.size()-j) == s.substr(0, t.size() - j)){
+                pr[i][0] = t.size() - j;
+                break;
             }
-            for(int v=0;v<=j;v++) cur[j][v] = (cur[j][v] + MOD  - dp[j][v]) % MOD;
-
-            for(int u=j+1;u<=k+j;u++){
-                if(s[u-j-1] == '('){
-                    for(int v=1;v<=u;v++){
-                        cur[u][v] = cur[u-1][v-1];
-                    }
-                }else{
-                    for(int v=0;v<u;v++){
-                        cur[u][v] = cur[u-1][v+1];
-                    }
-                }   
+        }
+        t = s.substr(0, i) + ')';
+        for(int j=0;j<t.size();j++){
+            if(t.substr(j, t.size()-j) == s.substr(0, t.size() - j)){
+                pr[i][1] = t.size() - j;
+                break;
             }
-            for(int u=k+j+1;u<=i;u++){
-                for(int v=0;v<=u;v++){
-                    if(!v) cur[u][v] = cur[u-1][v+1];
-                    else cur[u][v] = (cur[u-1][v-1] + cur[u-1][v+1]) % MOD;
-                }
-            }
-            for(int v=0;v<=i;v++) dp[i][v] = (dp[i][v] + cur[i][v]) % MOD;
         }
     }
-    cout << dp[2*n][0];
+    dp[0][0][0] = 1;
+    
+    for(int i=1;i<=2*n;i++){
+        for(int p=0;p<=2*n;p++){
+            for(int j=0;j<k;j++){
+                dp[i][p+1][pr[j][0]] = (dp[i][p+1][pr[j][0]] + dp[i-1][p][j]) % MOD;
+                if(p) dp[i][p-1][pr[j][1]] = (dp[i][p-1][pr[j][1]] + dp[i-1][p][j]) % MOD;
+            }
+            dp[i][p+1][k] = (dp[i][p+1][k] + dp[i-1][p][k]) % MOD;
+            if(p) dp[i][p-1][k] = (dp[i][p-1][k] + dp[i-1][p][k]) % MOD;
+        }
+    }
+    cout << dp[2*n][0][k];
     
 }
