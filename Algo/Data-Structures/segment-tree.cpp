@@ -27,4 +27,20 @@ void update(int i, ll value, int l = 1, int r = n, int p = 1){
 }
 
 
+//first element less than y (decrescent values) INF if not exist
+int query2(int i, int j, int y, int l = 1, int r = n, int p = 1){
+    if(j < l || i > r) return INF_INT; //identity element;
+    if(l == r){
+        if(st[p] <= y) return l;
+        else return INF_INT;
+    }
+    if(st[2*p] <= y){
+        int ans = query2(i, j, y, l, (l + r)/2, 2 * p);
+        if(ans != INF_INT) return ans;
+        else return query2(i, j, y, (l + r)/2 + 1, r, 2 * p + 1);
+    }else if(st[2*p+1] <= y){
+        return query2(i, j, y, (l + r)/2 + 1, r, 2 * p + 1);
+    }else return INF_INT;
+}
+
 
