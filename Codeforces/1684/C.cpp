@@ -17,55 +17,46 @@ int main(){
         int n, m;
         cin >> n >> m;
         vector<vector<int>> v(n, vector<int>(m));
-        bool ok = true;
-        vector<int> cmp(m);
-        for(int i=0;i<n;i++) for(int j=0;j<m;j++) cin >> v[i][j];
-        for(int j=1;j<m;j++){
-            bool ok1 = true, ok2 = true;
-            for(int i=0;i<n;i++){
-                if(v[i][j-1] > v[i][j]) ok1 = false;
-                if(v[i][j-1] < v[i][j]) ok2 = false;
+        vector<vector<int>> maxv(n, vector<int>(m, 0));
+        for(int i=0;i<n;i++) for(int j=0;j<m;j++){
+             cin >> v[i][j];
+             maxv[i][j] = v[i][j];
+             if(j) maxv[i][j] = max(maxv[i][j], maxv[i][j-1]);
+        }
+        int ind = -1, ind2 = -1;
+        for(int i=m-1;i>=0;i--){
+            bool ok = true;
+            for(int j=0;j<n;j++){
+                if(maxv[j][i] != v[j][i]){
+                    ok = false;
+                }
             }
-            if(ok1 && !ok2) cmp[j-1] = 1;
-            else if(!ok1 && ok2) cmp[j-1] = -1;
-            else cmp[j-1] = 0;
-            if(!ok1 && !ok2){
-                ok = false;
+            if(!ok){
+                ind = i;
                 break;
             }
         }
-        if(!ok) cout << "-1\n";
+        if(ind == -1) cout << "1 1\n";
         else{
-            int ind = -1;
-            for(int j=1;j<m;j++){
-                if(cmp[j-1] == -1){
-                    ind = j-1;
-                    break;
+            for(int i=ind-1;i>=0;i--){
+                bool ok = true;
+                for(int j=0;j<n;j++){
+                    if(maxv[j][ind] != v[j][i]){
+                        ok = false;
+                    }
+                }
+                if(ok){
+                    ind2 = i;
                 }
             }
-            if(ind == -1) cout << "1 1\n";
+            if(ind2 == -1) cout << "-1\n";
             else{
-                int ind2 = m-1;
-                bool ok = true;
-                for(int j = ind+1;j<m;j++){
-                    bool ok1 = true, ok2 = true;
-                    for(int i=0;i<n;i++){
-                        if(v[i][ind] > v[i][j]) ok1 = false;
-                        if(v[i][ind] < v[i][j]) ok2 = false;
-                    }
-                    if(!ok1 && !ok2) ok = false;
-                    else if(ok1){
-                        ind2 = j-1;
-                        break;
-                    }
-                }
                 for(int i=0;i<n;i++) swap(v[i][ind], v[i][ind2]);
-                for(int j=1;j<m;j++){
-                    for(int i=0;i<n;i++){
-                        if(v[i][j-1] > v[i][j]) ok = false;
-                    }
+                bool ok = true;
+                for(int i=0;i<n;i++) for(int j=1;j<m;j++){
+                    if(v[i][j] < v[i][j-1]) ok = false;
                 }
-                if(ok) cout << ind+1 << " " << ind2+1 << "\n";
+                if(ok) cout << ind2+1 << " " << ind+1 << "\n";
                 else cout << "-1\n";
             }
         }
