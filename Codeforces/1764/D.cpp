@@ -1,4 +1,13 @@
-int n;
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f;//1e9+7
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
+using namespace std;
+
+ll MOD;
+
 struct Mint{
     ll v;
     Mint(){ v = 0;}
@@ -29,30 +38,29 @@ struct Mint{
     }
 };
 
-//Worth to know;
-//Matrix to transform for Xor is (1,1) (1,-1), for OR (1,0) (1,1) and for AND (0,1) (1,1)
-//Remember n = 2^x
-// FWHT(A) + FWHT(B) + .... = FWHT(A + B + C + D + ...) for product it also holds(Linear Algebra)
-//FAST WALSH HADAMARD TRANSFORM
-//a1x^i * b1x^j = a1b1x^(i xor j)
-void fwht(vector<Mint> &a, int lo, int hi) { 
-    if(lo == (hi-1)) return;
-    //w1^n = 1
-    int mid = lo + (hi-lo)/2;
-    fwht(a, lo, mid);
-    fwht(a, mid, hi);
-    for(int i = 0; lo+i < mid; i++){
-        Mint x = a[lo+i];
-        Mint y = a[mid+i];
-        a[lo+i] = x + y;
-        a[mid+i] = x - y; 
-    } 
-}
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); //test input
+    int n;
+    cin >> n >> MOD;
+    Mint ans = 0;
+    vector<Mint> fat(n+1, 1);
+    for(int i=2;i<=n;i++){
+        fat[i] = fat[i-1] * i;
+    }
+    if(!(n % 2)){
+        ans += fat[n-2]*n;
+    }
+    for(int i=1;i<=n;i++){
+        for(int j=i+1;j<=n;j++){
+            if(j-i == n-j+i) continue;
+            int mindif = min(j-i, n-j+i), maxdif = max(j-1, n-j+i);
+            int 
+        }
+    }
 
-void multiply(vector<Mint> &a, vector<Mint> &b) { //just one example of task, sometimes you don't want multiply!
-    fwht(a,0,n);
-    fwht(b,0,n);
-    for (int i = 0; i < n; i++) a[i] = a[i]*b[i];
-    fwht(a,0,n);
-    for (int i = 0; i < n; i++) a[i] = a[i]/n;
+
+    cout << ans << "\n";
 }

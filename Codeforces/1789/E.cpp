@@ -18,8 +18,13 @@ int main(){
         ll n;
         cin >> n;
         vector<ll> s(n+1);
-
         for(ll i=1;i<=n;i++) cin >> s[i];
+        vector<ll> ps(s[n]+1, 0);
+        for(int i=1;i<=n;i++){
+            ps[s[i]]++;
+        }
+        for(ll i=1;i<=s[n];i++) ps[i] += ps[i-1];
+
         ll sum = 0, cur = 0;
 
         ll oldd = -1, oldc = -1;
@@ -30,18 +35,18 @@ int main(){
                 sum = (sum + (cur * i)) % MOD;
             }else{
                 cur = 0;
-                if(c == d){
-                    for(ll j=1;j<=n;j++){
-                        if(!(s[j] % c)) cur++;
+                if(c == d){//optimize too
+                    for(ll j=1;c*j <= s[n];j++){
+                        if(ps[c*j] != ps[c*j-1]) cur++;
                     }
-                }else{
-                    cur = n;
-                    ll up = (c-1)*c+1;
-                    for(ll j=1;j<=n;j++){
-                        if(s[j] >= up) break;
-                        if(!(s[j] % c) || !(s[j] % d)) continue;
-                        ll k1 = s[j]/d, k2 = s[j]%d;
-                        if(k1+k2 < c) cur--;
+                }else{//optimize
+                    cur = 0;
+                    for(ll j=1;;j++){
+                        ll lo = c*j, hi = d*j;
+                        if(hi >= s[n] || hi >= (lo+c)){
+                            cur += ps[s[n]] - ps[lo-1];
+                            break;
+                        }else cur += ps[hi] - ps[lo-1];
                     }
                 }
                 sum = (sum + (cur * i)) % MOD;
