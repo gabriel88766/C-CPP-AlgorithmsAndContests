@@ -20,6 +20,7 @@ int main(){
         vector<vector<ll>> v(m);
         vector<vector<ll>> c(m);
         vector<ll> num(m);
+        vector<ll> sn(m);
         vector<pair<ll,ll>> vp(m);
         map<ll, vector<pair<ll,ll>>> mp;
         ll lg = 0, rg = 0;
@@ -35,11 +36,11 @@ int main(){
             for(int j=0;j<num[i];j++){
                 ll aux;
                 cin >> aux;
+                sn[i] += aux;
                 mp[v[i][j]].push_back({i, aux});
             }
         }
         ll ans = INF_LL;
-        cout << lg << " " << rg << " ";
         for(ll i = lg; i <= rg; i++){
             if(!mp.count(i)){
                 ans = 0;
@@ -48,18 +49,15 @@ int main(){
                 auto v = mp[i];
                 ll llo = 0, lss = 0;
                 for(auto x : v){
-                    cout << x.first << " " << x.second << " ";
-                    ll qt = max(vp[x.first].first - (num[x.first] - x.second), 0LL);
+                    ll qt = max(vp[x.first].first - (sn[x.first] - x.second), 0LL);
+                    ll qt2 = max(vp[x.first].second - (sn[x.first] - x.second), 0LL);
                     llo += qt;
-                    lss += x.second - qt;
+                    lss += qt2 - qt;
                 }
-                cout << llo << " " << lss << " ";
                 if((rg - lss) < i) llo += i - (rg - lss);
                 ans = min(ans, llo);
             }
         }
         cout << ans << "\n";
-        
-        
     }
 }

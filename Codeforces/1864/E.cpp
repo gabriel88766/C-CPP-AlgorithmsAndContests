@@ -30,16 +30,18 @@ int main(){
                 }
             }
         }
-        //all 0
-        pos[1] += 2*cnt0*n;
+        
+        pos[1] += 2*cnt0*n - cnt0*cnt0;
         ll S = cnt0;
         for(int i=0;i<30;i++){
             ll x = v[i].size();
             S += x;
             int cnt2i = 0;
-            for(int j=0;j<v[i].size();j++) if((1 << i) == v[i][j]) cnt2i++;
-            pos[1] += x*(n-S); //b >= 2^(i+1)
-            pos[2] += x*(S-x-cnt0+cnt2i); //b <= 2^i
+            for(int j=0;j<v[i].size();j++){
+
+            }
+            pos[1] += x*(n-S); //a < b, a < 2^(i+1)
+            pos[2] += x*(n-S); //b < a, b
         }
     }
 }
