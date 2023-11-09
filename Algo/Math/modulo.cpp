@@ -39,8 +39,10 @@ long long div = (x * inv) % p;
 //cout << inv << " " << div; //must output 300
 
 //Mint
+//template <ll MOD_val=998244353>
 struct Mint{
     ll v;
+    //static const int MOD = MOD_val;
     Mint(){ v = 0;}
     Mint(ll u){ v = (u >= 0 ? u % MOD : u % MOD + MOD);}
     Mint pow(ll u){
