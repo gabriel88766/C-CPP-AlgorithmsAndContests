@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
-#pragma GCC optimize("O3,unroll-loops")
-#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+#pragma GCC optimize("O2")
 typedef long long int ll;
 typedef unsigned long long int ull;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7;
@@ -9,20 +8,19 @@ const long double PI = acosl(-1.), EPS = 1e-9;
 using namespace std;
  
 const int N = 2e5+3;   
-int p[N], sz[N], ans[N];
+int ans[N];
+vector<int> cmp[N];
+vector<pair<int,int>> p[N];
  
-
-struct custom_hash {
-    size_t operator()(int const& num) const {
-        int seed = num + 0x9e3779b9 + (num << 6) + (num >> 2);
-        return seed;
+void init(){
+    for(int i=1;i<N;i++){
+        p[i].push_back({i, 0});
+        cmp[i].push_back(i);
     }
-};
-unordered_map<int,int, custom_hash> mp[N];
-int t;
+}
  
 int get(int a){ 
-    return p[a] = (p[a] == a ? a : get(p[a]));
+    return p[a].back().first;
 }
  
 int cnt = 0;
@@ -30,17 +28,10 @@ void unite(int a, int b){
     a = get(a);
     b = get(b);
     if(a == b) return;
-    if(sz[a] < sz[b]) swap(a,b);
-    p[b] = a;
-    sz[a] += sz[b];
-    for(auto x : mp[b]){
-        if(mp[a].count(x.first)){
-            ans[x.first] = t;
-            mp[a].erase(x.first);
-            sz[a]-=2;
-        }else{
-            mp[a][x.first]++;
-        }
+    if(cmp[a].size() < cmp[b].size()) swap(a,b);
+    for(auto x : cmp[b]){
+        cmp[a].push_back(x);
+        p[x].push_back({a, cnt});
     }
 }
  
@@ -50,26 +41,28 @@ int main(){
     cin.tie(NULL);
     //freopen("in.txt", "r", stdin); //test input
     //freopen("out.txt", "w", stdout);
-    vector<pair<int,int>> unites;
+    init();
     int n, m, q;
     cin >> n >> m >> q;
     for(int i=0;i<m;i++){
         int a,b;
         cin >> a >> b;
-        unites.emplace_back(a,b);
+        cnt++;
+        unite(a, b);
     }
-    for(int i=1;i<=n;i++) p[i] = i;
     for(int i=1;i<=q;i++){
         int a,b;
         cin >> a >> b;
-        sz[a]++, sz[b]++;
-        mp[a][i]++, mp[b][i]++;
-        if(a == b) ans[i] = 0;
-        else ans[i] = -1;
+        if(a == b){
+            cout << "0\n";
+            continue;
+        }
+        int p1 = p[a].size() - 1;
+        int p2 = p[b].size() - 1;
+        if(p[a][p1].first != p[b][p2].first) cout << "-1\n";
+        else{
+            while(p[a][p1].first == p[b][p2].first && p[a][p1].second == p[b][p2].second) p1--, p2--;
+            cout << max(p[a][p1].second, p[b][p2].second) << "\n";
+        }
     }
-    for(int i=0;i<m;i++){
-        t = i+1;
-        unite(unites[i].first, unites[i].second);
-    }
-    for(int i=1;i<=q;i++) cout << ans[i] << "\n";
 }

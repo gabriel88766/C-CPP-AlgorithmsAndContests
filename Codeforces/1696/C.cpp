@@ -17,17 +17,46 @@ int main(){
         int n, m, k;
         cin >> n >> m;
         vector<int> a(n);
-        for(int i=0;i<n;i++) cin >> a[i];
+        vector<pair<ll,ll>> n1, n2, nr1, nr2;
+        for(int i=0;i<n;i++){
+             cin >> a[i];
+             int qt = 1;
+             while(!(a[i] % m)){
+                a[i] /= m;
+                qt *= m;
+             }
+             n1.push_back({a[i], qt});
+        }
         cin >> k;
         vector<int> b(k);
-        for(int i=0;i<k;i++) cin >> b[i];
-        int p1 = 0, p2 = 0;
-        bool ok = true;
-        int reduc = 0, curv = 0;
-        while(p1 < n && p2 < k){
-
+        for(int i=0;i<k;i++){ 
+            cin >> b[i];
+            int qt = 1;
+            while(!(b[i] % m)){
+                b[i] /= m;
+                qt *= m;
+            }
+            n2.push_back({b[i], qt});
         }
-        if(ok && p1 == n && p2 == k) cout << "Yes\n";
+        auto func = [&](vector<pair<ll, ll>> vec){
+                int n = vec.size();
+                vector<pair<ll,ll>> ans;
+                int p = 0;
+                while(p < n){
+                    ll nxt = vec[p].first;
+                    ll qt = vec[p].second;
+                    p++;
+                    while(p < n && vec[p].first == nxt){
+                        qt += vec[p].second;
+                        p++;
+                    }
+                    ans.push_back({nxt, qt});
+                }
+                return ans;
+        };
+        nr1 = func(n1);
+        nr2 = func(n2);
+        if(nr1 == nr2) cout << "Yes\n";
         else cout << "No\n";
     }
 }

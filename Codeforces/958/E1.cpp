@@ -1,5 +1,12 @@
-//looks like type is necessary 600D(codeforces)
-typedef double type; //if long long int, EPS = 0
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
+using namespace std;
+
+typedef long double type; //if long long int, EPS = 0
 bool ge(type a, type b){
     return a + EPS >= b;
 }
@@ -51,3 +58,45 @@ type distanceToSeg(Point a, Point b, Point x){
     if(y.onSeg(a,b)) return x.dist(y);
     else return min(x.dist(a), x.dist(b));
 }
+
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); //test input
+    int r, b;
+    cin >> r >> b;
+    vector<Point> vp1(r), vp2(b);
+    for(int i=0;i<r;i++) cin >> vp1[i].x >> vp1[i].y;
+    for(int i=0;i<b;i++) cin >> vp2[i].x >> vp2[i].y;
+    vector<int> perm;
+    for(int i=0;i<b;i++) perm.push_back(i);
+    if(r == b){
+        bool ok = false;
+        do{
+            //assign vp1[i] -> vp2[perm[i]]
+            bool cok = true;
+            for(int i=0;i<r;i++){
+                for(int j=i+1;j<r;j++){
+                    //line i intersect line j ?
+                    int x = perm[i], y = perm[j];
+                    Point d1 = vp2[x] - vp1[i];
+                    Point d2 = vp2[y] - vp1[j];
+                    if(eq(d1.cross(d2), 0.0)) continue;
+                    auto p = intersectLines(vp1[i], d1, vp1[j], d2);
+                    if(p.onSeg(vp1[i], vp2[x]) && p.onSeg(vp1[j], vp2[y])){
+                        cok = false;
+                    }
+                }
+            }
+
+            if(cok){
+                ok = true;
+                break;
+            }
+        }while(next_permutation(perm.begin(), perm.end()));
+        if(ok) cout << "Yes\n";
+        else cout << "No\n";
+    }else cout << "No\n";
+}
+ 

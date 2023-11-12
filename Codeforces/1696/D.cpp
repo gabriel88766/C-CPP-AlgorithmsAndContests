@@ -7,7 +7,7 @@ const long double PI = acosl(-1.), EPS = 1e-9;
 using namespace std;
 
 
-const int N = 200005, M = 20; // M >= log2(N)
+const int N = 250005, M = 20; // M >= log2(N)
 int sparse1[N][M], sparse2[N][M];
 vector<int> v;
 
@@ -66,7 +66,6 @@ int main(){
                 for(int i=n/2;i>=1;i>>=1){
                     while(mx + i < n && query1(cur, mx+i) == v[cur]) mx += i;
                 }
-                assert(mx != cur);
                 int nxt = query2(cur, mx);
                 cur = inv[nxt];
             }else{
@@ -75,7 +74,6 @@ int main(){
                 for(int i=n/2;i>=1;i>>=1){
                     while(mx + i < n && query2(cur, mx+i) == v[cur]) mx += i;
                 }
-                assert(mx != cur);
                 int nxt = query1(cur, mx);
                 cur = inv[nxt];
             }

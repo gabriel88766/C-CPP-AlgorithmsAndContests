@@ -5,11 +5,11 @@
 // for(int i=0;i<(n+m-1);i++) cout << (ll)round(a[i].x) << " ";
 const int N = 1e6+1e5;
 struct Complex {
-    long double x, y;
+    double x, y;
     Complex() : x(0), y(0) {}
-    Complex(long double a, long double b=0) : x(a), y(b) {}
+    Complex(double a, double b=0) : x(a), y(b) {}
 
-    Complex operator/=(long double k) { x/=k; y/=k; return (*this); }
+    Complex operator/=(double k) { x/=k; y/=k; return (*this); }
     Complex operator*(Complex a) const { return Complex(x*a.x - y*a.y, x*a.y + y*a.x); }
     Complex operator+(Complex a) const { return Complex(x+a.x, y+a.y); }
     Complex operator-(Complex a) const { return Complex(x-a.x, y-a.y); }
