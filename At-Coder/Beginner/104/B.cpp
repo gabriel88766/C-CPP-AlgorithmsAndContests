@@ -11,10 +11,17 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int a, b;
-    cin >> a >> b;
-    int c1 = a+b;
-    int c2 = a-b;
-    int c3 = a*b;
-    cout << max(c1, max(c2,c3)) << "\n";
+    string s;
+    cin >> s;
+    bool ok = true;
+    if(s[0] != 'A') ok = false;
+    int ind = -1;
+    for(int i=1;i<s.size();i++) if(s[i] == 'C'){ ind = i; break;}
+    if(ind < 2) ok = false;
+    if(s.back() == 'C') ok = false;
+    for(int i=1;i<s.size(); i++){
+        if(s[i] >= 'A' && s[i] <= 'Z' && ind != i) ok = false;
+    }
+    if(ok) cout << "AC\n";
+    else cout << "WA\n";
 }

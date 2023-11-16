@@ -11,10 +11,9 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int a, b;
-    cin >> a >> b;
-    int c1 = a+b;
-    int c2 = a-b;
-    int c3 = a*b;
-    cout << max(c1, max(c2,c3)) << "\n";
+    int n;
+    cin >> n;
+    vector<int> v(n);
+    for(int i=0;i<n;i++) cin >> v[i];
+    cout << *max_element(v.begin(), v.end()) - *min_element(v.begin(), v.end());
 }
