@@ -11,10 +11,17 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int a, b;
-    cin >> a >> b;
-    int c1 = a+b;
-    int c2 = a-b;
-    int c3 = a*b;
-    cout << max(c1, max(c2,c3)) << "\n";
+    int n;
+    ll ans = 0;
+    cin >> n;
+    vector<int> v(n);
+    for(int i=0;i<n;i++) cin >> v[i];
+    ll p1 = 0, p2 = 0;
+    while(p1 < n){
+        while(p2 + 1 < n && v[p2 + 1] == v[p1]) p2++;
+        ll qt = p2 - p1 + 1;
+        ans += (qt * (qt+1)) / 2;
+        p1 = p2 = p2+1;
+    }
+    cout << ans << "\n";
 }

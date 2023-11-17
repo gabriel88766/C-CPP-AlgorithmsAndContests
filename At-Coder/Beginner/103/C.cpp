@@ -11,10 +11,13 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int a, b;
-    cin >> a >> b;
-    int c1 = a+b;
-    int c2 = a-b;
-    int c3 = a*b;
-    cout << max(c1, max(c2,c3)) << "\n";
+    int n;
+    cin >> n;
+    int ans = 0;
+    for(int i=0;i<n;i++){
+        int x; cin >> x;
+        ans += x;
+        ans--;
+    }
+    cout << ans << "\n";
 }

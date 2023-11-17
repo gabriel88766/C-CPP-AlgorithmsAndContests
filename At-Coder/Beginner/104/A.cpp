@@ -11,10 +11,9 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int a, b;
-    cin >> a >> b;
-    int c1 = a+b;
-    int c2 = a-b;
-    int c3 = a*b;
-    cout << max(c1, max(c2,c3)) << "\n";
+    int r;
+    cin >> r;
+    if(r < 1200) cout << "ABC\n";
+    else if(r < 2800) cout << "ARC\n";
+    else cout << "AGC\n";
 }

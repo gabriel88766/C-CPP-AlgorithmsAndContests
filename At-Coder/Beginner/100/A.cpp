@@ -13,8 +13,6 @@ int main(){
     //freopen("in", "r", stdin); //test input
     int a, b;
     cin >> a >> b;
-    int c1 = a+b;
-    int c2 = a-b;
-    int c3 = a*b;
-    cout << max(c1, max(c2,c3)) << "\n";
-}
+    if(a <= 8 && b <= 8) cout << "Yay!";
+    else cout << ":(";
+}   
