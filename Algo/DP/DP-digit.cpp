@@ -17,22 +17,18 @@ int query(string ss, int k) {
     dp[n][1][0] = 1;
  
     for(int i = n-1; i >=0 ; i--) {
-        for(int tight = 0; tight < 2 ; tight++) {
-            for(int sum = 0; sum < k ; sum++) {
-                if(tight) {
-                    for(int d = 0; d <= ss[i] - '0' ; d++) { //10*k to avoid overflow and negatives.
-                        dp[i][1][sum] +=   (d == ss[i]-'0') ? dp[i+1][1][(sum-d + 10*k)%k] : dp[i+1][0][(sum-d + 10*k)%k];
-                        dp[i][1][sum] %= MOD;
-                    }
-                }
-                else {
-                    for(int d = 0; d < 10 ; d++) {
-                        dp[i][0][sum] = dp[i][0][sum] + dp[i+1][0][(sum-d + 10*k)%k];
-                        dp[i][0][sum] %= MOD;
-                    }
-                }
+        for(int sum = 0; sum < k ; sum++) {
+            for(int d = 0; d <= ss[i] - '0' ; d++) { //10*k to avoid overflow and negatives.
+                dp[i][1][sum] +=   (d == ss[i]-'0') ? dp[i+1][1][(sum-d + 10*k)%k] : dp[i+1][0][(sum-d + 10*k)%k];
+                dp[i][1][sum] %= MOD;
             }
+            for(int d = 0; d < 10 ; d++) {
+                dp[i][0][sum] = dp[i][0][sum] + dp[i+1][0][(sum-d + 10*k)%k];
+                dp[i][0][sum] %= MOD;
+            }
+            
         }
+        
     }
     return dp[0][1][0];
 }
