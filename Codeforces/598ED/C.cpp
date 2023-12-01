@@ -70,11 +70,7 @@ int checkQ(const Point &p){
         if(p.x > 0 && p.y > 0) return 1;
         else if(p.x < 0 && p.y > 0) return 2;
         else if(p.x < 0 && p.y < 0) return 3;
-        else if(p.x > 0 && p.y < 0) return 4;
-        else{
-            assert(1 == 0);
-            return 0;
-        }
+        else return 4;
     }
 }
 
@@ -90,6 +86,29 @@ bool comp(pair<Point, int> &u, pair<Point, int> &v){
     else return false;
 }
 
+struct BlaBlue{
+    long long  psin, pcos;
+    BlaBlue(long long a, long long b){
+        psin = a, pcos = b;
+    }
+    bool operator< (const BlaBlue &b){
+        if(pcos == 0 || b.pcos == 0){
+            if(pcos == 0 && b.pcos == 0) return false;//equal
+            if(pcos > 0 || b.pcos < 0) return true;
+            if(pcos < 0 || b.pcos > 0) return false;
+        }
+        if(min(pcos, b.pcos) < 0 && max(pcos, b.pcos) > 0){
+            if(pcos < 0) return false;
+            else return true;
+        }
+        if(pcos < 0){
+            return psin*b.pcos < pcos * b.psin;
+        }else{
+            //sin/cos < other
+            return psin*b.pcos < pcos * b.psin;
+        }
+    }
+};
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
@@ -109,16 +128,15 @@ int main(){
 
     sort(v.begin(), v.end(), comp);
     pair<int,int> ans = {0,0};
-    long double ang = 1e12;
-    //do double
+    BlaBlue ang = {1, -INF_INT};//near 180, sin = 0.000000... cos = -1
+    //long long :)
     for(int i=0;i<n;i++){
         auto p1 = v[i].first;
         auto p2 = v[(i+1) % n].first;
-        
         auto dt = p1.dot(p2);
         auto crs = p1.cross(p2);
         if(crs <= 0) continue; // >= 180 dg
-        long double a = atan2l(crs, dt);
+        BlaBlue a = {crs, dt};
         if(a < ang){
             ang = a;
             ans = {v[i].second, v[(i+1) %n].second};
