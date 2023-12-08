@@ -3,6 +3,7 @@
 // some hints, n = 32-__builtin_clz(sizeof a + size of b)
 // be a = new Complex[n]; b = new Complex[n]; (free in the end)
 // for(int i=0;i<(n+m-1);i++) cout << (ll)round(a[i].x) << " ";
+// remember to set a[i].y = 0, if more than 1 multiplication
 const int N = 1e6+1e5;
 struct Complex {
     double x, y;

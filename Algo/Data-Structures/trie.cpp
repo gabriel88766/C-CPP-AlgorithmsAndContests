@@ -1,4 +1,4 @@
-const int N = 1505*1505; //substrings of a string of len 1505
+const int N = 1002*1002; //substrings of a string of len 1505
 
 int cntn = 0;
 int trie[N][26];
