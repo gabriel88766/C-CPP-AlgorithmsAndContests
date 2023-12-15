@@ -1,5 +1,5 @@
 //usually unnecessary
-const int M = 15000000; //M > 60*N
+const int M = 18000000; //M > 90*N!
 int st[M], lz[M]
 int lc[M], rc[M], cnt = 1; 
 int v[200005];
@@ -8,10 +8,10 @@ int MAX_INT = 1e9;
 
 void push(int l, int r, int p){
     if(lz[p]){
-        if(!lc[p]) lc[p] = ++cnt;
-        if(!rc[p]) rc[p] = ++cnt;
         st[p] += (ll)(r - l + 1) * lz[p]; //RMQ = lz, RSQ, = (r-l+1)*lz
         if(l != r){
+            if(!lc[p]) lc[p] = ++cnt;
+            if(!rc[p]) rc[p] = ++cnt;
             lz[lc[p]] += lz[p]; // += increment = update
             lz[rc[p]] += lz[p];
         } 
