@@ -35,26 +35,22 @@ int main(){
             cnt++;
         }
     }
-    if(cnt < pos.size()) cout << "NO\n";
-    else{
-        int rl = 0;
-        for(auto x: neg) rl -= x.second;
-        if(rl > r) cout << "NO\n";
-        else{
-            //how to solve this  S*** here ???
-            sort(neg.begin(), neg.end(), [&](const pair<int,int> &u, const pair<int,int> &v){
-                return u.first + u.second > v.first + v.second;
-            });
-            for(auto [x, y] : neg){
-                if(r >= x){
-                    cnt++;
-                    r += y;
-                }
+    sort(neg.begin(), neg.end(), [&](const pair<int,int> &u, const pair<int,int> &v){
+        return u.first + u.second > v.first + v.second;
+    });
+    //here dp
+    vector<int> dp(n+1, -INF_INT);
+    dp[0] = 0;
+    for(int i=0;i<neg.size();i++){
+        auto [x, y] = neg[i];
+        for(int j=n-1;j>=0;j--){
+            if(dp[j] + r >= x){
+                dp[j+1] = max(dp[j+1], dp[j] + y);
             }
-            if(cnt == n) cout << "YES\n";
-            else cout << "NO\n";
         }
     }
+    for(int i=1;i<=n;i++){
+        if(dp[i] + r >= 0) cnt++;
+    }
+    cout << cnt << "\n";
 }
-
-//Unsolved!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

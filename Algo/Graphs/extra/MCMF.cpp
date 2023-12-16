@@ -47,6 +47,7 @@ ll shortestpath(vector<int> &par){
 }
 
 ll MCMF(int flow){
+    if(flow == 0) return 0;
     vector<int> par(n+1);
     ll curflow = 0;
     ll cost = 0;
