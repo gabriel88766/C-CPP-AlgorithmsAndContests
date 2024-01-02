@@ -4,27 +4,17 @@
 //and (a^[2^(r-1)*d]+1)...(a^(2d)+1)(a^d+1)(a^d-1) == 0 mod n.
 //if n is prime, some of these should be a multiple of n, just check it. if fails, is composite.
 // we only need to check for a = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37}
-void binmul(ull &a, ull  b, ull  m){
-    a %= m;
-    ull ans = 0;
-    while(b){
-        if(b & 1){
-            ans += a;
-            if(ans > m) ans -= m;
-        }
-        a += a;
-        if(a > m) a -= m;
-        b >>= 1;
-    }
-    a = ans;
+ull mult(ull a, ull  b, ull  m){
+    __int128 res = (unsigned __int128)a * b % m;
+    return (ull)res;
 }
 
 ull binpow(ull a, ull b, ull m){
     a %= m;
     ull ans = 1;
     while(b){
-        if(b & 1) binmul(ans, a, m);
-        binmul(a, a, m);
+        if(b & 1) ans = mult(ans, a, m);
+        a = mult(a, a, m);
         b >>= 1;
     }
     return ans;
@@ -34,7 +24,7 @@ bool check_composite(ull n, ull a, ull d, int s){
     ull res = binpow(a, d, n);
     if(res == 1 || res == (n-1)) return false;
     for(int r=1;r<s;r++){
-        binmul(res, res, n);
+        res = mult(res, res, n);
         if(res == (n-1)) return false;
     }
     return true;

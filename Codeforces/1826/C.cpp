@@ -6,7 +6,8 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-const int N = 316228;
+
+const int N = 1e6+5;
 int p[N]; // 0 if prime, 1 if not prime
 vector<ll> primes;
 void sieve(){
@@ -20,43 +21,28 @@ void sieve(){
     }
 }
 
-ll maxv;
-map<ll,ll> mp;
-ll cx = 0;
-ll ans = 0;
-void generate(vector<ll> &v, int cur, ll val, int cnt){
-    //mp[val] = cnt;
-    cx++;
-    for(int i=cur+1;i<v.size();i++){
-        if(val*v[i] <= maxv){
-            generate(v, i, val*v[i], cnt+1);
-        }else break;
-    }
-}
-
-
-ll cp(ll x){
-    ll ans = 0;
-    return ans;
-}
-
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    sieve();
-    ll n;
-    //cin >> n;
-    
-    for(ll i = 2; i*i*i <= n; i++){
-        if(p[i]) ans++;
+    int t;
+    cin >> t;
+    while(t--){
+        int n, m;
+        cin >> n >> m;
+        if(m == 1 || n == 1){
+            cout << "YES\n";
+        }else{
+            int ld = n;
+            for(ll i=2;i*i<=n;i++){
+                if(!(n % i)){
+                    ld = i;
+                    break;
+                }
+            }
+            if(ld <= m) cout << "NO\n";
+            else cout << "YES\n";
+        }
     }
-    int c = 0;
-    for(auto x : primes){
-        if(n/x <= x) break;
-        c++;
-        ans += cp(n/x) - c;
-    }
-    cout << ans << "\n";
 }

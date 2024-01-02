@@ -21,7 +21,7 @@ int src, snk, n;
 
 ll shortestpath(vector<int> &par){
     fill(par.begin(), par.end(), -1);
-    vector<ll> dist(n+1, INF_LL);
+    vector<ll> dist(n+1, INF_LL); //min or max?
     dist[src] = 0;
     queue<tuple<ll,ll,ll>> q;
     q.push({0, src, INF_LL});
@@ -32,7 +32,7 @@ ll shortestpath(vector<int> &par){
         if(d > dist[u]) continue;
         for(auto k : g[u]){
             if(edgs[k].c == edgs[k].f) continue;
-            if(dist[edgs[k].v] > dist[u] + edgs[k].w){
+            if(dist[edgs[k].v] > dist[u] + edgs[k].w){ // > if min, < if max
                 dist[edgs[k].v] = dist[u] + edgs[k].w;
                 ll nxtf = min(f, edgs[k].c - edgs[k].f);
                 q.push({dist[edgs[k].v], edgs[k].v, nxtf});

@@ -31,6 +31,7 @@ struct Mint{
 
 //Worth to know;
 //Matrix to transform for Xor is (1,1) (1,-1), for OR (1,0) (1,1) and for AND (0,1) (1,1)
+// OR inverse (1, 0) (-1, 1), AND inverse (-1, 1) (1, 0) (and & or, dont divide by n)
 //Remember n = 2^x
 // FWHT(A) + FWHT(B) + .... = FWHT(A + B + C + D + ...) for product it also holds(Linear Algebra)
 //FAST WALSH HADAMARD TRANSFORM

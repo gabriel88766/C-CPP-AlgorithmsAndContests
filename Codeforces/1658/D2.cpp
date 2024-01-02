@@ -6,25 +6,81 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-const int N = 2e6;
-int trie[N][2];
-int val[N];
+const int N = 3800005, M = 19; // log aMax * Q (2e5 * 19, for example)
 int cnt = 0;
+int trie[N][2];
+int sz[N];
 
-void clear(){
-    for(int i=0;i<=cnt;i++){
-        val[i] = trie[i][0] = trie[i][1] = 0;
-    }
-    cnt = 0;
-}
-void add(int n){
+bool get(int num){
     int cur = 0;
-    for(int j=16;j>=0;j--){
-        int b = (1 << j) & n ? 1 : 0;
-        if(!trie[cur][b]) trie[cur][b] = ++cnt;
-        cur = trie[cur][b];
+    for(int i=M-1;i >= 0; i--){
+        if(trie[cur][(num & (1 << i)) >> i]){
+            cur = trie[cur][(num & (1 << i)) >> i];
+        }else return false;
     }
-    val[cur] = n;
+    return true;
+}
+void insert(int num){
+    if(get(num)) return;
+    int cur = 0;
+    for(int i=M-1;i >= 0; i--){
+        sz[cur]++;
+        if(trie[cur][(num & (1 << i)) >> i]){
+            cur = trie[cur][(num & (1 << i)) >> i];
+        }else cur = trie[cur][(num & (1 << i)) >> i] = ++cnt;
+    }
+    sz[cur]++;
+}
+
+void remove(int num){
+    if(!get(num)) return;
+    int cur = 0;
+    for(int i=M-1;i>=0;i--){
+        sz[cur]--;
+        cur = trie[cur][(num & (1 << i)) >> i];
+    }
+    sz[cur]--;
+    cur = 0;
+    for(int i=M-1;i>=0;i--){
+        int nxt = trie[cur][(num & (1 << i)) >> i];
+        if(sz[nxt] == 0){
+            trie[cur][(num & (1 << i)) >> i] = 0;
+        }
+        cur = nxt;
+    }
+}
+
+int minxor(int num){
+    int cur = 0;
+    int key = 0;
+    for(int i=M-1;i>=0;i--){
+        int b = (num & (1 << i)) >> i;
+        if(trie[cur][b]){
+            cur = trie[cur][b];
+            if(b) key ^= (1 << i);
+        }else{
+            cur = trie[cur][b^1];
+            if(b^1) key ^= (1 << i);
+        }
+    }
+    return key ^ num;
+}
+
+
+int maxxor(int num){
+    int cur = 0;
+    int key = 0;
+    for(int i=M-1;i>=0;i--){
+        int b = (num & (1 << i)) >> i;
+        if(trie[cur][b^1]){
+            cur = trie[cur][b^1];
+            if(b^1) key ^= (1 << i);
+        }else{
+            cur = trie[cur][b];
+            if(b) key ^= (1 << i);
+        }
+    }
+    return key ^ num;
 }
 
 //cout << fixed << setprecision(6)
@@ -35,41 +91,24 @@ int main(){
     int t;
     cin >> t;
     while(t--){
-        int l, r, ans = 0;
+        int l, r;
         cin >> l >> r;
-        int n = r-l+1;
+        int n = r - l + 1;
         vector<int> v(n);
         vector<int> chk;
-        for(int i=0;i<n;i++){
-            int aux;
-            cin >> aux;
-            add(aux);
-            chk.push_back(l ^ aux);
-        }
-        for(int x=0;x<n;x++){
-            auto i = chk[x];
-            // find i such that max i ^ some number from v is equal n-1
-            int  c1 = 0, c2 = 0;
-            for(int j=16;j>=0;j--){
-                if(i & (1 << j)){
-                    if(trie[c1][1]) c1 = trie[c1][1];
-                    else c1 = trie[c1][0];
-                    if(trie[c2][0]) c2 = trie[c2][0];
-                    else c2 = trie[c2][1];
-                }else{
-                    if(trie[c1][0]) c1 = trie[c1][0];
-                    else c1 = trie[c1][1];
-                    if(trie[c2][1]) c2 = trie[c2][1];
-                    else c2 = trie[c2][0];
-                }
-            }
-            //cout << val[c1] << " " << val[c2] << " " << i << "\n";
-            if((i ^ val[c1])  == l && (i ^ val[c2]) == r){
-                ans = i;
+        for(int i=0;i<n;i++) cin >> v[i];
+        for(int i=0;i<n;i++) insert(v[i]);
+        for(int i=0;i<n;i++) chk.push_back(v[i] ^ l);
+        //find some x, maxxor(x) = r, minxor(x) = l
+        for(auto x : chk){
+            if(maxxor(x) == r && minxor(x) == l){
+                cout << x << "\n";
                 break;
             }
         }
-        cout << ans << "\n";
-        clear();
+
+
+        //clear tree
+        trie[0][0] = trie[0][1] = sz[0] = 0;
     }
 }

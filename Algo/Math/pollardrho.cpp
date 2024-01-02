@@ -1,26 +1,18 @@
-//factoring in O(N^1/4 logN) + O(log^3(N)) (of miller rabin)
+//factoring in O(N^1/4 logN) + O(log^2(N)) (of miller rabin)
 //begin miller rabin:
-void binmul(ull &a, ull  b, ull  m){
-    a %= m;
-    ull ans = 0;
-    while(b){
-        if(b & 1){
-            ans += a;
-            if(ans > m) ans -= m;
-        }
-        a += a;
-        if(a > m) a -= m;
-        b >>= 1;
-    }
-    a = ans;
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+
+ull mult(ull a, ull  b, ull  m){
+    __int128 res = (unsigned __int128)a * b % m;
+    return (ull)res;
 }
 
 ull binpow(ull a, ull b, ull m){
     a %= m;
     ull ans = 1;
     while(b){
-        if(b & 1) binmul(ans, a, m);
-        binmul(a, a, m);
+        if(b & 1) ans = mult(ans, a, m);
+        a = mult(a, a, m);
         b >>= 1;
     }
     return ans;
@@ -30,7 +22,7 @@ bool check_composite(ull n, ull a, ull d, int s){
     ull res = binpow(a, d, n);
     if(res == 1 || res == (n-1)) return false;
     for(int r=1;r<s;r++){
-        binmul(res, res, n);
+        res = mult(res, res, n);
         if(res == (n-1)) return false;
     }
     return true;
@@ -58,14 +50,14 @@ ull gcd(ull a, ull b){
     return a;
 }
 ull funct(ull x, ull c, ull mod){
-    binmul(x,x,mod);
+    x = mult(x,x,mod);
     x += c;
     return x > mod ? x - mod : x;
 }
 
-ull rho(ull n, ull x0=2, ull c = 1){
+ull rho(ull n, ull c = 1){
     if(!(n&1)) return 2;
-    ull x = x0, y = x0;
+    ull x = 2, y = 2;
     ull g = 1;
     while(g == 1){
         x = funct(x,c,n);
@@ -73,8 +65,8 @@ ull rho(ull n, ull x0=2, ull c = 1){
         y = funct(y,c,n);
         g = gcd((x > y ? x-y : y-x), n);
     }
-    if(g == n) return rho(g, x0, c+1);
-    return isPrime(g) ? g : rho(g, x0, c);
+    if(g == n) return rho(g, rng());
+    return isPrime(g) ? g : rho(g, rng());
 }
 
 vector<pair<ull,ull>> fact(ull n){
@@ -85,7 +77,7 @@ vector<pair<ull,ull>> fact(ull n){
             f.push_back({n, 1});
             n = 1;
         }else{
-            ull cur = rho(n);
+            ull cur = rho(n, rng());
             ull cnt = 0;
             while(!(n % cur)){
                 n /= cur;

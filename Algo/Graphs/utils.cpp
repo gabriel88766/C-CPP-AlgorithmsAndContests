@@ -101,20 +101,42 @@ bool isbiparitite(int n){
     for(int i=1;i<=n;i++) if(c[i] == INF_INT && !bfs_bipartite(i)) return false;
     return true;
 }
-//(4) Find bridges in O(V+E)
+//(4) Find bridges in O(V+E) // (5) Find Articulation Points O(V+E)
 const int N = 2e5+3;
 vector<int> adj[N];
-int dfs_low[N], dfs_num[N], cnt = 0;
+int in[N], low[N], cnt = 0;
+vector<pair<int,int>> bdgs;
+vector<int> artp;
 
-vector<pair<int,int>> bdg;
-void dfs(int u, int p = -1){ //connected undirected graph
-    dfs_low[u] = dfs_num[u] = ++cnt;
-    for(auto v : adj[u]){
-        if(p == v) continue;
-        if(!dfs_num[v]){
-            dfs(v, u);
-            if(dfs_low[v] > dfs_num[u]) bdg.emplace_back(u, v);
+void dfs_bridge(int u, int p = -1){
+    low[u] = in[u] = ++cnt;
+    for(auto v: adj[u]){
+        if(v == p) continue;
+        if(!in[v]){
+            dfs_bridge(v, u);
+            if(low[v] == in[v]) bdgs.push_back({u, v});
         }
-        dfs_low[u] = min(dfs_low[v], dfs_low[u]);
+        low[u] = min(low[u], low[v]);
+    }
+}
+
+
+void dfs_artp(int u, int p = -1){
+    low[u] = in[u] = ++cnt;
+    int ch = 0;
+    for(auto v: adj[u]){
+        if(v == p) continue;
+        if(!in[v]){
+            dfs_artp(v, u);
+            if(low[v] >= in[u] && p != -1){
+                artp.push_back(u);
+            }
+            ch++;
+            low[u] = min(low[u], low[v]);
+        }else low[u] = min(low[u], in[v]);
+    }
+    if(p == -1 && ch > 1){
+        //artic point. if removed, ch-1 more components
+        artp.push_back(u);
     }
 }

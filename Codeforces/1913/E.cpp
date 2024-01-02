@@ -6,10 +6,10 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
  
-const int N = 1000;
+const int N = 55;
 struct edge {int v, c, f, w;};
 vector<edge> edgs;
-vector<int> g[N];
+vector<int> g[10005];
 int cost[N][N];
 void add_edge (int u, int v, int c, int w) {
     int k = edgs.size();
@@ -22,7 +22,7 @@ int src, snk;
  
 int shortestpath(vector<int> &par){
     fill(par.begin(), par.end(), -1);
-    vector<int> dist(par.size(), -INF_INT);
+    vector<int> dist(par.size(), INF_INT);
     dist[src] = 0;
     queue<tuple<int,int,int>> q;
     q.push({0, src, INF_INT});
@@ -30,10 +30,11 @@ int shortestpath(vector<int> &par){
     while(!q.empty()){
         auto [d, u, f] = q.front();
         q.pop();
-        if(d > dist[u]) continue;
+        
+        if(d != dist[u]) continue;
         for(auto k : g[u]){
             if(edgs[k].c == edgs[k].f) continue;
-            if(dist[edgs[k].v] < dist[u] + edgs[k].w){
+            if(dist[edgs[k].v] > dist[u] + edgs[k].w){
                 dist[edgs[k].v] = dist[u] + edgs[k].w;
                 int nxtf = min(f, edgs[k].c - edgs[k].f);
                 q.push({dist[edgs[k].v], edgs[k].v, nxtf});
