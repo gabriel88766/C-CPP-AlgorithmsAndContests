@@ -95,48 +95,37 @@ int main(){
         vector<bool> vis(n+1, false);
         for(auto [l, r] : seg){
             set<int> s;
-            for(int i=l;i<=r;i++){
-                s.insert(i);
-                vis[v[i]] = false;
-            }
-            priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
-            vis[v[l]] = true;
-            pq.push({ir[v[l]], v[l]});
-            while(!pq.empty()){
-                auto [d, u] = pq.top();
-                pq.pop();
-                for(auto it = s.begin(); it != s.end() && *it < d; ++it){
-                    if(il[v[*it]] == *it && ir[v[*it]] > d){
-                        unite(u, v[*it]);
-                        if(!vis[v[*it]]){
-                            pq.push({ir[v[*it]], v[*it]});
-                            vis[v[*it]] = true;
-                        }
+            s.insert(l);
+            s.insert(ir[v[l]]);
+            queue<pair<int,int>> q;
+            q.push({il[v[l]], ir[v[l]]});
+            while(!q.empty()){
+                auto [l, r] = q.front();
+                q.pop();
+                for(int i=l+1;i<r;i++){
+                    if(il[v[i]] < l || ir[v[i]] > r && get(v[i]) != get(v[l])){
+                        unite(v[i], v[l]);
+                        int u1 = il[v[i]];
+                        int u2 = ir[v[i]];
+                        auto insrt = [&](int u){
+                            auto it1 = s.lower_bound(u);
+                            if(it1 != s.begin() && it1 != s.end()){
+                                int d1 = u - *prev(it1);
+                                int d2 = *it1 - u;
+                                if(d1 < d2) q.push({*prev(it1), u});
+                                else q.push({u, *it1});
+                            }else if(it1 == s.begin()){
+                                q.push({u, *it1});
+                            }else{
+                                q.push({*prev(it1), u});
+                            }
+                        };
+                        insrt(u1);
+                        insrt(u2);
+                        s.insert(u1);
+                        s.insert(u2);
                     }
                 }
-                while(s.size() && *s.begin() <= d) s.erase(s.begin());
-            }
-            //reverse
-            for(int i=l;i<=r;i++){
-                s.insert(i);
-                vis[v[i]] = false;
-            }
-            priority_queue<pair<int,int>> pq2;
-            vis[v[r]] = true;
-            pq.push({il[v[r]], v[r]});
-            while(!pq2.empty()){
-                auto [d, u] = pq2.top();
-                pq2.pop();
-                for(auto it = prev(s.end()); *it > d; --it){
-                    if(ir[v[*it]] == *it && il[v[*it]] < d){
-                        unite(u, v[*it]);
-                        if(!vis[v[*it]]){
-                            pq2.push({il[v[*it]], v[*it]});
-                            vis[v[*it]] = true;
-                        }
-                    }
-                }
-                while(s.size() && *prev(s.end()) >= d) s.erase(prev(s.end()));
             }
             int cur = 0;
             for(int i=l;i<=r;i++) if(get(v[i]) == get(v[l])) cur++;
