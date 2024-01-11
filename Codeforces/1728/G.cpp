@@ -40,6 +40,32 @@ struct Mint{
 Mint dp[1 << 16];
 Mint dp2[1 << 16];
 map<int, Mint> dp3[1 << 16];
+int pos[1 << 16];
+int addb[1 << 16];
+vector<int> base;
+
+void add(int num){
+    if(num == 0) return;
+    for(int i=0;i<base.size();i++){
+        if(__builtin_clz(base[i]) == __builtin_clz(num)){
+            add(num ^ base[i]);
+            return;
+        }
+    }
+    base.push_back(num);
+}
+
+bool inbase(int num){
+    if(num == 0) return true;
+    for(int i=0;i<base.size();i++){
+        if(__builtin_clz(base[i]) == __builtin_clz(num)){
+            return inbase(num ^ base[i]);
+        }
+    }
+    return false;
+}
+
+
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
@@ -57,15 +83,14 @@ int main(){
     }
     sort(l.begin(), l.end());
     sort(p.begin(), p.end());
-    int msk = 0;
-    for(int i=0;i<m;i++) msk |= (1 << i);
-    for(int i=0;i<(1 << m);i++) dp[i] = 1;
+    int msk = (1 << m) - 1;
+    for(int i=0;i<(1 << m);i++) {dp[i] = 1;}
     //####### begincalc dp[i] ##########
     for(int i=0;i<n;i++){
         int cur = 0;
         vector<int> vaux;
         for(int j=0;j<m;j++){
-            vaux.push_back(abs(l[n] - p[j]));
+            vaux.push_back(abs(l[i] - p[j]));
         }
         vaux.push_back(d+1);
         sort(vaux.begin(), vaux.end());
@@ -74,59 +99,49 @@ int main(){
         while(cur <= d){
             int cmsk = 0;
             for(int j=0;j<m;j++){
-                if(l[n]-cur <= p[j] && l[n] + cur >= p[j]){
+                if(l[i]-cur <= p[j] && l[i] + cur >= p[j]){
                     cmsk |= (1 << j);
                 }
             }
             int nxt = *upper_bound(vaux.begin(), vaux.end(), cur);
             ms.push_back(cmsk);
+            addb[cmsk] = true;
             val.push_back(nxt);
-            //dp3[cmsk^msk] *= nxt;
             cur = nxt;
         }
         for(int j=0;j<ms.size();j++){
-            int nx = j == (ms.size()-1) ? ms[j+1] ^ ms[j] : 0;
-            if(dp3[ms[j] ^ msk].count(nx)) dp3[ms[j] ^ msk][nx] *= val[j];
-            else dp3[ms[j] ^ msk][nx] = val[j];
+            int nx = j != (ms.size()-1) ? ms[j+1] ^ ms[j] : 0;
+            if(dp3[ms[j]].count(nx)) dp3[ms[j]][nx] *= val[j];
+            else dp3[ms[j]][nx] = val[j];
         }
     }
     //fix
     for(int i=0;i<(1 << m);i++){
         int s = i;
         for(auto [k, v] : dp3[i]){
-            cout << i << " " << k << " - " << v << "\n";
-            int valp = msk ^ i;
-            int ms = i ^ k;
-            for (int s=ms; s; s=(s-1)&ms){ 
-                dp[s^valp] *= v;
+            int mmsk = msk ^ i;
+            assert(__builtin_popcount(k) <= 2);
+            //mmsk ^= k;
+            for (int s=mmsk; s; s=(s-1)&mmsk){ 
+                if(__builtin_popcount(s & k) == __builtin_popcount(k)) continue;
+                dp[s | i] *= v;
             }
-            dp[valp] *= v;
+            dp[i] *= v;
         }
     }
-    cout << dp[0] << " " << dp[1] << "\n";
+    for(int i=0;i<(1<<m);i++) if(addb[i]) add(i);
+    for(int i=0;i<(1 << m);i++) if(inbase(i)) pos[i] = true;
+    for(int i=0;i<(1 << m); i++) if(!pos[i]) dp[i] = 0;
     for(int i=1;i<(1 << m);i++){
         //dp[i] = dp3[i^msk];
+        if(!pos[i]) continue;
         int s = i;
         do{ 
             s = (s-1) & i;
-            if((__builtin_popcount(i) - __builtin_popcount(s)) % 2) dp[i] -= dp[s];
-            else dp[i] += dp[s];
+            dp[i] -= dp[s];
         }while(s);
     }
     //######## end calc dp[i] #############
-    /*for(int i=0;i<=d;i++){
-        for(int j=0;j<=d;j++){
-            for(int k=0;k<=d;k++){
-                int mm = 0;
-                for(int x=0;x<m;x++){
-                    if(l[0]-i <= p[x] && l[0] + i >= p[x]) mm |= (1 << x);
-                    if(l[1]-j <= p[x] && l[1] + j >= p[x]) mm |= (1 << x);
-                    if(l[2]-k <= p[x] && l[2] + k >= p[x]) mm |= (1 << x);
-                }
-                dp[mm] += 1;
-            }
-        }
-    }*/
     for(int i=0;i<(1 << m);i++){
         for (int s=i; s; s=(s-1)&i){ 
             int cur = s ^ msk;
