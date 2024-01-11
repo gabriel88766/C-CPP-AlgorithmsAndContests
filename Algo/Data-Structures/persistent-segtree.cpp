@@ -10,6 +10,7 @@ struct SegmentTree{
         st.resize(40*n);
         lc.resize(40*n);
         rc.resize(40*n);
+        cnt = 0;
         rt = build(1, n);
     }
     int build(int l, int r){
