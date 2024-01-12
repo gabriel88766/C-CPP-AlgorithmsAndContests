@@ -55,3 +55,12 @@ int f = 2;
 function<int(int,int)> fn = [&f](int a,int b){
     return a+b+f;
 };
+
+//from string to int
+ll to_int(string s){
+    ll ans;
+    stringstream b;
+    b << s;
+    b >> ans;
+    return ans;
+}
