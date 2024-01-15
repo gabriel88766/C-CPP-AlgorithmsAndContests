@@ -116,6 +116,50 @@ void multMod(vector<ll> &a, vector<ll> &b, int n){
     }
 }
 
+//alternative
+void multMod2(vector<ll> &a, vector<ll> &b, int n){
+    //split 2^20 * x3 + 2^10 * x2 + x1
+    const int MID = 1 << 15;
+    vector<Complex> a2(n), a1(n), b2(n), b1(n);
+    for(int i=0;i<n;i++){
+        a2[i].x = (a[i] / MID);
+        a1[i].x = a[i] % MID;
+        b2[i].x = (b[i] / MID);
+        b1[i].x = b[i] % MID;
+    }
+    fft(a1, n, 1);
+    fft(a2, n, 1);
+    fft(b1, n, 1);
+    fft(b2, n, 1);
+    auto a11 = a1;
+    auto a12 = a1;
+    auto a21 = a2;
+    auto a22 = a2;
+    for(int i=0;i<n;i++){
+        a11[i] = a11[i] * b1[i];
+        a12[i] = a12[i] * b2[i];
+        a21[i] = a21[i] * b1[i];
+        a22[i] = a22[i] * b2[i];
+    }
+    fft(a11, n, -1);
+    fft(a12, n, -1);
+    fft(a21, n, -1);
+    fft(a22, n, -1);
+    for (int i = 0; i < n; i++){
+        a11[i] /= n;
+        a12[i] /= n;
+        a21[i] /= n;
+        a22[i] /= n;
+    }
+    for(int i=0;i<n;i++){
+        ll r11 = (ll)round(a11[i].x) % MOD;
+        ll r12 = (ll)round(a12[i].x) % MOD;
+        ll r21 = (ll)round(a21[i].x) % MOD;
+        ll r22 = (ll)round(a22[i].x) % MOD;
+        a[i] = r11 + (r12 + r21) * MOD + r22 * (1LL << 30);
+        a[i] %= MOD; 
+    }
+}
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);

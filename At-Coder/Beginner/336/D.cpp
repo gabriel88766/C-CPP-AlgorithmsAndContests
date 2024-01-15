@@ -1,5 +1,11 @@
-//only recursive. push function is problematic
-//use SegmentTree<long long int, op, el> st(v);
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
+using namespace std;
+
 template<typename T, T (*op)(T, T), T (*nullel)()>
 struct SegmentTreeLazy{
     vector<T> st, lz;
@@ -12,8 +18,8 @@ struct SegmentTreeLazy{
     }
     SegmentTreeLazy(ll sz){
         n = sz;
-        st.assign(4*n, 0);
-        lz.assign(4*n, 0);
+        st.assign(4*n, nullel());
+        lz.assign(4*n, nullel());
     }
     void build(vector<T> &v, int l, int r, int p){
         if(l == r){ st[p] = v[l]; return; }
@@ -24,7 +30,7 @@ struct SegmentTreeLazy{
 
     void push(int l, int r, int p){
         if(lz[p] != 0){ //0 can be assigned? change!
-            st[p] += (ll)(r - l + 1) * lz[p]; //RMQ = lz, RSQ, = (r-l+1)*lz
+            st[p] += lz[p]; //RMQ = lz, RSQ, = (r-l+1)*lz
             if(l != r){
                 lz[2 * p] += lz[p]; // += increment = update
                 lz[2 * p + 1] += lz[p];
@@ -55,10 +61,42 @@ struct SegmentTreeLazy{
     }
 };
 
-ll op(ll a, ll b){
-    return a + b;
+int op(int a, int b){
+    return min(a, b);
 }
 
-ll el(){
-    return 0LL;
+int el(){
+    return INF_INT;
+}
+
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); //test input
+    int ans = 0;
+    int cur = 0;
+    int n;
+    cin >> n;
+    vector<int> v(n);
+    for(int i=0;i<n;i++) cin >> v[i];
+    SegmentTreeLazy<int, op, el> st(v);
+    for(int i=0;i<n;i++){
+        while(i - cur >= 0 && i + cur < n){
+            st.update(i-cur, i+cur, -1);
+            if(st.query(0, n-1) < 0){
+                st.update(i-cur, i+cur, 1);
+                break;
+            }else{
+                cur++;
+                ans = max(ans, cur);
+            }
+        }
+        cur--;
+        st.update(i-cur, i, 1);
+        if(cur != 0){
+            st.update(i-cur+1, i, 1);
+        }
+    }
+    cout << ans << "\n";
 }
