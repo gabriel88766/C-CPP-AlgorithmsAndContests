@@ -14,16 +14,16 @@ void init(){
 }
 
 int find(int a, int t){
-    if(p[a] == a) return a;
+    if(p[a] == a) return a; //his[a] = 0
     if(his[a] > t) return a;
     else return find(p[a], t);
 }
 
 
 void unite(int a, int b){
+    ++tim;
     a = find(a, tim);
     b = find(b, tim);
-    ++tim;
     if(a == b) return;
     if(sz[a] < sz[b]) swap(a,b);
     p[b] = a;
@@ -37,6 +37,7 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
+    init();
     int n, m, q;
     cin >> n >> m >> q;
     for(int i=1;i<=m;i++){
@@ -44,6 +45,7 @@ int main(){
         cin >> a >> b;
         unite(a, b);
     }
+    assert(tim == m);
     for(int i=0;i<q;i++){
         int a, b;
         cin >> a >> b;
@@ -56,17 +58,19 @@ int main(){
                         ans = his[a];
                         a = p[a];
                     }else{
+                        assert(his[b] != 0);
                         ans = his[b];
                         b = p[b];
                     }
-                }
-                if(his[a] < his[b]){
-                    ans = his[a];
-                    a = p[a];
-                
                 }else{
-                    ans = his[b];
-                    b = p[b];
+                    if(his[a] < his[b]){
+                        ans = his[a];
+                        a = p[a];
+                    
+                    }else{
+                        ans = his[b];
+                        b = p[b];
+                    }
                 }
             }
             cout << ans << "\n";

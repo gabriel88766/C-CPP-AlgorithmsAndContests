@@ -1,5 +1,12 @@
-//Untested :) (remove is working)
-//Some bugs in insert were fixed (915E)
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
+using namespace std;
+
+
 struct Intervals{
     set<pair<int,int>> s;
     int sz;
@@ -80,3 +87,23 @@ struct Intervals{
         s.insert(p);
     }
 };
+
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); //test input
+    int n, q;
+    cin >> n >> q;
+    Intervals st(n);
+    for(int i=0;i<q;i++){
+        int l, r, t;
+        cin >> l >> r >> t;
+        if(t == 1){
+            st.remove(l, r);
+        }else{
+            st.insert(l, r);
+        }
+        cout << st.sz << "\n";
+    }
+}
