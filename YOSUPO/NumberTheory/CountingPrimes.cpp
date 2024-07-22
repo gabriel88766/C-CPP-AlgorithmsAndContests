@@ -1,3 +1,12 @@
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
+using namespace std;
+
+
 const int N = 22e6;
 bool p[N]; // 0 if prime, 1 if not prime
 vector<ll> primes;
@@ -81,7 +90,18 @@ ll cntp(ll n){
     for(int i=a+1;i<primes.size();i++){
         while(primes[i] * primes[p] > n) p--;
         if(p < i) break;
-        ans -= p-i+1; //prefix sum if sum.
+        ans -= p-i+1; //multiply p if sum
     }
     return ans;
+}
+
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); //test input
+    sieve();
+    ll n;
+    cin >> n;
+    cout << cntp(n) << "\n";
 }

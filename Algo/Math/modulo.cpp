@@ -55,6 +55,15 @@ struct Mint{
         }
         return ans;
     }
+    ll gcd_euclid(ll a, ll b, ll &x, ll &y){ //solves ax+by = g where g = gcd(a,b)
+        if(b == 0){ //meaning 1 * a - 0 * 0 = a, (gcd)
+            x = 1; y = 0;
+            return a;
+        }
+        ll d = gcd_euclid(b, a % b, y, x); //if b > a then this step reverses it
+        y -= x * (a/b); 
+        return d;
+    }
     friend Mint operator* (Mint a, Mint const &b){ return a *= b;}
     friend Mint operator/ (Mint a, Mint const &b){ return a /= b;}
     friend Mint operator+ (Mint a, Mint const &b){ return a += b;}
@@ -62,7 +71,14 @@ struct Mint{
     Mint operator*= (Mint u){ v = (u.v * v) % MOD; return *this;}
     Mint operator+= (Mint u){ v = (v+u.v >= MOD ? v+u.v-MOD : v+u.v); return *this;}
     Mint operator-= (Mint u){ v = (v-u.v < 0 ? v-u.v+MOD : v-u.v); return *this;}
-    Mint operator/= (Mint u){ (*this) *= u.pow(MOD-2); return *this;}
+    /*Mint operator/= (Mint u){ (*this) *= u.pow(MOD-2); return *this;}*/
+    Mint operator/= (Mint u){ //division untested, MOD not prime, u.v must be coprime with MOD.
+        ll x, y;
+        ll g = gcd_euclid(u.v, MOD, x, y);
+        assert(g == 1);
+        (*this) *= x; 
+        return *this;
+    }
     bool operator== (Mint u){ return v == u.v;}
     bool operator!= (Mint u){ return v != u.v;}
     friend ostream& operator<<(ostream& os, const Mint& num){

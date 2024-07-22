@@ -1,3 +1,6 @@
+//not actually the tree, but a code to find nearest p/q with denominator up to N.
+//tested on 333G - atcoder.
+//in python: Fraction('1.4142135623730950488016887242097').limit_denominator(1000000000000)
 #include <bits/stdc++.h>
 typedef long long int ll;
 typedef unsigned long long int ull;

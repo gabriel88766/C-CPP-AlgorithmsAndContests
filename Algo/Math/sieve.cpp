@@ -30,3 +30,19 @@ for (int i=2; i <= N; ++i) {
         }
     }
 }
+
+//seg sieve
+const int M = 1e7+2; 
+int p2[M]; //primes interval up to 10^7, primes up to N^2
+vector<ll> pr;
+void segsieve(ll l, ll r){
+    for(auto x : primes){
+        if(x*x > r) break;
+        for(ll i=(l-1)/x+1; i*x <= r; i++){
+            p2[i*x-l] = 1;
+        }
+    }
+    for(int i=l;i<=r;i++){
+        if(!p2[i-l]) pr.push_back(i);
+    }
+}

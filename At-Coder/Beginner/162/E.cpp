@@ -1,13 +1,26 @@
 #include <bits/stdc++.h>
-#pragma GCC optimize("O2")
 typedef long long int ll;
 typedef unsigned long long int ull;
-const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7; //1e9+7
 const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-
+const int N = 1e5+1;
+ll mi[N], p[N];
+void mobius(){ //another sieve.
+    for(ll i =1; i<N;i++) mi[i] = 1;
+    for(ll i=2; i<N; i++){
+        if(!p[i]){
+            for(ll j = i; j < N; j += i){
+                p[j] = 1, mi[j] *= -1;
+            }
+            for(ll j = i*i; j < N; j += i*i){
+                mi[j] = 0;
+            }
+        }
+    }
+}
 
 struct Mint{
     ll v;
@@ -24,6 +37,15 @@ struct Mint{
         }
         return ans;
     }
+    ll gcd_euclid(ll a, ll b, ll &x, ll &y){ //solves ax+by = g where g = gcd(a,b)
+        if(b == 0){ //meaning 1 * a - 0 * 0 = a, (gcd)
+            x = 1; y = 0;
+            return a;
+        }
+        ll d = gcd_euclid(b, a % b, y, x); //if b > a then this step reverses it
+        y -= x * (a/b); 
+        return d;
+    }
     friend Mint operator* (Mint a, Mint const &b){ return a *= b;}
     friend Mint operator/ (Mint a, Mint const &b){ return a /= b;}
     friend Mint operator+ (Mint a, Mint const &b){ return a += b;}
@@ -31,7 +53,14 @@ struct Mint{
     Mint operator*= (Mint u){ v = (u.v * v) % MOD; return *this;}
     Mint operator+= (Mint u){ v = (v+u.v >= MOD ? v+u.v-MOD : v+u.v); return *this;}
     Mint operator-= (Mint u){ v = (v-u.v < 0 ? v-u.v+MOD : v-u.v); return *this;}
-    Mint operator/= (Mint u){ (*this) *= u.pow(MOD-2); return *this;}
+    /*Mint operator/= (Mint u){ (*this) *= u.pow(MOD-2); return *this;}*/
+    Mint operator/= (Mint u){ //division untested, MOD not prime, u.v must be coprime with MOD.
+        ll x, y;
+        ll g = gcd_euclid(u.v, MOD, x, y);
+        assert(g == 1);
+        (*this) *= x; 
+        return *this;
+    }
     bool operator== (Mint u){ return v == u.v;}
     bool operator!= (Mint u){ return v != u.v;}
     friend ostream& operator<<(ostream& os, const Mint& num){
@@ -40,58 +69,22 @@ struct Mint{
     }
 };
 
-//sf(n)  =  (s(f conv g)(n) - sum[i=2:n](sf(n/i) * g(i))) /g(1)
-//example f(i) = phi(i), phi conv I = Id, sum Id is easy to calculate, sum of I is too
-unordered_map<ll, Mint> dp;
-Mint inv = Mint(1)/2;
-Mint calcconv(ll n){
-    //something easy to calculate
-    return Mint(n)*Mint(n+1) * inv;
-}
-
-ll ctt =0 ;
-Mint calcsum(ll n){
-    if(dp.count(n)) return dp[n];
-    Mint ans = calcconv(n);
-    //ll g1 = 1; //ignore in this case
-    ll fv = 2;
-    while(fv <= n){
-        ll lv = n/(n / fv);
-        //sum of g from fv to lv . In this case = lv - fv + 1
-        if(!dp.count(n/lv)) calcsum(n/lv);
-        ans -= Mint(lv - fv + 1) * dp[n/lv]; 
-        fv = lv+1;
-    }
-    //g(i) = 1, no need to divide
-    return dp[n] = ans;
-}
-
-
-//precompute up to n^(2/3)
-const int N = 10e6; //2*10^7, for 10^11
-int phi[N];
-void euler(){
-    for(ll i=1;i<N;i++) phi[i] = i;
-    for(ll i=2; i < N; i++){
-        if(phi[i] == i){
-            for(ll j = i; j < N; j += i){
-                phi[j] -= phi[j]/i; 
-            }
-        }
-    }
-    dp[1] = 1;
-    for(int i=2;i<N;i++){
-        dp[i] = dp[i-1] + phi[i];
-    }
-}
-
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    euler();
-    ll n;
-    cin >> n;
-    cout << calcsum(n) << "\n";
+    mobius();
+    int n, k;
+    cin >> n >> k;
+    Mint ans;
+    for(int i=1;i<=k;i++){
+        Mint cur = 0;
+        for(int j=1;i*j<=k;j++){
+            cur += mi[j]*Mint(k/(i*j)).pow(n);
+        }
+        ans += cur * i;
+    }
+
+    cout << ans << "\n";
 }
