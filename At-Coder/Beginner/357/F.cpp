@@ -53,68 +53,95 @@ struct Mint{
     }
 };
 
-template<typename T, T (*op)(T, T), T (*nullel)()>
-struct SegmentTreeLazy{
-    vector<T> st, lz;
-    int n;
-    SegmentTreeLazy(vector<T> &v){
-        n = v.size();
-        st.resize(4*n);
-        lz.assign(4*n, 0);
-        build(v, 0, n-1, 1);
-    }
-    SegmentTreeLazy(ll sz){
-        n = sz;
-        st.assign(4*n, 0);
-        lz.assign(4*n, 0);
-    }
-    void build(vector<T> &v, int l, int r, int p){
-        if(l == r){ st[p] = v[l] % MOD; return; }
-        build(v, l, (l+r)/2, 2 * p);
-        build(v, (l+r)/2 + 1, r, 2 * p + 1);
-        st[p] = op(st[2 * p], st[2 * p + 1]); 
-    }
+const int N = 2e5+3;
+const int sqrtN = 500; //200000 = 500*400
+Mint a[N], b[N];
+Mint bl[N/sqrtN+1];
+Mint lb[N/sqrtN+1], la[N/sqrtN+1];
+Mint sb[N/sqrtN+1], sa[N/sqrtN+1];
+int n;
 
-    void push(int l, int r, int p){
-        if(lz[p] != 0){ //0 can be assigned? change!
-            st[p] += (ll)(r - l + 1) * lz[p]; //RMQ = lz, RSQ, = (r-l+1)*lz
-            st[p] %= MOD;
-            if(l != r){
-                lz[2 * p] += lz[p]; // += increment = update
-                lz[2 * p + 1] += lz[p];
-            } 
-            lz[p] = 0;
-        }
+void build(){
+    for(int i=1;i<=n;i++){
+        bl[i/sqrtN] += a[i]*b[i];
+        sa[i/sqrtN] += a[i];
+        sb[i/sqrtN] += b[i];
     }
-
-    ll query(int i, int j, int l, int r, int p){
-        push(l, r, p);
-        if(j < l || i > r) return nullel();
-        if(j >= r && i <= l) return st[p];
-        return op(query(i, j, l, (l + r)/2, 2 * p), query(i, j, (l + r)/2 + 1, r, 2 * p + 1)); 
-    }
-    T query(int i, int j){
-        return query(i, j, 0, n-1, 1);
-    }
-    void update(int i, int j, T val, int l, int r, int p){
-        push(l, r, p);
-        if(j < l || i > r) return;
-        if(l >= i && r <= j) {lz[p] = val; push(l, r, p); return;}
-        update(i, j, val, l, (l + r)/2, 2 * p);
-        update(i, j, val, (l + r)/2 + 1, r, 2 * p + 1);
-        st[p] = op(st[2 * p], st[2 * p + 1]); 
-    }
-    void update(int i, int j, T val){
-        update(i, j, val, 0, n-1, 1);
-    }
-};
-
-ll op(ll a, ll b){
-    return (a + b) % MOD;
 }
 
-ll el(){
-    return 0LL;
+Mint query(int aa, int bb){
+    int l = (aa/sqrtN+1)*sqrtN;
+    int r = (bb/sqrtN)*sqrtN;
+    Mint ans = 0;
+    if(r <= l){
+        for(int i=aa;i<=bb;i++) ans += (a[i] + la[i/sqrtN]) * (b[i] + lb[i/sqrtN]);
+    }else{
+        for(int i=aa;i<l;i++) ans += (a[i] + la[i/sqrtN]) * (b[i] + lb[i/sqrtN]);
+        for(int i=r;i<=bb;i++) ans += (a[i] + la[i/sqrtN]) * (b[i] + lb[i/sqrtN]);
+        l /= sqrtN, r /= sqrtN;
+        for(int i=l;i<r;i++){
+            ans += bl[i];
+        }
+    }
+    return ans;
+}
+
+void update_a(int aa, int bb, Mint x){ 
+    int l = (aa/sqrtN+1)*sqrtN;
+    int r = (bb/sqrtN)*sqrtN;
+    if(r <= l){
+        for(int i=aa;i<=bb;i++){
+            bl[i/sqrtN] += x*(b[i] + lb[i/sqrtN]);
+            sa[i/sqrtN] += x;
+            a[i] += x;
+        }
+    }else{
+        for(int i=aa;i<l;i++){
+            bl[i/sqrtN] += x*(b[i] + lb[i/sqrtN]);
+            sa[i/sqrtN] += x;
+            a[i] += x;
+        }
+        for(int i=r;i<=bb;i++){
+            bl[i/sqrtN] += x*(b[i] + lb[i/sqrtN]);
+            sa[i/sqrtN] += x;
+            a[i] += x;
+        }
+        l /= sqrtN, r /= sqrtN;
+        for(int i=l;i<r;i++){
+            la[i] += x;
+            bl[i] += x * sb[i];
+            sa[i] += x * sqrtN;
+        }
+    }
+}
+
+void update_b(int aa, int bb, Mint x){ 
+    int l = (aa/sqrtN+1)*sqrtN;
+    int r = (bb/sqrtN)*sqrtN;
+    if(r <= l){
+        for(int i=aa;i<=bb;i++){
+            bl[i/sqrtN] += x*(a[i] + la[i/sqrtN]);
+            sb[i/sqrtN] += x;
+            b[i] += x;
+        }
+    }else{
+        for(int i=aa;i<l;i++){
+            bl[i/sqrtN] += x*(a[i] + la[i/sqrtN]);
+            sb[i/sqrtN] += x;
+            b[i] += x;
+        }
+        for(int i=r;i<=bb;i++){
+            bl[i/sqrtN] += x*(a[i] + la[i/sqrtN]);
+            sb[i/sqrtN] += x;
+            b[i] += x;
+        }
+        l /= sqrtN, r /= sqrtN;
+        for(int i=l;i<r;i++){
+            lb[i] += x;
+            bl[i] += x * sa[i];
+            sb[i] += x * sqrtN;
+        }
+    }
 }
 
 //cout << fixed << setprecision(6)
@@ -122,27 +149,31 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int n, q;
+    int q;
     cin >> n >> q;
-    vector<ll> a(n+1), b(n+1);
-    for(int i=1;i<=n;i++) cin >> a[i];
-    for(int i=1;i<=n;i++) cin >> b[i];
-    SegmentTreeLazy<ll, op, el> st1(a), st2(b);
-    Mint ans = 0;
-    for(int i=1;i<=n;i++) ans += a[i] * b[i];
+    for(int i=1;i<=n;i++){
+        ll x;
+        cin >> x;
+        a[i] = x;
+    }
+    for(int i=1;i<=n;i++){
+        ll x;
+        cin >> x;
+        b[i] = x;
+    }
+    build();
+
     for(int i=0;i<q;i++){
         int tt, x, l, r;
         cin >> tt >> l >> r;
         if(tt == 1){
             cin >> x;
-            ans += x * st2.query(l, r);
-            st1.update(l, r, x);
+            update_a(l, r, x);
         }else if(tt == 2){
             cin >> x;
-            ans += x * st1.query(l, r);
-            st2.update(l, r, x);
+            update_b(l, r, x);
         }else{
-            cout << ans << "\n";
+            cout << query(l, r) << "\n";
         }
     }
 }
