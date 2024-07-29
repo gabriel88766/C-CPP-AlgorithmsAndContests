@@ -17,17 +17,42 @@ int main(){
         int n;
         cin >> n;
         ll ans = 0;
-        ll ox = 0, op = 0;
+        ll ox = 1, op = 0;
         bool ok = true;
         for(int i=0;i<n;i++){
+            // cout << ans << " ";
             ll x;
             cin >> x;
             if(!ok) continue;
-            if(x == 1 && ox > 1){
-                ok = false;
+            if(x == 1){
+                if(ox > 1) ok = false;
                 continue;
             }
-            //ox^(2^2^2^2)
+            if(i == 0 || ox == 1){
+                ox = x, op = 0;
+                continue;
+            }
+            if(ox < x){
+                while(ox*ox <= x){
+                    ox *= ox;
+                    op--;
+                }
+                if(op < 0) op = 0;
+                ans += op;
+                ox = x;
+            }else if(ox == x){
+                ans += op;
+            }else{
+                //ox > x
+                ll aux = x;
+                //cout << aux << " " << ox << "\n";
+                while(aux < ox){
+                    aux *= aux;
+                    op++;
+                }
+                ans += op;
+                ox = x;
+            }
         }
         if(!ok) cout << "-1\n";
         else cout << ans << "\n";
