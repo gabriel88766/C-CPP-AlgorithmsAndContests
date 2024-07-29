@@ -6,80 +6,51 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-const int N = 1e6+10;
-const int nMOD = 1; //change nMOD if needed;
-ull pVal; 
-const ull MOD[] = {(ull)1e9+7, (ull)1e9+9, (ull)1e9+21, (ull)1e9+33, (ull)1e9+87, (ull)1e9+93, (ull)1e9+97};
-ull pot[N][nMOD];
-ull invpot[N][nMOD];
-char inited = false;
-
-ull binpow(ull a, ull b, ull m){
-    ull ans = 1;
-    while(b > 0){
-        if(b & 1) ans = (ans * a) % m;
-        a = (a * a) % m;
-        b >>= 1;
-    }
-    return ans;
-}
-
-mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-
-void init(int n){
-    inited = true;
-    
-    pVal = uniform_int_distribution<int>(257, 1000000000)(rng); //greater than alphabet
-    for(int i=0;i<nMOD;i++){
-        pot[0][i] = 1, pot[1][i] = pVal;
-        invpot[0][i] = 1, invpot[1][i] = binpow(pVal, MOD[i]-2, MOD[i]);
-    }  
-    for(int i=2;i<n;i++) 
-        for(int j=0;j<nMOD;j++){
-            pot[i][j] = (pot[i-1][j] * pVal) % MOD[j]; 
-            invpot[i][j] = (invpot[i-1][j] * invpot[1][j]) % MOD[j];
-        } 
-}
-
-struct Hash{ //1-indexed
-    vector<vector<ull>> hash;
-    int len = 0;
-    void inithash(int maxl, int strlen){
-        if(!inited) init(maxl);
-        hash.assign(strlen+1, vector<ull> (nMOD, 0));
-    }
-    Hash(string &s, int maxlen, int strlen){ // maxlen > nmax
-        inithash(maxlen, strlen);
-        for(int i=1;i<=s.size();i++){
-            for(int j=0;j<nMOD;j++){
-                hash[i][j] = (hash[i-1][j] + pot[i-1][j] * s[i-1]) % MOD[j];
-            }
+int z[200005]; //Lenght of greatest prefix(sz) equals substr (i, i+sz-1) 
+int n;
+int ans[200005];
+//Z-function
+void zfunc(string s){
+    int lm = 0, rm = 0;
+    for(int i=0;i<n;i++) z[i] = 0;
+    for(int i=1;i<s.size();i++){
+        if(i < rm){
+            z[i] = min(z[i-lm], rm-i);
         }
-        len = s.size();
-    }
-    void subHash(vector<ull> &ans, int l, int r){ //O(1)
-        for(int i=0;i<nMOD;i++) ans[i] = ((hash[r][i]-hash[l-1][i]+MOD[i]) * invpot[l-1][i]) % MOD[i];
-    }
-    void pop_back(){ 
-        for(int i=0;i<nMOD;i++){
-            hash[len][i] = 0;
-        }
-        len--;
-    }
-    void push_back(char c){
-        len++; 
-        for(int i=0;i<nMOD;i++){
-            hash[len][i] =  (hash[len-1][i] + c * pot[len][i]) % MOD[i];
+        while(i+z[i] < n && s[i+z[i]] == s[z[i]]) z[i]++;
+        if(i + z[i] > rm){
+            rm = i + z[i];
+            lm = i;
         }
     }
-};
-
-
-bool isEqual(vector<ull> &h1, vector<ull> &h2){
-    for(int i=0;i<nMOD;i++) if(h1[i] != h2[i]) return false;
-    return true;
 }
 
+ll calc(ll lo, ll hi, ll sz){
+    while(lo != hi){
+        int cnt = 1;
+        int mid = lo + (hi - lo + 1)/2;
+        int p = mid;
+        while(p < n){
+            if(z[p] >= mid){
+                p += mid;
+                cnt++;
+            }else p++;
+        }
+        if(cnt >= sz) lo = mid;
+        else hi = mid - 1;
+    }
+    return lo;
+}
+
+//for l, m-1 => ans to hi. for m+1, r => lo to ans
+void solve(ll l, ll r, ll lo = 0, ll hi = n){
+    if(l > r) return;
+    int m = (l + r) / 2;
+    int ansc = calc(lo, hi, m);
+    ans[m] = ansc;
+    solve(l, m-1, ansc, hi);
+    solve(m+1, r, lo, ansc);
+}
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
@@ -88,30 +59,13 @@ int main(){
     int t;
     cin >> t;
     while(t--){
-        int n, l, r;
+        int l, r;
         cin >> n >> l >> r;
         string s;
         cin >> s;
-        Hash hs(s, 200005, s.size());
-        int lo = 0, hi = n;
-        vector<ull> v1(nMOD), v2(nMOD);
-        while(lo != hi){
-            int mid = lo + (hi - lo + 1)/2;
-            int cnt = 1;
-            int last = 1;
-            hs.subHash(v1, 1, mid);
-            for(int i=mid+1;i<=n;i++){
-                if(i < last + mid) continue;
-                if(i + mid - 1 > n) break;
-                hs.subHash(v2, i, i+mid-1);
-                if(isEqual(v1, v2)){
-                    cnt++;
-                    last = i;
-                }
-            }
-            if(cnt >= l) lo = mid;
-            else hi = mid - 1;
-        }
-        cout << lo << "\n";
+        zfunc(s);
+        solve(l, r);
+        for(int i=l;i<=r;i++) cout << ans[i] << " ";
+        cout << "\n";
     }
 }

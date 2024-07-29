@@ -66,20 +66,12 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("out", "w", stdout);
-    for(int i=0;i<=29;i++){
-        calc(i, expm);
-    }
-    sieve();
-    seg_sieve();
-    ll ans = 0;
-    for(int i=1;i<=posm;i++){
-        if(i > mxs){
-            mis+=1000000;
-            mxs+=1000000;
-            seg_sieve();
+    for(int i=1;i<=7;i++){
+        for(int j=i+1;j<=7;j++){
+            for(int k=j+1;k<=7;k++){
+                int x = i^j^k;
+                if(x == 0) cout << i << " " << j << " "<< k << "\n"
+            }
         }
-        ans += fat[i-mis];
-        ans %= MOD;
     }
-    cout << ans << "\n";
 }

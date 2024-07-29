@@ -6,29 +6,32 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-
 const int N = 1e6+5;
-vector<int> divs[N];
-void init(){
-    for(ll i=1; i<N; i++){
-        for(ll j=i;j<N;j+=i){
-            divs[j].emplace_back(i);
+int lp[N];
+void sieve(){
+    for(ll i=2; i<N; i++){
+        if(lp[i] == 0){
+            for(int j=i;j<N;j+=i){
+                if(!lp[j]) lp[j] = i;
+            }
         }
     }
 }
+
+int v[105][105];
+bool vis[105][105];
 
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    init();
+    sieve();
     int t;
     cin >> t;
     while(t--){
         int n, m;
         cin >> n >> m;
-        vector<vector<int>> v(n, vector<int>(m));
         for(int i=0;i<n;i++){
             for(int j=0;j<m;j++){
                 cin >> v[i][j];
@@ -36,12 +39,11 @@ int main(){
         }
         int g = gcd(v[0][0], v[n-1][m-1]);
         
-        int ans = 1;
-        for(auto div : divs[g]){
+        auto bfs = [&](int div){
             queue<pair<int,int>> q;
             q.push({0, 0});
             bool ok = false;
-            vector<vector<bool>> vis(n, vector<bool>(m));
+            for(int i=0;i<n;i++) for(int j=0;j<m;j++) vis[i][j] = false;
             while(!q.empty()){
                 auto [x, y] = q.front();
                 q.pop();
@@ -61,7 +63,34 @@ int main(){
                     }
                 }
             }
-            if(ok) ans = max(ans, div);
+            return ok;
+        };
+        vector<int> fs;
+        auto aux = g;
+        while(aux != 1){
+            if(!fs.size() || fs.back() != lp[aux]) fs.push_back(lp[aux]);
+            aux /= lp[aux];
+        }
+        queue<int> q;
+        map<int, bool> visx;
+        q.push(1);
+        visx[1] = true;
+        int ans = 1;
+        while(!q.empty()){
+            auto u = q.front();
+            q.pop();
+            ans = max(ans, u);
+            for(auto x : fs){
+                if(g/x >= u){
+                    int v = u * x;
+                    if(g % v) continue;
+                    if(visx.count(v)) continue;
+                    if(bfs(v)){
+                        q.push(v);
+                        visx[v] = true;
+                    }
+                }
+            }
         }
         cout << ans << "\n";
 
