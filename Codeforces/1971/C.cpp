@@ -14,8 +14,14 @@ int main(){
     int t;
     cin >> t;
     while(t--){
-        int x, y;
-        cin >> x >> y;
-        cout << min(x, y) << " " << max(x,y) << "\n";
+        int a, b, c, d;
+        cin >> a >> b >> c >> d;
+        bool ok = false;
+        if(a > b) swap(a, b);
+        for(int i=a+1;i<=b-1;i++){
+            if(c == i || d == i) ok ^= true;
+        }
+        if(ok) cout << "YES\n";
+        else cout << "NO\n";
     }
 }

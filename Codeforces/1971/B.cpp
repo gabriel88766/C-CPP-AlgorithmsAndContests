@@ -14,8 +14,14 @@ int main(){
     int t;
     cin >> t;
     while(t--){
-        int x, y;
-        cin >> x >> y;
-        cout << min(x, y) << " " << max(x,y) << "\n";
+        string s;
+        cin >> s;
+        auto aux = s;
+        sort(s.begin(), s.end());
+        if(s[0] == s.back()) cout << "NO\n";
+        else{
+            if(s == aux) swap(s[0], s[s.size()-1]);
+            cout << "YES\n" << s << "\n";
+        }
     }
 }

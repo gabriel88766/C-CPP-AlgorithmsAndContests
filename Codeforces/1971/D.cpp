@@ -14,8 +14,15 @@ int main(){
     int t;
     cin >> t;
     while(t--){
-        int x, y;
-        cin >> x >> y;
-        cout << min(x, y) << " " << max(x,y) << "\n";
+        string s;
+        cin >> s;
+        bool f01 = false;
+        int ans = 0;
+        for(int i=1;i<s.size();i++){
+            if(s[i] != s[i-1]) ans++;
+            if(s[i] == '1' && s[i-1] == '0') f01 = true;
+        }
+        if(f01) ans--;
+        cout << ans+1 << "\n";
     }
 }

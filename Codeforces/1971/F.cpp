@@ -14,8 +14,20 @@ int main(){
     int t;
     cin >> t;
     while(t--){
-        int x, y;
-        cin >> x >> y;
-        cout << min(x, y) << " " << max(x,y) << "\n";
+        ll ans = 0;
+        ll r;
+        cin >> r;
+        ll sq1 = r*r;
+        ll sq2 = (r+1) * (r+1);
+        for(ll x=1;x<=r;x++){
+            ll lr = sqrt(r*r - x*x);
+
+            while(lr*lr + x*x < sq1) lr++;
+            while(lr*lr + x*x < sq2){
+                ans += 4;
+                lr++;
+            } 
+        }
+        cout << ans << "\n";
     }
 }
