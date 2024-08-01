@@ -1,3 +1,8 @@
+//at 2n components.
+//each new edge makes a new component, tree (at  most n-1 new edges) so at most 2n components
+//make the tree of components
+//try to make a dp, increasing k in each component, dp[i][k] = sum dp[j][k-1] j is in left subtree of some ancestor.
+
 #include <bits/stdc++.h>
 typedef long long int ll;
 typedef unsigned long long int ull;
@@ -53,35 +58,43 @@ struct Mint{
     }
 };
 
-const int N = 1e4+3;
-Mint dp1[N][1024][2], dp2[N][1024][2];
+const int N = 1e5+3;   
+int p[N], sz[N], lb[2*N];
+int clb;
+void init(int n){
+    for(int i=1;i<=n;i++) {p[i] = i; sz[i] = 1; lb[i] = i;}
+}
 
-void calc(string &s){
-    int n = s.size();
-    dp1[n][0][0] = dp1[n][0][1] = 0;
-    dp2[n][0][0] = dp2[n][0][1] = 1;
-    Mint cp = 1;
-    for(int i=n-1;i>=0;i--){
-        for(int j=0;j<2;j++){ //j==0, then no restriction, j==1 then restrition.
-            for(int d=0;d<=9;d++){
-                int b = 1 << d;
-                for(int msk=0;msk <=1023; msk++){                
-                    if(j == 1){
-                        if(d < s[i] - '0'){
-                            dp2[i][msk | b][1] += dp2[i+1][msk][0];
-                            dp1[i][msk | b][1] += dp1[i+1][msk][0] + Mint(d) * cp * dp2[i+1][msk][0];
-                        }else if(d == s[i] - '0'){
-                            dp2[i][msk | b][1] += dp2[i+1][msk][1];
-                            dp1[i][msk | b][1] += dp1[i+1][msk][1] + Mint(d) * cp * dp2[i+1][msk][1];
-                        }else break;
-                    }else{
-                        dp2[i][msk | b][0] += dp2[i+1][msk][0];
-                        dp1[i][msk | b][0] += dp1[i+1][msk][0] + Mint(d) * cp * dp2[i+1][msk][0];
-                    }
-                }
-            }
-        }
-        cp *= 10;
+int get(int a){ 
+    return p[a] = (p[a] == a ? a : get(p[a]));
+}
+
+void unite(int a, int b){
+    a = get(a);
+    b = get(b);
+    if(a == b) return;
+    if(sz[a] < sz[b]) swap(a,b);
+    p[b] = a;
+    sz[a] += sz[b];
+    lb[a] = ++clb;
+}
+
+const int N = 1e5+1;
+Mint dp[501][2*N];
+vector<int> adj[2*N];
+int vis[2*N];
+vector<int> cur;
+int vn[2*N];
+//in order;
+int t = 0;
+void dfs(int u){
+    vis[u] = 1;
+    if(adj[u].size()){
+        dfs(adj[u][0]);
+    }
+    vn[++t] = u;
+    if(adj[u].size()){
+        dfs(adj[u][1]);
     }
 }
 //cout << fixed << setprecision(6)
@@ -89,26 +102,41 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    string s;
-    cin >> s;
-    int n = s.size();
-    int m;
-    cin >> m;
-    vector<int> v(m);
-    for(int i=0;i<m;i++) cin >> v[i];
-    int sm = 0;
+    Mint ans = 1;
+    int n, m, k;
+    cin >> n >> m >> k;
+    clb = n;
+    vector<pair<int,int>, int>> vp(m);
     for(int i=0;i<m;i++){
-        sm |= (1 << v[i]);
+        cin >> vp[i].first.first >> vp[i].first.second >> vp[i].second;
     }
-    calc(s);
-    Mint ans = 0;
-    for(int i=0;i<(1 << 10);i++){
-        if((sm & i) == sm){
-            ans += dp1[0][i][1];
-            if((sm & 1)){
-                for(int j=1;j<=n-1;j++) ans -= dp1[j][i^1][0];
+    sort(vp.begin(), vp.end(), [&](const pair<int,int>, int> &u, const pair<int,int>, int> &v){
+        return u.second < v.second;
+    });
+    for(auto [u, v, w] : vp){
+        if(get(u) != get(v)){
+            if(sz[get(u)] < sz[get(V)]) swap(u, v);
+            lb1 = lb[get(u)];
+            lb2 = lb[get(v)];
+            
+            unite(u, v);
+            adj[lb[get(u)]].push_back(lb1);
+            adj[lb[get(v)]].push_back(lb2);
+        }
+    }
+    for(int i=1;i<=n;i++){
+        if(!vis[lb[get(i)]]){
+            t = 0;
+            dfs(lb[get(i)], 0);
+            for(int i=1;i<=k;i++){
+                for(int j=1;j<=t;j++){
+                    ans += dp[i][j];
+                    dp[i][j] = 0;
+                }
             }
+            for(int i=1;i<=t;i++) vn[i] = 0;
         }
     }
     cout << ans << "\n";
+
 }

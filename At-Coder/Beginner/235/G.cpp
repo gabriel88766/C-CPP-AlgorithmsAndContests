@@ -53,62 +53,54 @@ struct Mint{
     }
 };
 
-const int N = 1e4+3;
-Mint dp1[N][1024][2], dp2[N][1024][2];
-
-void calc(string &s){
-    int n = s.size();
-    dp1[n][0][0] = dp1[n][0][1] = 0;
-    dp2[n][0][0] = dp2[n][0][1] = 1;
-    Mint cp = 1;
-    for(int i=n-1;i>=0;i--){
-        for(int j=0;j<2;j++){ //j==0, then no restriction, j==1 then restrition.
-            for(int d=0;d<=9;d++){
-                int b = 1 << d;
-                for(int msk=0;msk <=1023; msk++){                
-                    if(j == 1){
-                        if(d < s[i] - '0'){
-                            dp2[i][msk | b][1] += dp2[i+1][msk][0];
-                            dp1[i][msk | b][1] += dp1[i+1][msk][0] + Mint(d) * cp * dp2[i+1][msk][0];
-                        }else if(d == s[i] - '0'){
-                            dp2[i][msk | b][1] += dp2[i+1][msk][1];
-                            dp1[i][msk | b][1] += dp1[i+1][msk][1] + Mint(d) * cp * dp2[i+1][msk][1];
-                        }else break;
-                    }else{
-                        dp2[i][msk | b][0] += dp2[i+1][msk][0];
-                        dp1[i][msk | b][0] += dp1[i+1][msk][0] + Mint(d) * cp * dp2[i+1][msk][0];
-                    }
-                }
-            }
-        }
-        cp *= 10;
+const int N = 5e6+3;
+Mint fat[N], invfat[N];
+void init(){ //MOD must be prime
+    fat[0] = invfat[N-1] = 1;
+    for(int i=1;i<N;i++){
+        fat[i] = fat[i-1]*i;
     }
+    invfat[N-1] = 1/fat[N-1];
+    for(int i=N-2;i>=0;i--) invfat[i] = invfat[i+1] * (i + 1);
 }
+Mint nCr(ll a, ll b){
+    assert(a >= b); //catch silly bugs
+    return fat[a]*invfat[a-b]*invfat[b];
+}
+
+
+Mint dp[N];
+
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    string s;
-    cin >> s;
-    int n = s.size();
-    int m;
-    cin >> m;
-    vector<int> v(m);
-    for(int i=0;i<m;i++) cin >> v[i];
-    int sm = 0;
-    for(int i=0;i<m;i++){
-        sm |= (1 << v[i]);
-    }
-    calc(s);
-    Mint ans = 0;
-    for(int i=0;i<(1 << 10);i++){
-        if((sm & i) == sm){
-            ans += dp1[0][i][1];
-            if((sm & 1)){
-                for(int j=1;j<=n-1;j++) ans -= dp1[j][i^1][0];
-            }
+    init();
+    int n, a, b, c;
+    cin >> n >> a >> b >> c;
+    dp[0] = 1;
+    for(int i=1;i<=n;i++) dp[i] = 1;
+    Mint aa = 1, ab = 1, ac = 1;
+    for(int i=1;i<=n;i++){
+        if(i <= a) aa = aa * 2;
+        else{
+            aa = 2*aa - nCr(i-1, a);
         }
+        if(i <= b) ab = ab * 2;
+        else{
+            ab = 2*ab - nCr(i-1, b);
+        }
+        if(i <= c) ac = ac * 2;
+        else{
+            ac = 2*ac - nCr(i-1, c);
+        }
+        dp[i] = aa*ab*ac;
+    }
+    Mint ans = 0;
+    for(int i=0;i<=n;i++){
+        if(i % 2) ans -= nCr(n, i) * dp[n-i];
+        else ans += nCr(n, i) * dp[n-i];
     }
     cout << ans << "\n";
 }

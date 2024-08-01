@@ -11,5 +11,6 @@ void init(){ //MOD must be prime
     for(int i=N-2;i>=0;i--) invfat[i] = invfat[i+1] * (i + 1);
 }
 Mint nCr(ll a, ll b){
+    assert(a >= b); //catch silly bugs
     return fat[a]*invfat[a-b]*invfat[b];
 }
