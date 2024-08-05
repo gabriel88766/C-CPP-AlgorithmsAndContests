@@ -118,8 +118,8 @@ struct Mint{
         (*this) *= x; 
         return *this;
     }
-    bool operator== (Mint u){ return v == u.v;}
-    bool operator!= (Mint u){ return v != u.v;}
+    bool operator== (const Mint u) const { return v == u.v;}
+    bool operator!= (const Mint u) const { return v != u.v;}
     friend ostream& operator<<(ostream& os, const Mint& num){
         os << num.v;
         return os;
