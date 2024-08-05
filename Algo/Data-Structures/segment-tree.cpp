@@ -64,3 +64,32 @@ int query(int i, ll y, int l = 0, int r = n-1, int p = 1){
 }
 
 
+//prefix, suffix sum, find max subarray sum
+const int N = 2e5+6;
+ll pr[4*N], su[4*N], st[4*N], sum[4*N];
+int v[N];
+int n;
+ 
+void build(int l = 1, int r = n, int p = 1){
+    if(l == r){ pr[p] = su[p] = st[p] = sum[p] = v[l]; return; }
+    build(l, (l+r)/2, 2 * p);
+    build((l+r)/2 + 1, r, 2 * p + 1);
+    pr[p] = max(pr[2*p], sum[2*p] + pr[2*p+1]);
+    su[p] = max(su[2*p+1], su[2*p] + sum[2*p+1]);
+    st[p] = max(st[2*p], max(st[2*p+1], su[2*p] + pr[2*p+1]));
+    sum[p] = sum[2*p] + sum[2*p+1];
+}
+ 
+void update(int i, int value, int l = 1, int r = n, int p = 1){
+    if(i < l || i > r) return;
+    if(l == r) {pr[p] = su[p] = st[p] = sum[p] = value; return;}
+    update(i, value, l, (l + r)/2, 2 * p);
+    update(i, value, (l + r)/2 + 1, r, 2 * p + 1);
+    pr[p] = max(pr[2*p], sum[2*p] + pr[2*p+1]);
+    su[p] = max(su[2*p+1], su[2*p] + sum[2*p+1]);
+    st[p] = max(st[2*p], max(st[2*p+1], su[2*p] + pr[2*p+1]));
+    sum[p] = sum[2*p] + sum[2*p+1];
+}
+
+//easily expand to queries L,R and lazy propagation
+
