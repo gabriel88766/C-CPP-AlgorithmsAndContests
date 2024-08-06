@@ -11,13 +11,19 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int a, b;
-    cin >> a >> b;
-    if(a > b) swap(a, b);
-    if(a == b) cout << "-1\n";
-    else{
-        if(a == 1 && b == 2) cout << 3 << "\n";
-        else if(a == 1 && b == 3) cout << 2 << "\n";
-        else cout << "1\n";
+    int n;
+    cin >> n;
+    vector<pair<int,int>> vp(n);
+    for(int i=0;i<n;i++){
+        cin >> vp[i].first >> vp[i].second;
     }
+    sort(vp.begin(), vp.end());
+    multiset<int> ms;
+    ll ans = 0;
+    for(int i=0;i<n;i++){
+        while(ms.size() && *ms.begin() < vp[i].first) ms.erase(ms.begin());
+        ans += ms.size();
+        ms.insert(vp[i].second);
+    }
+    cout << ans << "\n";
 }

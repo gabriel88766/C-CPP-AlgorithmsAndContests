@@ -11,13 +11,13 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int a, b;
-    cin >> a >> b;
-    if(a > b) swap(a, b);
-    if(a == b) cout << "-1\n";
-    else{
-        if(a == 1 && b == 2) cout << 3 << "\n";
-        else if(a == 1 && b == 3) cout << 2 << "\n";
-        else cout << "1\n";
+    int n, m;
+    cin >> n >> m;
+    for(int i=0;i<m;i++){
+        int x;
+        cin >> x;
+        n -= x;
     }
+    n = max(n, -1);
+    cout << n << "\n";
 }
