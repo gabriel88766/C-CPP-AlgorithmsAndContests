@@ -3,17 +3,15 @@ typedef long long int ll;
 typedef unsigned long long int ull;
 const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
 const int INF_INT = 0x3f3f3f3f;
-const long double PI = acosl(-1.);
-long long  EPS = 0; 
+const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-//looks like type is necessary 600D(codeforces)
 typedef long long int type; //if long long int, EPS = 0
 bool ge(type a, type b){
-    return a + EPS >= b;
+    return a >= b;
 }
 bool le(type a, type b){
-    return a - EPS <= b;
+    return a <= b;
 }
 bool eq(type a, type b){
     return ge(a,b) && le(a,b);
@@ -34,11 +32,7 @@ struct Point{
     //long double arg() { return atan2l(y, x); }
 
     type dot(Point p){ return x*p.x + y*p.y;}
-    type cross(Point p){ return x*p.y - y*p.x;} //if pos, p is in left of vector (x, y), right otherwise
-    /*Point rot(type g){// g degrees
-        g *= PI/180;
-        return Point(x * cosl(g) - y * sinl(g), x * sinl(g) + y * cosl(g)); //double!
-    }*/
+    type cross(Point p){ return x*p.y - y*p.x;} 
     Point rot90(){ //can handle integers.
         return Point(-y, x);
     }
@@ -48,10 +42,23 @@ struct Point{
         if(!eq(rot, 0)) return false;
         return ge(x, min(a.x, b.x)) && le(x, max(a.x, b.x)) && ge(y, min(a.y, b.y)) && le(y, max(a.y, b.y));
     }
-    //for set
+    //sort by argument xD
+    int checkQuad() const {
+        if(x >= 0 && y > 0) return 3; // 1 > >=
+        else if(x < 0 && y >= 0) return 4; // 2 <= >
+        else if(x <= 0 && y < 0) return 1; // 3 < <=
+        else if(x > 0 && y <= 0) return 2; // 4 , >= <
+        else{
+            assert(false);
+            return -1;
+        }
+    }
     bool operator< (const Point &b) const{
-        if(y != b.y) return y < b.y;
-        else return x < b.x;
+        Point aux = *this;
+        int x = aux.checkQuad();
+        int y = b.checkQuad();
+        if(x != y) return x < y;
+        else return aux.cross(b) > 0;
     }
 };
 
@@ -66,46 +73,23 @@ type distanceToSeg(Point a, Point b, Point x){
     else return min(x.dist(a), x.dist(b));
 }
 
-
-ll mysqrt(ll n){
-    ll lo = 1, hi = 3e9;
-    while(lo != hi){
-        ll mid = lo + (hi - lo + 1)/2;
-        if(mid*mid <= n) lo = mid;
-        else hi = mid - 1;
-    }
-    return lo;
-}
-
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    
     int n;
     cin >> n;
     vector<Point> v(n);
-    for(int i=0;i<n;i++) cin >> v[i].x >> v[i].y;
-    set<Point> s;
-    sort(v.begin(), v.end(), [&](Point &a, Point &b){
-        if(a.x != b.x) return a.x < b.x;
-        else return a.y < b.y;
-    });
-    ll mind = 9e18;
-    int p = 0;
     for(int i=0;i<n;i++){
-        while((v[i].x - v[p].x)*(v[i].x - v[p].x) >= mind) s.erase(v[p++]);
-        if(!s.empty()){
-            ll sqt = mysqrt(mind);
-            auto it = s.lower_bound({-INF_INT, v[i].y - sqt});
-            while(it != s.end() && (v[i].y-it->y)*(v[i].y-it->y) <= mind){
-                Point d = *it;
-                mind = min(mind, d.dist(v[i]));
-                ++it;
-            }
-        }
-        s.insert(v[i]);
+        cin >> v[i].x >> v[i].y;
+        //case 0 0 
+        if(v[i].x == 0 && v[i].y == 0) v[i].x = INF_INT;
     }
-    cout << mind << "\n";
+    sort(v.begin(), v.end());
+    for(int i=0;i<n;i++){
+        if(v[i].x == INF_INT) v[i].x = 0;
+        cout << v[i].x << " " << v[i].y << "\n";
+    
+    }
 }
