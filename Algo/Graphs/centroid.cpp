@@ -11,33 +11,8 @@ struct centroid{
     vector<vector<int>> anc;
     vector<int> h;
     int rt; //after dec
-    void dfsT(int u, int p){
-        sub[u] = 1;
-        for(auto v : tree[u]){
-            if(v != p && !ac[v]){
-                dfsT(v, u);
-                sub[u] += sub[v];
-            }
-        }
-    }
-    int find_centroid(int u){
-        dfsT(u, 0);
-        int sz = sub[u]/2, p = 0;
-        while(true){
-            int nxt = 0;
-            for(auto v: tree[u]){
-                if(!ac[v] && sub[v] > sz && v != p){
-                    nxt = v;
-                }
-            }
-            if(nxt){
-                p = u;
-                u = nxt;
-            }else break;
-        }
-        return u;
-    }
-    void build_distances(){
+    
+    void build_distances(){ //LCA
         anc.resize(tree.size());
         h.resize(tree.size());
         h[0] = -1;
@@ -76,6 +51,32 @@ struct centroid{
             }
         }
         return ans + 2;
+    }
+    void dfsT(int u, int p){
+        sub[u] = 1;
+        for(auto v : tree[u]){
+            if(v != p && !ac[v]){
+                dfsT(v, u);
+                sub[u] += sub[v];
+            }
+        }
+    }
+    int find_centroid(int u){
+        dfsT(u, 0);
+        int sz = sub[u]/2, p = 0;
+        while(true){
+            int nxt = 0;
+            for(auto v: tree[u]){
+                if(!ac[v] && sub[v] > sz && v != p){
+                    nxt = v;
+                }
+            }
+            if(nxt){
+                p = u;
+                u = nxt;
+            }else break;
+        }
+        return u;
     }
     void build(){
         sub.resize(tree.size());
