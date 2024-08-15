@@ -58,11 +58,19 @@ struct Mint{
     }
 };
 
+struct edge{
+    int a, b, c;
+    bool operator< (const edge &e) const {
+        return c < e.c;
+    }
+};
+
 const int N = 1e5+3;   
-int p[N], sz[N], lb[2*N];
-int clb;
-void init(int n){
-    for(int i=1;i<=n;i++) {p[i] = i; sz[i] = 1; lb[i] = i;}
+int p[N];
+Mint dp[N][501];
+int n;
+void init(){
+    for(int i=1;i<=n;i++) {p[i] = i;  dp[i][0] = 1; dp[i][1] = 1;}
 }
 
 int get(int a){ 
@@ -73,70 +81,66 @@ void unite(int a, int b){
     a = get(a);
     b = get(b);
     if(a == b) return;
-    if(sz[a] < sz[b]) swap(a,b);
+    int x1 = 0, x2 = 0;
+    for(int i=0;i<=500;i++) if(dp[a][i] != 0) x1 = i;
+    for(int i=0;i<=500;i++) if(dp[b][i] != 0) x2 = i;
+    if(x1 < x2){
+        swap(x1, x2);
+        swap(a, b);
+    }
+    //merge
+    for(int i=min(500, x1+x2);i>=1;i--){
+        for(int j=max(1, i-x1);j<=min(i, x2);j++){ //dp[b][j], i-j <= x1 -> j >= i-x1
+            dp[a][i] += dp[a][i-j] * dp[b][j];
+        }
+    }
     p[b] = a;
-    sz[a] += sz[b];
-    lb[a] = ++clb;
 }
 
-const int N = 1e5+1;
-Mint dp[501][2*N];
-vector<int> adj[2*N];
-int vis[2*N];
-vector<int> cur;
-int vn[2*N];
-//in order;
-int t = 0;
-void dfs(int u){
-    vis[u] = 1;
-    if(adj[u].size()){
-        dfs(adj[u][0]);
-    }
-    vn[++t] = u;
-    if(adj[u].size()){
-        dfs(adj[u][1]);
-    }
-}
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    Mint ans = 1;
-    int n, m, k;
+    Mint ans = 0;
+    int m, k;
     cin >> n >> m >> k;
-    clb = n;
-    vector<pair<int,int>, int>> vp(m);
+    init();
+    vector<edge> v(m);
     for(int i=0;i<m;i++){
-        cin >> vp[i].first.first >> vp[i].first.second >> vp[i].second;
+        int a, b, c;
+        cin >> a >> b >> c;
+        v[i] = {a, b, c};
     }
-    sort(vp.begin(), vp.end(), [&](const pair<int,int>, int> &u, const pair<int,int>, int> &v){
-        return u.second < v.second;
-    });
-    for(auto [u, v, w] : vp){
-        if(get(u) != get(v)){
-            if(sz[get(u)] < sz[get(V)]) swap(u, v);
-            lb1 = lb[get(u)];
-            lb2 = lb[get(v)];
-            
-            unite(u, v);
-            adj[lb[get(u)]].push_back(lb1);
-            adj[lb[get(v)]].push_back(lb2);
+    sort(v.begin(), v.end());
+    int cl = 0;
+    int p = 0;
+    while(p < m){
+        cl = v[p].c;
+        set<int> allu;
+        int pi = p;
+        while(pi < m && v[pi].c == cl){
+            allu.insert(get(v[pi].a));
+            allu.insert(get(v[pi].b));
+            pi++;
+        }
+        while(p != pi){
+            unite(v[p].a, v[p].b);
+            p++;
+        }
+        map<int, int> cc;
+        for(auto x : allu){
+            cc[get(x)]++;
+        }
+        for(auto [kk, v] : cc){
+            dp[kk][1]+=1;
+            if(v <= 500) dp[kk][v]-=1;
         }
     }
-    for(int i=1;i<=n;i++){
-        if(!vis[lb[get(i)]]){
-            t = 0;
-            dfs(lb[get(i)], 0);
-            for(int i=1;i<=k;i++){
-                for(int j=1;j<=t;j++){
-                    ans += dp[i][j];
-                    dp[i][j] = 0;
-                }
-            }
-            for(int i=1;i<=t;i++) vn[i] = 0;
-        }
+    for(int i=2;i<=n;i++){
+        if(get(i) != get(1)) unite(i, 1);
     }
+    for(int i=0;i<=k;i++) ans += dp[get(1)][i];
     cout << ans << "\n";
 
 }
