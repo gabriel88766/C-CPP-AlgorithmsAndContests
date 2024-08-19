@@ -137,7 +137,7 @@ struct SegmentTree { //1-based
         
     }
 
-    void update_add(int i, int j, ll b, int l, int r, int p){ //ai -> max(ai, b)
+    void update_add(int i, int j, ll b, int l, int r, int p){ //ai -> ai + b
         
         if(j < l || i > r ) return;
         if(i <= l && r <= j){
@@ -154,7 +154,7 @@ struct SegmentTree { //1-based
         update_add(i, j, b, 1, n, 1);
     }
 
-    void update_chmin(int i, int j, ll b, int l, int r, int p){ //ai -> max(ai, b)
+    void update_chmin(int i, int j, ll b, int l, int r, int p){ //ai -> min(ai, b)
         
         if(j < l || i > r || b >= T[p].max1) return;
         if(i <= l && r <= j && b > T[p].max2){
