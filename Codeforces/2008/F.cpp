@@ -6,7 +6,6 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-
 struct Mint{
     ll v;
     //static const int MOD = MOD_val;
@@ -54,47 +53,28 @@ struct Mint{
     }
 };
 
-vector<pair<int,int>> seg;
-void makeseg(int i, int j, int l = 0, int r = (1 << 30) - 1, int len = 30){
-    if(l > j || r < i) return;
-    assert(r-l+1 == 1 << len);
-    if(l >= i && r <= j){
-        seg.push_back({l, len});
-        return;
-    }
-    int m = (l + r) >> 1;
-    makeseg(i, j, l, m, len - 1);
-    makeseg(i, j, m+1, r, len - 1);
-}
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int l1, r1, l2, r2, l3, r3;
-    cin >> l1 >> r1 >> l2 >> r2 >> l3 >> r3;
-    makeseg(l1, r1);
-    auto seg1 = seg;
-    seg.clear();
-    makeseg(l2, r2);
-    auto seg2 = seg;
-    seg.clear();
-    Mint ans = 0;
-    for(auto [a, b] : seg1){
-        for(auto [c, d] : seg2){
-            int cur = a ^ c;
-            int xmin = 1 << b;
-            int xmax = 1 << d;
-            if(xmin > xmax) swap(xmin, xmax);
-            int minv = cur & (-(xmax));
-            int maxv = cur | (xmax-1);
-            ll inters = min(maxv, r3) - max(minv, l3);
-            inters = max(inters + 1, 0LL);
-            ans += inters * xmin;
+    int t;
+    cin >> t;
+    while(t--){
+        int n;
+        cin >> n;
+        vector<ll> v(n+1), ps(n+1);
+        for(int i=1;i<=n;i++){
+            cin >> v[i];
+            ps[i] = ps[i-1] + v[i];
         }
+        Mint P = 0, Q = 0;
+        Q = n;
+        Q *= (n-1);
+        Q /= 2;
+        for(int i=1;i<n;i++){
+            P += Mint(v[i]) * Mint(ps[n] - ps[i]);
+        }
+        cout << P/Q << "\n";
     }
-    ans /= (r1 - l1 + 1);
-    ans /= (r2 - l2 + 1);
-    ans /= (r3 - l3 + 1);
-    cout << 1-ans << "\n";
 }

@@ -1,11 +1,12 @@
 #include <bits/stdc++.h>
 typedef long long int ll;
 typedef unsigned long long int ull;
-const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7; //1e9+7
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f; //1e9+7
 const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
+ll MOD;
 
 struct Mint{
     ll v;
@@ -53,48 +54,50 @@ struct Mint{
         return os;
     }
 };
-
-vector<pair<int,int>> seg;
-void makeseg(int i, int j, int l = 0, int r = (1 << 30) - 1, int len = 30){
-    if(l > j || r < i) return;
-    assert(r-l+1 == 1 << len);
-    if(l >= i && r <= j){
-        seg.push_back({l, len});
-        return;
-    }
-    int m = (l + r) >> 1;
-    makeseg(i, j, l, m, len - 1);
-    makeseg(i, j, m+1, r, len - 1);
-}
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int l1, r1, l2, r2, l3, r3;
-    cin >> l1 >> r1 >> l2 >> r2 >> l3 >> r3;
-    makeseg(l1, r1);
-    auto seg1 = seg;
-    seg.clear();
-    makeseg(l2, r2);
-    auto seg2 = seg;
-    seg.clear();
-    Mint ans = 0;
-    for(auto [a, b] : seg1){
-        for(auto [c, d] : seg2){
-            int cur = a ^ c;
-            int xmin = 1 << b;
-            int xmax = 1 << d;
-            if(xmin > xmax) swap(xmin, xmax);
-            int minv = cur & (-(xmax));
-            int maxv = cur | (xmax-1);
-            ll inters = min(maxv, r3) - max(minv, l3);
-            inters = max(inters + 1, 0LL);
-            ans += inters * xmin;
+    int t;
+    cin >> t;
+    while(t--){
+        ll n, k;
+        cin >> n >> k >> MOD;
+        vector<vector<Mint>> dp(n+1, vector<Mint>(k+1));
+        vector<Mint> jmp(k+1);
+
+        dp[n][0] = 1;
+        for(int i=n-1;i>=0;i--){
+            if(i != 0){ //must have at least 1 for desired, and
+                int aux = n-i; //1, 2, ..
+                Mint tnb = Mint(2).pow(aux) - 1;//(1 << aux) - 1; // 1, 3, 7, ...
+                vector<Mint> Cb(k+1);
+                Mint auxc = 1;
+                Cb[0] = 1;
+                for(int b=1;b<=k;b++){
+                    // C(tnb + b - 1, b)
+                    auxc *= Mint(tnb.v + b - 1);
+                    auxc /= b;
+                    Cb[b] = auxc;
+                }
+                for(int b=0;b<=k;b++){ // d
+                    if(b) jmp[b] = jmp[b-1];
+                    else jmp[b] = 0;
+                    jmp[b] += Cb[b];
+                }
+                for(int s=0;s<=k;s++){
+                    for(int d=max(s, 1);d<=k;d++){
+                        int mx = min((d-1)/2, d-s); // mx < d/2, mx <= d-s;
+                        // if(i == 1 && d == 1 && s == 1) cout << s << " " << mx<< " ";
+                        dp[i][d] += dp[i+1][s] * jmp[mx];
+                    }
+                }
+            }else{
+                //only one option
+                for(int j=0;j<=k;j++) dp[i][k] += dp[i+1][j];
+            }
         }
+        cout << dp[0][k] * Mint(2).pow(n-1) << "\n";
     }
-    ans /= (r1 - l1 + 1);
-    ans /= (r2 - l2 + 1);
-    ans /= (r3 - l3 + 1);
-    cout << 1-ans << "\n";
 }

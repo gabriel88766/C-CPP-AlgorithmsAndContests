@@ -1,0 +1,4 @@
+* cclbrbraw - BR Brasil
+userfullname=[CCL] Cachaceiro Viajante
+username=cclbrbraw001
+userpassword=4WZKNjjkwZAt

@@ -1,11 +1,10 @@
 #include <bits/stdc++.h>
 typedef long long int ll;
 typedef unsigned long long int ull;
-const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7; //1e9+7
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
 const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
-
 
 struct Mint{
     ll v;
@@ -54,47 +53,29 @@ struct Mint{
     }
 };
 
-vector<pair<int,int>> seg;
-void makeseg(int i, int j, int l = 0, int r = (1 << 30) - 1, int len = 30){
-    if(l > j || r < i) return;
-    assert(r-l+1 == 1 << len);
-    if(l >= i && r <= j){
-        seg.push_back({l, len});
-        return;
-    }
-    int m = (l + r) >> 1;
-    makeseg(i, j, l, m, len - 1);
-    makeseg(i, j, m+1, r, len - 1);
-}
+Mint dp[1005][2005][4];
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int l1, r1, l2, r2, l3, r3;
-    cin >> l1 >> r1 >> l2 >> r2 >> l3 >> r3;
-    makeseg(l1, r1);
-    auto seg1 = seg;
-    seg.clear();
-    makeseg(l2, r2);
-    auto seg2 = seg;
-    seg.clear();
-    Mint ans = 0;
-    for(auto [a, b] : seg1){
-        for(auto [c, d] : seg2){
-            int cur = a ^ c;
-            int xmin = 1 << b;
-            int xmax = 1 << d;
-            if(xmin > xmax) swap(xmin, xmax);
-            int minv = cur & (-(xmax));
-            int maxv = cur | (xmax-1);
-            ll inters = min(maxv, r3) - max(minv, l3);
-            inters = max(inters + 1, 0LL);
-            ans += inters * xmin;
+    dp[1][1][0] = dp[1][1][3] = 1;
+    dp[1][2][1] = dp[1][2][2] = 1;
+    int n, k;
+    cin >> n >> k;
+    for(int i=2;i<=n;i++){
+        for(int j=0;j<=2*n;j++){//0 W W, 1 B W, 2 W B, 3 B B.
+            dp[i][j][0] += dp[i-1][j][1] + dp[i-1][j][2] + dp[i-1][j][0];
+            dp[i][j+1][0] += dp[i-1][j][3];
+            dp[i][j][1] += dp[i-1][j][1];
+            dp[i][j+1][1] += dp[i-1][j][0] + dp[i-1][j][3];
+            dp[i][j+2][1] += dp[i-1][j][2];
+            dp[i][j][2] += dp[i-1][j][2];
+            dp[i][j+1][2] += dp[i-1][j][0] + dp[i-1][j][3];
+            dp[i][j+2][2] += dp[i-1][j][1];
+            dp[i][j][3] += dp[i-1][j][1] + dp[i-1][j][2] + dp[i-1][j][3];
+            dp[i][j+1][3] += dp[i-1][j][0];
         }
     }
-    ans /= (r1 - l1 + 1);
-    ans /= (r2 - l2 + 1);
-    ans /= (r3 - l3 + 1);
-    cout << 1-ans << "\n";
+    cout << dp[n][k][0] + dp[n][k][1] + dp[n][k][2] + dp[n][k][3] << "\n";
 }
