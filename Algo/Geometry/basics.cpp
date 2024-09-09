@@ -51,3 +51,40 @@ type distanceToSeg(Point a, Point b, Point x){
     if(y.onSeg(a,b)) return x.dist(y);
     else return min(x.dist(a), x.dist(b));
 }
+
+vector<Point> convex_hull(vector<Point> &p){ //at least 2 points
+    Point pvt = {INF_LL, INF_LL};
+    for(int i=0;i<p.size();i++){
+        if(p[i].x < pvt.x){
+            pvt = p[i];
+            swap(p[i], p[0]);
+        }else if(p[i].x == pvt.x && p[i].y < pvt.y){
+            pvt = p[i];
+            swap(p[i], p[0]);
+        }
+    }
+    assert(pvt == p[0]);
+    sort(p.begin()+1, p.end(), [&](Point &u, Point &v){
+        Point a1 = u - p[0];
+        Point a2 = v - p[0];
+        if(a1.cross(a2) == 0){
+            return a1.abs() < a2.abs();
+        }else return a1.cross(a2) > 0;
+    });
+    vector<Point> hull;
+    hull.push_back(p[0]);
+    hull.push_back(p[1]);
+    for(int i=2;i<p.size();i++){
+        while(hull.size() >= 2){
+            int sz = hull.size();
+            Point dir1 = hull[sz-1] - hull[sz-2];
+            Point dir2 = p[i] - hull[sz-1];
+            if(dir1.cross(dir2) <= 0) hull.pop_back();
+            else break;
+        }
+        hull.push_back(p[i]);
+    }
+    //this convex hull is working, but it doesn't contain some colinear points.
+    //to fix it, change < to <= and add points colinear to hull[0] and hull.back() manually (O(n))
+    return hull;
+}

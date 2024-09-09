@@ -42,7 +42,7 @@ struct Point{
     }
 };
  
-vector<Point> convex_hull(vector<Point> &p){
+vector<Point> convex_hull(vector<Point> &p){ //at least 2 points
     Point pvt = {INF_LL, INF_LL};
     for(int i=0;i<p.size();i++){
         if(p[i].x < pvt.x){
@@ -69,17 +69,13 @@ vector<Point> convex_hull(vector<Point> &p){
             int sz = hull.size();
             Point dir1 = hull[sz-1] - hull[sz-2];
             Point dir2 = p[i] - hull[sz-1];
-            if(dir1.cross(dir2) < 0) hull.pop_back();
+            if(dir1.cross(dir2) <= 0) hull.pop_back();
             else break;
         }
         hull.push_back(p[i]);
     }
-    //need to fix, add points in line hull[0], hull.back();
-    for(int i=1;i<p.size()-1;i++){
-        Point dir1 = p[i] - hull[0];
-        Point dir2 = p[i] - hull.back();
-        if(dir1.cross(dir2) == 0) hull.push_back(p[i]);
-    }
+    //this convex hull is working, but it doesn't contain some colinear points.
+    //to fix it, change < to <= and add points colinear to hull[0] and hull.back() manually (O(n))
     return hull;
 }
  
@@ -88,17 +84,28 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    vector<Point> v, convex;
-    int n;
-    cin >> n;
-    for(int i=0;i<n;i++){
-        type a, b;
-        cin >> a >> b;
-        v.push_back(Point(a, b));
+    int t;
+    cin >> t;
+    while(t--){
+        vector<Point> v, convex;
+        int n;
+        cin >> n;
+        map<pair<int,int>, int> mp;
+        for(int i=0;i<n;i++){
+            type a, b;
+            cin >> a >> b;
+            if(!mp.count({a, b})) v.push_back(Point(a, b));
+            mp[{a, b}]++;
+        }
+        if(v.size() <= 2){
+            cout << v.size() << "\n";
+            for(auto [x, y] : v) cout << x << " " << y << "\n";
+            continue;
+        }
+        convex = convex_hull(v);
+        cout << convex.size() << "\n";
+        for(int i=0;i<convex.size();i++){
+            cout << convex[i].x << " " << convex[i].y << "\n"; 
+        }  
     }
-    convex = convex_hull(v);
-    cout << convex.size() << "\n";
-    for(int i=0;i<convex.size();i++){
-        cout << convex[i].x << " " << convex[i].y << "\n"; 
-    }  
 }
