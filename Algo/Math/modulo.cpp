@@ -111,7 +111,7 @@ struct Mint{
     Mint operator+= (Mint u){ v = (v+u.v >= MOD ? v+u.v-MOD : v+u.v); return *this;}
     Mint operator-= (Mint u){ v = (v-u.v < 0 ? v-u.v+MOD : v-u.v); return *this;}
     /*Mint operator/= (Mint u){ (*this) *= u.pow(MOD-2); return *this;}*/
-    Mint operator/= (Mint u){ //division untested, MOD not prime, u.v must be coprime with MOD.
+    Mint operator/= (Mint u){ //division , MOD not prime, u.v must be coprime with MOD.
         ll x, y;
         ll g = gcd_euclid(u.v, MOD, x, y);
         assert(g == 1);
