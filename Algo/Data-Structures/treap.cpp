@@ -9,7 +9,7 @@ using namespace std;
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 struct nodeT{
-    int Bv;
+    int ind;
     ll sum;
     ll val;
     int Hv;
@@ -17,9 +17,8 @@ struct nodeT{
     bool rev;
     nodeT *l, *r;
     nodeT(int index, int value){
-        Bv = index;
-        sum = value;
-        val = value;
+        ind = index;
+        sum = val = value;
         Hv = rng();
         l = nullptr;
         r = nullptr;
@@ -44,6 +43,8 @@ void updsum(pnode rt){
     if(rt) rt->sum = getsum(rt->l) + getsum(rt->r) + rt->val;
 }
 
+//may not work in implicit treaps;
+/*
 void split(pnode rt, pnode &l, pnode &r, int val){
     if(!rt) l = r = nullptr;
     else if(val >= rt->Bv){
@@ -55,8 +56,9 @@ void split(pnode rt, pnode &l, pnode &r, int val){
     }
     upd_sz(rt);
     updsum(rt);
-}
+}*/
 
+// need to reverse? range update? if not, remove this
 void push (pnode it) {
     if (it && it->rev) {
         it->rev = false;
@@ -76,7 +78,9 @@ void merge(pnode &rt, pnode l, pnode r){
     updsum(rt);
 }
 
-void insertT(pnode &rt, pnode t){
+//inserT and eraseT are apparently buggy in implicit treaps
+//leaving here commented.
+/*void insertT(pnode &rt, pnode t){
     if(!rt) rt = t;
     else if(t->Hv > rt->Hv){
         split(rt, t->l, t->r, t->Bv);
@@ -95,10 +99,11 @@ void eraseT(pnode &rt, int val){
     }else eraseT(val < rt->Bv ? rt->l : rt->r, val);
     upd_sz(rt);
     updsum(rt);
-}
+}*/
 
 //Cut and Paste CSES
 //implicit treap!
+//useful split
 void split2(pnode rt, pnode &l, pnode &r, int sz){
     push(rt);
     if(!rt) return void(l = r = nullptr);
@@ -141,12 +146,13 @@ ll getsum(pnode rt, int l, int r){
     merge(rt, rt, t3);
     return ans;
 }
+//need to implement update.
 
 vector<int> ans;
 void dfsbst(pnode rt){
     push(rt);
     if(rt->l) dfsbst(rt->l);
-    ans.push_back(rt->Bv);
+    ans.push_back(rt->val);
     if(rt->r) dfsbst(rt->r);
 }
 
@@ -162,8 +168,8 @@ int main(){
     s = " " + s;
     pnode rt = nullptr;
     for(int i=1;i<=n;i++){
-        pnode nn = new nodeT(i);
-        insertT(rt, nn);
+        pnode nn = new nodeT(i, i);
+        merge(rt, rt, nn);
     }
     for(int i=0;i<m;i++){
         int a, b;
