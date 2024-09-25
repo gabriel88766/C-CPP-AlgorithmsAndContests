@@ -53,11 +53,29 @@ struct Mint{
     }
 };
 
-//cout << fixed << setprecision(6) //keep going .. not solved.
+const int N = 1e6+2; //O(N) preprocessing, O(1) query
+
+//Using Mint
+Mint fat[N], invfat[N];
+void init(){ //MOD must be prime
+    fat[0] = invfat[N-1] = 1;
+    for(int i=1;i<N;i++){
+        fat[i] = fat[i-1]*i;
+    }
+    invfat[N-1] = 1/fat[N-1];
+    for(int i=N-2;i>=0;i--) invfat[i] = invfat[i+1] * (i + 1);
+}
+Mint nCr(ll a, ll b){
+    assert(a >= b); //catch silly bugs
+    return fat[a]*invfat[a-b]*invfat[b];
+}
+
+//cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
+    init();
     int n, q;
     cin >> n >> q;
     vector<int> ps1(n+1, 0), ps2(n+1, 0);
@@ -71,6 +89,12 @@ int main(){
         cin >> a;
         ps2[i] = ps2[i-1] + a;
     }
+    ll sb = ps2[n];
+    vector<Mint> ps3(sb+1);
+    ps3[0] = 1;
+    for(int i=1;i<=sb;i++){
+        ps3[i] = ps3[i-1] + nCr(sb, i);
+    }
     for(int i=1;i<=q;i++){
         int l, r;
         cin >> l >> r;
@@ -80,18 +104,15 @@ int main(){
         int bo = ps2[n] - bi;
         Mint ans = 1;
         int dif = ao + 1 - ai; 
-        if(dif >= 0){
-            if(bi > dif){
-                ans *= nCr(bi, dif);
-                bi -= dif;
-                if(bi > bo) ans *= Mint(2).pow(bi - bo);
-                //solve for min(bi, bo);
-            }else if(bi < dif){
-                ans = 0;
-            }
-        }
+        // minimum is bo + dif or 0
+        int mn = max(bo + dif, 0);
+        if(mn <= sb){
+            if(mn >= 1) cout << (ps3[sb] - ps3[mn-1])/Mint(2).pow(sb) << " ";
+            else cout << ps3[sb]/Mint(2).pow(sb) << " ";
+        }else cout << "0 ";
         
     
 
     }
+    cout << "\n";
 }
