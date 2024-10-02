@@ -1,5 +1,6 @@
 const int N = 22e6;
 bool p[N]; // 0 if prime, 1 if not prime
+int cnt[N];
 vector<ll> primes;
 void sieve(){
     primes.push_back(0);
@@ -8,8 +9,10 @@ void sieve(){
             for(ll j = i*i; j < N; j += i){
                 p[j] = 1; //marking all multiples of i as not prime
             }
+            cnt[i] = 1;
             primes.push_back(i);
         }
+        cnt[i] += cnt[i-1];
     }
 }
 
@@ -50,6 +53,7 @@ ll fphi2(ll n, ll a, int s){
     }
 }
 ll cntp(ll n){
+    if(n < N) return cnt[n];
     ll cy = pow(n, 0.385);
     ll a = upper_bound(primes.begin(), primes.end(), cy) - primes.begin();
     y = n/primes[a]+1;

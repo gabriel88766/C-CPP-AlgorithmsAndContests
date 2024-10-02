@@ -71,15 +71,107 @@ Mint nCr(ll a, ll b){
     return fat[a]*invfat[a-b]*invfat[b];
 }
 
+const int M = 1.2e6;
+int pr[M]; // 0 if prime, 1 if not prime
+Mint val[M], sum[M]; 
+ll cnt[M];// cnt[M];
+vector<int> primes;
+
+void sieve2(){
+    primes.push_back(0);
+    for(ll i=2; i<M; i++){
+        if(!pr[i]){
+            for(ll j = i*i; j <=M; j += i){
+                pr[j] = 1; //marking all multiples of i as not prime
+            }
+            primes.push_back(i);
+            cnt[i] = 1;
+        }
+        cnt[i] += cnt[i-1];
+    }
+}
+
+
+ll y;
+vector<tuple<ll, ll, ll>> qrs;
+
+struct Bit{
+    vector<int> bit;
+    int n;
+    Bit(int sz){
+        n = sz;
+        bit.resize(sz+1);
+    }
+    int query(int b){ // sum in range [1, b]
+        int ans = 0;
+        for(int i = b; i > 0; i -= i & -i){
+            ans += bit[i];
+        }
+        return ans;
+    }
+    void add(int b){ //add value to position b
+        for(int i = b; i <= n; i += i & -i){
+            bit[i]++;
+        }
+    } 
+};
+
+
+ll fphi2(ll n, ll a, int s){
+    if(a == 0) return n; //sum 1, n if sum
+    else{
+        if(n < primes[a]) return 0;
+        if((a-1) && n/primes[a] <= y){
+            qrs.push_back({n/primes[a], a-1, -s});
+            return fphi2(n, a-1, s);
+        }else
+        return fphi2(n, a-1, s) - fphi2(n/primes[a], a-1, -s); //multiply here if sum
+    }
+}
+
+ll cntp(ll n){
+    if(n < M) return cnt[n];
+    ll cy = pow(n, 0.385);
+    ll a = upper_bound(primes.begin(), primes.end(), cy) - primes.begin();
+    y = n/primes[a]+1;
+    qrs.resize(0);
+    ll ans = fphi2(n, a, 1);
+    sort(qrs.begin(), qrs.end(), [&](tuple<ll, ll, ll> &a, tuple<ll, ll, ll> &b){
+        auto [n1, a1, s1] = a;
+        auto [n2, a2, s2] = b;
+        return a1 < a2;
+    });
+    Bit b(y);
+    int p = 1;
+    vector<char> vis(y+1, false);
+    for(auto [n, a, s] : qrs){
+        while(p <= a){
+            for(int i=primes[p];i<=y;i+=primes[p]){
+                if(!vis[i]){
+                    b.add(i);
+                    vis[i] = true;
+                }
+            }
+            p++;
+        }
+        if(s == 1) ans += n - b.query(n);
+        else ans -= n - b.query(n);
+    }
+    ans += a - 1;
+    p = lower_bound(primes.begin(), primes.end(), n/primes[a+1]) - primes.begin();
+    for(int i=a+1;i<primes.size();i++){
+        while(primes[i] * primes[p] > n) p--;
+        if(p < i) break;
+        ans -= p-i+1; //prefix sum if sum.
+    }
+    return ans;
+}
+
+//Begin solve. 2020F
 int n, k, d, x;
-
-int pr[N]; // 0 if prime, 1 if not prime
-Mint val[N], sum[N], sump[N];
-
 void sieve(int n){
     x = n;
-    for(ll i=1;i<=n;i++) sum[i] = val[i] = 1, sump[i] = 0;
-    sump[1] = 1;
+    for(ll i=1;i<=n;i++) sum[i] = val[i] = 1;
     for(ll i=2; i<=n; i++){
         if(!pr[i]){
             for(ll j = i*i; j <=n; j += i){
@@ -94,9 +186,7 @@ void sieve(int n){
                 }
                 val[j] *= nCr(d + k * cnt, d);
             }
-            sump[i] = nCr(d + k, d);
         }
-        sump[i] += sump[i-1];
         sum[i] = val[i];
         sum[i] += sum[i-1];
     }
@@ -105,31 +195,8 @@ void sieve(int n){
 
 //S(v, p) is the sum of integers up to v, when sieve until p.
 //S(v, p) = S(v, p-1) - p*(S(v, p-1) - S(p-1, p-1));
-map<ll, map<ll, Mint>> dp;
-map<ll, map<ll, Mint>> dp2;
-Mint calc_sump(ll n, ll p = 2e7){ // sum for only all p^1
-    if(n == 1) return 1;
-    if(p*p > n && n <= x) return sump[n];
-    // if(dp.count(n) && dp[n].count(p)) return dp[n][p];
-    Mint ans = (n-1) * nCr(d + k, d) + 1;
-    ll sqt = sqrt(n);
-    while(sqt*sqt>n)sqt--;
-    while((sqt+1)*(sqt+1) <= n) sqt++;
-    for(ll i=2;i<=min(p, sqt);i++){
-        if(!pr[i]){
-            ans -=  (calc_sump(n/i, i-1) - sump[i-1]);
-        }
-    }
-    return /*dp[n][p] =*/ ans;
-}
-
-
-
-
 Mint calc(ll n, ll p = 2){
     if(n == 1 || n  < p) return 1;
-    // if(dp2.count(n) && dp2[n].count(p)) return dp2[n][p];
-    
     Mint ans = 1;
     ll sqt = sqrt(n);
     while(sqt*sqt>n)sqt--;
@@ -143,12 +210,10 @@ Mint calc(ll n, ll p = 2){
                 cnt++;
                 ans += nCr(d + k * cnt, d) * calc(n/x, i+1);
             }
-            // ans += i * calc(n/i, i+1);
         }
     }
-    //just one more prime
-    ans += calc_sump(n) - calc_sump(max(sqt, p-1));
-    return /*dp2[n][p] =*/ ans;
+    ans += (cntp(n) - cntp(max(sqt, p-1))) * nCr(d + k, d);
+    return ans;
 }
 
 //cout << fixed << setprecision(6)
@@ -156,12 +221,11 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
+    sieve2();
     init();
     int t;
     cin >> t;
     while(t--){
-        dp.clear();
-        dp2.clear();
         cin >> n >> k >> d;
         sieve(max((int)pow(n, 0.66), 100));
         if(n <= 100){
