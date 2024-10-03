@@ -53,79 +53,21 @@ struct Mint{
     }
 };
 
-
-const int N = 15005; //O(N) preprocessing, O(1) query
-
-//Using Mint
-Mint fat[N], invfat[N];
-void init(){ //MOD must be prime
-    fat[0] = invfat[N-1] = 1;
-    for(int i=1;i<N;i++){
-        fat[i] = fat[i-1]*i;
-    }
-    invfat[N-1] = 1/fat[N-1];
-    for(int i=N-2;i>=0;i--) invfat[i] = invfat[i+1] * (i + 1);
-}
-Mint nCr(ll a, ll b){
-    assert(a >= b); //catch silly bugs
-    return fat[a]*invfat[a-b]*invfat[b];
-}
-
-
-
-Mint stirling(ll n, ll k){
-    Mint ans = 0;
-    for(int i=0;i<=k;i++){
-        if((k-i) % 2) ans -= nCr(k, i) * Mint(i).pow(n); 
-        else ans += nCr(k, i) * Mint(i).pow(n); 
-    }
-    return ans*invfat[k];
-}
-
-Mint p;
-int ini;
-/*Mint ansv[5005][5005];
-int vis[5005][5005];
-
-Mint solve(int n, int k){ //My dp, solve in O(n^3)
-    if(vis[ini-n][k]) return ansv[ini-n][k];
-    vis[ini-n][k] = true;
-    if(k == 0) return ansv[ini-n][k] = 1;
-    else if(n == 0) return ansv[ini-n][k] = 0;
-    else{
-        Mint ans = 0;
-        for(int i=0;i<=k-1;i++){
-            ans += solve(n-1, i) * nCr(k-1, i);
-        }
-        ans *= p*Mint(n);
-        
-        return ansv[ini-n][k] = ans; 
-    } 
-}*/
-
-
-
-Mint solvet(int n, int k){ //solving in O(n^2)
-    Mint ans = 0;
-    for(int i=0;i<=k;i++){
-        Mint cur = stirling(k, i);
-        for(int j=0;j<i;j++){
-            cur *= Mint(n-j);
-        }
-        cur *= Mint(p).pow(i);
-        ans += cur;
-    }
-    return ans;
-}
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    init();
-    int n, m, k;
-    cin >> n >> m >> k;
-    ini = n;
-    p = Mint(1)/m;
-    cout << solvet(n, k) << "\n";
+    int n, m;
+    cin >> m >> n;
+    double exp = 0;
+    for(int i=1;i<=m;i++){
+        double ci = i;
+        double li = i-1;
+        ci /= m;
+        li /= m;
+        // cout << pow(ci, n) - pow(li, n) << "\n";
+        exp += (pow(ci, n) - pow(li, n)) * i;
+    }
+    cout << fixed << setprecision(15) << exp << "\n";
 }
