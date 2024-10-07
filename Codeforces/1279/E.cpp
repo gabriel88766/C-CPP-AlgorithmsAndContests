@@ -86,7 +86,6 @@ int main(){
                                     used[aux[j]] = true;
                                     aux2.push_back(cur);
                                 }
-                                aux2.push_back(0);
                                 vector<int> rss;
                                 //0 -> ig-1
                                 used = vector<bool>(ig, false);
@@ -94,30 +93,35 @@ int main(){
                                 out[0] = ig - 1;
                                 in[ig-1] = 0;
                                 rss.push_back(ig - 1);
-                                for(int j=1;j<=ig-1;j++){
+                                for(int j=1;j<ig-1;j++){
                                     vector<int> can;
                                     if(!in[j]){
-                                        for(int u=0;u<ig;u++) if(in[u] != -1 && u != j) can.push_back(u);
+                                        for(int u=0;u<ig;u++) if(in[u] == -1 && u != j) can.push_back(u);
                                     }else{
                                         int cant = j;
-                                        while(in[cant]) cant = in[cant];
-                                        for(int u=0;u<ig;u++) if(in[u] != -1 && u != cant) can.push_back(u);
+                                        while(in[cant] != -1) cant = in[cant];
+                                        for(int u=0;u<ig;u++) if(in[u] == -1 && u != cant) can.push_back(u);
                                     }
-                                    int nw = can[aux2[j-1]];
+                                    int nw = can[aux2[j-1]-1];
                                     rss.push_back(nw);
                                     out[j] = nw;
                                     in[nw] = j;
                                 }
+                                for(int j=0;j<ig-1;j++){
+                                    if(in[j] == -1){
+                                        rss.push_back(j);
+                                    }
+                                }
                                 for(int j=0;j<rss.size();j++){
-                                    ans[ig + j] = ig + rss[j];
+                                    ans[i + j] = i + rss[j];
                                 }
                             }else if(ig == 1){
                                 assert(og == 1);
-                                ans[ig] = ig;
+                                ans[i] = i;
                             }else{
                                 assert(og == 1);
-                                ans[ig] = ig + 1;
-                                ans[ig+1] = ig;
+                                ans[i] = i + 1;
+                                ans[i+1] = i;
                             }
                             i += (ig - 1);
                             
@@ -126,6 +130,8 @@ int main(){
                     }
                 }
             }
+            for(int i=1; i<=n;i++) cout << ans[i] << " ";
+            cout << "\n";
         }else cout << "-1\n";
     }
 }

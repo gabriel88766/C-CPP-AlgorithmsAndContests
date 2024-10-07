@@ -20,3 +20,4 @@ __builtin_popcountll(x); //for long long int (ctz, clz)
 #pragma GCC optimize("unroll-loops")
 //run locally
 //bash -c 'ulimit -s 262144 && ulimit -v 1048576 && time "./a.out"'
+//run instead "ulimit -s unlimited" globally
