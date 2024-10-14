@@ -71,8 +71,6 @@ int el(){
 }
 
 const int N = 1e6+3;
-int nxt[N][21];
-vector<int> prv[N];
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
@@ -92,30 +90,11 @@ int main(){
             eol[dq.front().second] = i+1;
             dq.pop_front();
         }
-        if(dq.size()){
-            nxt[i][0] = dq.front().second;
-            prv[dq.front().second].push_back(i);
-        }else nxt[i][0] = -1;
         dq.push_front({v[i], i});
-    }
-    for(int i=1;i<=20;i++){
-        for(int j=1;j<=n;j++){
-            nxt[j][i] = (nxt[j][i-1] == -1 ? -1 : nxt[nxt[j][i-1]][i-1]);
-        }
+        av[i] = dq.size();
     }
     for(auto [a, b] : dq){
         eol[b] = 1;
-    }
-    for(int i=1;i<=n;i++){
-        int cur = 1;
-        int cv = i;
-        for(int j=20;j>=0;j--){
-            if(nxt[cv][j] != -1){
-                cur += 1 << j;
-                cv = nxt[cv][j];
-            }
-        }
-        av[i] = cur;
     }
     SegmentTreeLazy<int, op, el> st(av);
     for(int i=n-k+1;i>=1;i--){

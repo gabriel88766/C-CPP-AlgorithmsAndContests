@@ -22,7 +22,7 @@ struct Query{
 //specific case 86D
 int loc[1000001]; //last occurence
 ll aux[N];
-void erase(){
+void erase(){ //caution here!!! remember to erase everything.
     for(int i=1;i<=n;i++){
         loc[v[i]] = -1;
         aux[i] = 0;
