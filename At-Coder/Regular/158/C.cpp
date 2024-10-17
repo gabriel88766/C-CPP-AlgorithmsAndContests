@@ -11,16 +11,38 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int t;
-    cin >> t;
-    while(t--){
-        int a,b,c;
-        cin >> a >> b >> c;
-        if(a % 2 == b % 2 && b % 2 == c % 2){
-            if((a+b+c) % 3) cout << "-1\n";
-            else{
-                
-            }
-        }else cout << "-1\n";
+    ll n;
+    cin >> n;
+    vector<ll> v(n);
+    ll Sum = 0;
+    for(int i=0;i<n;i++){
+        cin >> v[i];
+        ll aux = v[i];
+        ll cur = 0;
+        while(aux){
+            cur += aux % 10;
+            aux /= 10;
+        }
+        Sum += n*cur;
     }
+    Sum *= 2;
+    ll c = 0;
+    ll mod = 1;
+    for(int i=1;i<=15;i++){ //suffix size.
+        mod *= 10;
+        vector<ll> cv;
+        for(int j=0;j<n;j++){
+            cv.push_back(v[j] % mod);
+        }
+        sort(cv.begin(), cv.end());
+        int pl = n-1;
+        for(int j=0;j<n;j++){
+            while(pl >= 0 && cv[pl] + cv[j] >= mod) --pl;
+            c += n-1 - pl;
+        }
+    }
+
+
+    Sum -= 9*c;
+    cout << Sum << "\n";
 }
