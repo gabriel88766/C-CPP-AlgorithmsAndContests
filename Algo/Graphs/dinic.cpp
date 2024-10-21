@@ -22,6 +22,7 @@ void add_edge (int u, int v, int c) {
 
 bool bfs() {
     memset(h, 0, sizeof h);
+    //for(int i=src;i<=snk;i++) h[i] = 0;
     queue<int> q;
     h[src] = 1;
     q.push(src);
@@ -56,6 +57,7 @@ int dinic() {
     int flow = 0;
     while (bfs()) {
         memset(ptr, 0, sizeof ptr);
+        //for(int i=src;i<=snk;i++) ptr[i] = 0;
         while (int inc = dfs(src, INF)) flow += inc;
     }
     return flow;

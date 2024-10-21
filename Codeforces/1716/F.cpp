@@ -53,44 +53,37 @@ struct Mint{
     }
 };
 
-const int N = 1e7+2; //O(N) preprocessing, O(1) query
-
-//Using Mint
-Mint fat[N], invfat[N];
-void init(){ //MOD must be prime
-    fat[0] = invfat[N-1] = 1;
-    for(int i=1;i<N;i++){
-        fat[i] = fat[i-1]*i;
-    }
-    invfat[N-1] = 1/fat[N-1];
-    for(int i=N-2;i>=0;i--) invfat[i] = invfat[i+1] * (i + 1);
-}
-Mint nCr(ll a, ll b){
-    assert(a >= b); //catch silly bugs
-    return fat[a]*invfat[a-b]*invfat[b];
-}
-
+Mint str[2005][2005];
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    init();
-    int n, x, y, z;
-    cin >> n >> x >> y >> z;
-    x = abs(x), y = abs(y), z = abs(z);
-    int sm = x + y + z;
-    int dm = (n - sm)/2;
-    if(sm % 2 == n % 2 && sm <= n){
-        Mint ans = 0; //sm progress, n-sm antiprogress.
-        for(int i=0;i<=dm;i++){
-            int cx = i + x;
-            ans += nCr(n-dm, cx) * nCr(dm, i) * nCr(n-dm-cx+dm-i, dm-i+y); //sum (n-dm-cx, y + j) * (dm-i, j) 
-            
+    for(int i=1;i<=2000;i++){
+        str[i][1] = str[i][i] = 1;
+        for(int j=2;j<i;j++){
+            str[i][j] = str[i-1][j-1] + str[i-1][j] * j;
         }
-        ans *=  nCr(n, dm);
+    }
+    int t;
+    cin >> t;
+    while(t--){
+        int n, m, k;
+        cin >> n >> m >> k;
+        Mint ans = Mint(m).pow(n);
+        Mint p = (m/2 + m%2)/Mint(m);
+        Mint cp = 1;
+        Mint cn = n;
+        Mint cpn = 1;
+        Mint aux = 0;
+        for(int c=1;c<=k;c++){
+            cpn *= cn;
+            cp *= p;
+            // cout << cp << " " << cpn <<  " " << str[k][c] << " / ";
+            aux += str[k][c] * cpn * cp;
+            cn -= 1;
+        }
+        ans *= aux;
         cout << ans << "\n";
-    }else cout << "0\n";
-    
-
+    }
 }

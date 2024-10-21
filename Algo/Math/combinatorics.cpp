@@ -25,3 +25,11 @@ Mint stirling(ll n, ll k){
     }
     return ans*invfat[k];
 }
+
+//quadratic
+for(int i=1;i<=2000;i++){
+    str[i][1] = str[i][i] = 1;
+    for(int j=2;j<i;j++){
+        str[i][j] = str[i-1][j-1] + str[i-1][j] * j;
+    }
+}

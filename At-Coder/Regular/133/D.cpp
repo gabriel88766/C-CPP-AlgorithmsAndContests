@@ -34,19 +34,18 @@ int main(){
             if((m1[j] ^ m2[k]) == v % 4){
                 //solve...
                 if(s1[j] && s2[k]){
-                    if(aux == 0){
-                        if(j >= l &&  k >= j && r >= k) ans += 1;
+                    ll nl, nr;
+                    nl = (l/4)*4 + j;
+                    if(nl < l) nl += 4;
+                    nr = (r/4)*4 + k;
+                    if(nr > r) nr -= 4;
+                    nl = (nl/4);
+                    nr = (nr/4);
+                    vx = aux2;
+                    if(aux){
+                        if(nr >= nl) ans += solve(nl, nr)/2;
                     }else{
-                        int mb = 63 - __builtin_clzll(aux);
-                        ll nl, nr;
-                        nl = (l/4)*4 + j;
-                        if(nl < l) nl += 4;
-                        nr = (r/4)*4 + k;
-                        if(nr > r) nr -= 4;
-                        nl = (nl/4);
-                        nr = (nr/4);
-                        vx = aux2;
-                        ans += solve(nl, nr)/2;
+                        if(k >= j) ans += solve(nl, nr);
                     }
                 }else if(s1[j]){
                     //So aux = num

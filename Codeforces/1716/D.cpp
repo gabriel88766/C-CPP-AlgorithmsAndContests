@@ -53,44 +53,34 @@ struct Mint{
     }
 };
 
-const int N = 1e7+2; //O(N) preprocessing, O(1) query
-
-//Using Mint
-Mint fat[N], invfat[N];
-void init(){ //MOD must be prime
-    fat[0] = invfat[N-1] = 1;
-    for(int i=1;i<N;i++){
-        fat[i] = fat[i-1]*i;
-    }
-    invfat[N-1] = 1/fat[N-1];
-    for(int i=N-2;i>=0;i--) invfat[i] = invfat[i+1] * (i + 1);
-}
-Mint nCr(ll a, ll b){
-    assert(a >= b); //catch silly bugs
-    return fat[a]*invfat[a-b]*invfat[b];
-}
-
+const int M = 505;
+const int N = 2e5+3;
+Mint ans[N];
+Mint dp[2][N];
+Mint scg[N];
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    init();
-    int n, x, y, z;
-    cin >> n >> x >> y >> z;
-    x = abs(x), y = abs(y), z = abs(z);
-    int sm = x + y + z;
-    int dm = (n - sm)/2;
-    if(sm % 2 == n % 2 && sm <= n){
-        Mint ans = 0; //sm progress, n-sm antiprogress.
-        for(int i=0;i<=dm;i++){
-            int cx = i + x;
-            ans += nCr(n-dm, cx) * nCr(dm, i) * nCr(n-dm-cx+dm-i, dm-i+y); //sum (n-dm-cx, y + j) * (dm-i, j) 
-            
+    int n, k;
+    cin >> n >> k;
+    dp[0][0] = 1;
+    int mins = 0;
+    int ck = k;
+    int b = 0;
+    for(int i=1;;i++){
+        mins += ck;
+        if(mins > n) break;
+        b ^= 1;
+        for(int j=0;j<=n;j++) dp[b][j] = 0, scg[j] = 0;
+        for(int j=0;j<=n;j++){
+            dp[b][j] = scg[j%ck];
+            scg[j%ck] += dp[b^1][j];
+            ans[j] += dp[b][j];
         }
-        ans *=  nCr(n, dm);
-        cout << ans << "\n";
-    }else cout << "0\n";
-    
-
+        ck++;
+    }
+    for(int i=1;i<=n;i++) cout << ans[i] << " ";
+    cout << "\n";
 }

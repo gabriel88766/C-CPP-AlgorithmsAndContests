@@ -53,7 +53,7 @@ struct Mint{
     }
 };
 
-const int N = 1e7+2; //O(N) preprocessing, O(1) query
+const int N = 10005; //O(N) preprocessing, O(1) query
 
 //Using Mint
 Mint fat[N], invfat[N];
@@ -70,27 +70,28 @@ Mint nCr(ll a, ll b){
     return fat[a]*invfat[a-b]*invfat[b];
 }
 
+Mint dp[N];
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
     init();
-    int n, x, y, z;
-    cin >> n >> x >> y >> z;
-    x = abs(x), y = abs(y), z = abs(z);
-    int sm = x + y + z;
-    int dm = (n - sm)/2;
-    if(sm % 2 == n % 2 && sm <= n){
-        Mint ans = 0; //sm progress, n-sm antiprogress.
-        for(int i=0;i<=dm;i++){
-            int cx = i + x;
-            ans += nCr(n-dm, cx) * nCr(dm, i) * nCr(n-dm-cx+dm-i, dm-i+y); //sum (n-dm-cx, y + j) * (dm-i, j) 
-            
+    string s;
+    cin >> s;
+    int n = s.size();
+    vector<int> cnt(26, 0);
+    for(auto c : s) cnt[c-'a']++;
+    dp[0] = 1;
+    for(int c=0;c<26;c++){
+        if(!cnt[c]) continue;
+        for(int i=n;i>0;i--){
+            for(int j=1;j<=min(i, cnt[c]);j++){
+                dp[i] += dp[i-j] * nCr(i, j);
+            }
         }
-        ans *=  nCr(n, dm);
-        cout << ans << "\n";
-    }else cout << "0\n";
-    
-
+    }
+    Mint ans = 0;
+    for(int i=1;i<=n;i++) ans += dp[i];
+    cout << ans << "\n";
 }
