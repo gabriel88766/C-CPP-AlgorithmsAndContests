@@ -105,3 +105,26 @@ int getK(int val){ //get quantity of values lower than val
     }
     return ans;
 }
+
+
+//findxor
+//try to find the highest index with xor num^v[j] lower than mv
+//idx is the highest index of some descendent of the current node
+//binary search in trie.
+int findxor(int mv, int num, int lv = M-1, int cx=0, int p=0){
+    if(cx >= mv) return -1;
+    int cur = (1 << (lv+1)) - 1 + cx;
+    if(cur < mv) return idx[p];
+
+    if(trie[p][0] && trie[p][1]){
+        if(num & (1 << lv)) return max(findxor(mv, num, lv-1, cx | (1 << lv), trie[p][0]), findxor(mv, num, lv-1, cx, trie[p][1]));
+        else return max(findxor(mv, num, lv-1, cx, trie[p][0]), findxor(mv, num, lv-1, cx | (1 << lv), trie[p][1]));
+    }else if(trie[p][0]){
+        if(num & (1 << lv)) return findxor(mv, num, lv-1, cx | (1 << lv), trie[p][0]);
+        else return findxor(mv, num, lv-1, cx, trie[p][0]);
+    }else{
+        if(num & (1 << lv)) return findxor(mv, num, lv-1, cx, trie[p][1]);
+        else return findxor(mv, num, lv-1, cx | (1 << lv), trie[p][1]);
+    }
+}
+
