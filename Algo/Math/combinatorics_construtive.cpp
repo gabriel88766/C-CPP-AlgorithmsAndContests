@@ -131,3 +131,20 @@ int main(){
     cout << kth_permutation(s, 30) << "\n"; //last = cbbaa
     cout << kth_permutation(s, 31) << "\n"; //null
 }
+
+
+//THIS CAN GENERATE ALL PARTITIONS (stirling) 
+ll query(int n, int k, int m = 0){
+    int mss = ((1 << n) - 1) ^ m;
+    if(__builtin_popcount(mss) < k) return 0;
+    if(k == 1) return 1;
+
+    ll ans = 0;
+    int fb = 1 << __builtin_ctz(~m);
+    mss ^= fb;
+    for (int s=mss; ; s=(s-1)&mss){ 
+        ans += query(n, k-1, s | fb | m);
+        if(s == 0) break;
+    }
+    return ans;
+}
