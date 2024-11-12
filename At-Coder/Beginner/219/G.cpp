@@ -6,46 +6,47 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-const int N = 1e5+3;   
-ll p[N], sz[N];
+const int N = 2e5+3;
+int p[N], sz[N], val[N], vis[N];
 
 void init(){
-    for(int i=1;i<N;i++) {p[i] = i; sz[i] = 1;}
+    for(int i=1;i<N;i++) {p[i] = i; sz[i] = 1; val[i] = i;}
 }
 
 int get(int a){ 
     return p[a] = (p[a] == a ? a : get(p[a]));
 }
 
-void unite(int a, int b){
+void unite(int a, int b, int x){
     a = get(a);
     b = get(b);
+    x = get(x);
     if(a == b) return;
     if(sz[a] < sz[b]) swap(a,b);
     p[b] = a;
     sz[a] += sz[b];
+    val[a] = val[x];
 }
-
-
+vector<int> adj[N];
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
     init();
-    int n;
-    cin >> n;
-    vector<tuple<ll,ll,ll>> vt(n-1);
-    for(int i=0;i<n-1;i++){
-        int u, v, w;
-        cin >> u >> v >> w;
-        vt[i] = {w, u, v};
+    int n, m, q;
+    cin >> n >> m >> q;
+    for(int i=1;i<=m;i++){
+        int a, b;
+        cin >> a >> b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
     }
-    sort(vt.begin(), vt.end());
-    ll ans = 0;
-    for(auto [w, u, v] : vt){
-        ans += w * sz[get(u)] * sz[get(v)];
-        unite(u, v);
+    for(int i=0;i<q;i++){
+        int x;
+        cin >> x;
+        if(!vis[x]){
+            vis[x] = true;
+        }
     }
-    cout << ans << "\n";
 }
