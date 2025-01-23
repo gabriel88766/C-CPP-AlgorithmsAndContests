@@ -59,50 +59,38 @@ struct SegmentTree{
     int n;
     SegmentTree(vector<T> &v){
         n = v.size();
-        st.resize(4*n);
-        build(v, 0, n-1, 1);
+        st.resize(2*n);
+        build(v);
     }
     SegmentTree(ll sz){
         n = sz;
-        st.resize(4*n);
+        st.resize(2*n);
     }
-    void build(vector<T> &v, int l, int r, int p){
-        if(l == r){st[p] = v[l]; return;}
-        build(v, l, (l+r)/2, 2*p);
-        build(v, (l+r)/2+1, r, 2*p+1);
-        st[p] = op(st[2*p], st[2*p+1]);
+    void build(vector<T> &v){
+        for(int i=n;i<2*n;i++) st[i] = v[i-n];
+        for(int i=n-1;i>=1;i--) st[i] = op(st[2*i], st[2*i+1]); //merge op
     }
-    T query(int i, int j, int l, int r, int p){
-        if(j < l || i > r) return nullel(); 
-        if(j >= r && i <= l) return st[p];
-        return op(query(i, j, l, (l + r)/2, 2 * p), query(i, j, (l + r)/2 + 1, r, 2 * p + 1)); 
-    }
-    T query(int i, int j){
-        return query(i, j, 0, n-1, 1);
-    }
-    void update(int i, T value, int l, int r, int p){
-        if(i < l || i > r) return;
-        if(l == r) {st[p] += value; return;}
-        update(i, value, l, (l + r)/2, 2 * p);
-        update(i, value, (l + r)/2 + 1, r, 2 * p + 1);
-        st[p] = op(st[2 * p], st[2 * p + 1]); //some operation
-    }
-    void update(int i, T value){
-        update(i, value, 0, n-1, 1);
-    }
-    int find(int l, int r, int mx, int p, int val){ //segtree op must be sum.
-        if(st[p] < val) return -1;
-        if(l > mx) return -1;
-        if(l == r){
-            if(l <= mx) return l;
-            else return -1;
+    T query(int l, int r){
+        T ans = nullel();
+        l += n, r += n;
+        while(l <= r){
+            int no = l, c = 1;
+            while(!(no & 1) && (r-l+1) >= (c << 1)){
+                c <<= 1;
+                no >>= 1;
+            }
+            ans = op(ans, st[no]); //merge op
+            l += c;
         }
-        int m = (l + r)/2;
-        if(find(m+1, r, mx, 2*p+1, val) != -1) return find(m+1, r, mx, 2*p+1, val);
-        else return find(l, m, mx, 2*p, val);
+        return ans;
     }
-    int find(int val){ //rightmost greater than val
-        return find(0, n-1, val, 1, val);
+    void update(int l, T val){
+        l += n;
+        st[l] += val; //assign or increment?
+        while(l > 1){
+            l >>= 1;
+            st[l] = op(st[2*l], st[2*l+1]); //merge op
+        }
     }
 };
 
@@ -117,6 +105,9 @@ int el(){
 
 int op2(int a, int b){
     return max(a, b);
+}
+int el2(){
+    return 0;
 }
 
 const int N = 2*300005; //O(N) preprocessing, O(1) query
@@ -136,10 +127,8 @@ Mint nCr(ll a, ll b){
     return fat[a]*invfat[a-b]*invfat[b];
 }
 
-Mint ct[N];
 Mint cat(ll n){
-    if(ct[n] == 0) ct[n] = nCr(2*n, n) / (n+1);
-    return ct[n];
+    return nCr(2*n, n) / (n+1);
 }
 
 
@@ -147,7 +136,8 @@ Mint cat(ll n){
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    //freopen("in", "r", stdin); //test input
+    // freopen("in", "r", stdin); //test input
+    // freopen("out", "w", stdout);
     init();
     int t;
     cin >> t;
@@ -155,13 +145,31 @@ int main(){
         int n;
         cin >> n;
         vector<pair<int,int>> vx(n+1);
+        vector<int> tin(2*n+2, -1), tout(2*n+2, -1);
+        vector<int> par(n+1);
+        tin[0] = tout[2*n+1] = 0;
+        vx[0].second = 2*n+1;
         for(int i=1;i<=n;i++){
             cin >> vx[i].first >> vx[i].second;
+            tout[vx[i].second] = i;
+            tin[vx[i].first] = i;
+        }
+        stack<int> s;
+        SegmentTree<int, op2, el2> st(n+1);
+        for(int i=0;i<=2*n;i++){
+            if(tin[i] != -1){
+                if(i != 0){
+                    par[tin[i]] = st.query(0, tin[i]);
+                } 
+                s.push(tin[i]);
+                st.update(s.top(), vx[s.top()].first);
+            }else{
+                st.update(s.top(), -st.query(s.top(), s.top()));
+                s.pop();
+            }
         }
         SegmentTree<int, op, el> stt(2*n+2);
-        SegmentTree<int, op2, el> st2(2*n+2);
         stt.update(0, 2*n+2);
-        st2.update(0, 2*n+1);
         cout << cat(n) << " ";
         Mint ans = cat(n);
         for(int i=1;i<=n;i++){
@@ -170,14 +178,9 @@ int main(){
             int f = r - l + 1 - nf;
             ans *= cat(f/2 - 1);
             stt.update(l, f);
-            int par;
-            //TODO find the parent
-            par = st2.find(r);
-            st2.update(l, r);
-            //END TODO
-            ans /= cat(stt.query(par,par)/2 - 1);
-            stt.update(par, -f);
-            ans *= cat(stt.query(par, par)/2 - 1);
+            ans /= cat(stt.query(par[i], par[i])/2 - 1);
+            stt.update(par[i], -f);
+            ans *= cat(stt.query(par[i], par[i])/2 - 1);
             cout << ans << " ";
         }
         cout << "\n";
