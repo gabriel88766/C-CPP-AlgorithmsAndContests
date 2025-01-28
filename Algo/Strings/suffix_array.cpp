@@ -2,11 +2,12 @@
 const int N = 2e5+3; 
 int n, c;
 // n log n
+int cnt[N], aux[N], mp2[256];
+pair<int, int> cs[N];
 vector<int> suffix_array(string &s){
     s += "$";
     n = s.size(), c=-1;
-    vector<int> mp(n), cnt(max(n+1, 256)), mp2(256), aux(n); 
-    vector<pair<int,int>> cs(n); // class,class <int,int>
+    vector<int> mp(n);
 
     for(int i=0;i<n;i++) cnt[s[i]]++;
     for(int i=0;i<256;i++){
@@ -17,7 +18,7 @@ vector<int> suffix_array(string &s){
     for(int i=0;i<n;i++) cs[i].first = mp2[s[i]];
 
     for(int i=0;(1 << i) < n;i++){
-        fill(cnt.begin(), cnt.begin() + c + 2, 0);
+        fill(cnt, cnt + c + 2, 0);
         int offset = 1 << i;
         for(int j=0;j<n;j++){
             int mindex = (j + offset) >= n ? j + offset - n : j + offset;
@@ -27,7 +28,7 @@ vector<int> suffix_array(string &s){
         //begin raddix_sort of pair O(n)
         for(int j=2; j<=(c+1); j++) cnt[j] += cnt[j-1];
         for(int j=0; j<n; j++) aux[cnt[cs[j].second]++] = j;
-        fill(cnt.begin(), cnt.begin() + c + 2, 0);
+        fill(cnt, cnt + c + 2, 0);
         for(int j=0; j<n; j++) cnt[cs[j].first+1]++; 
         for(int j=2; j<=(c+1); j++) cnt[j] += cnt[j-1];
         for(int j=0; j<n;j++) mp[cnt[cs[aux[j]].first]++] = aux[j]; 

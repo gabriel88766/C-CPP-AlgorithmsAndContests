@@ -14,23 +14,16 @@ int main(){
     int t;
     cin >> t;
     while(t--){
-        //odd sum
-        //3 odds or 1 odd and 2 even
         int n;
         cin >> n;
-        vector<int> odd, even;
-        for(int i=1;i<=n;i++){
+        int co = 0, ce = 0;
+        for(int i=0;i<n;i++){
             int x;
             cin >> x;
-            if(x % 2) odd.push_back(i);
-            else even.push_back(i);
+            if(x % 2) co++;
+            else ce++;
         }
-        if(odd.size() >= 3){
-            cout << "YES\n";
-            cout << odd[0] << " " << odd[1] << " " << odd[2] << "\n";
-        }else if(odd.size() >= 1 && even.size() >= 2){
-            cout << "YES\n";
-            cout << odd[0] << " " << even[0] << " " << even[1] << "\n";
-        }else cout << "NO\n";
+        if(ce > 0) cout << 1 + co << "\n";
+        else cout << co - 1 << "\n";
     }
 }

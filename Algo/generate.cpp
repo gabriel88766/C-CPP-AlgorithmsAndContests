@@ -34,6 +34,15 @@ string gen_rbs(int n){ //()((()))(((())))
     return ans;
 }
 
+string gen_str(int n){
+    string ans = "";
+    for(int i=0;i<n;i++){
+        char c = uniform_int_distribution<int>(0,25)(rng) + 'a';
+        ans += c;
+    }
+    return ans;
+}
+
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);

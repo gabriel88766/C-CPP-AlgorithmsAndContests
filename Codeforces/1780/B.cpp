@@ -14,23 +14,17 @@ int main(){
     int t;
     cin >> t;
     while(t--){
-        //odd sum
-        //3 odds or 1 odd and 2 even
         int n;
         cin >> n;
-        vector<int> odd, even;
+        vector<ll> ps(n+1);
         for(int i=1;i<=n;i++){
-            int x;
-            cin >> x;
-            if(x % 2) odd.push_back(i);
-            else even.push_back(i);
+            cin >> ps[i];
+            ps[i] += ps[i-1];
         }
-        if(odd.size() >= 3){
-            cout << "YES\n";
-            cout << odd[0] << " " << odd[1] << " " << odd[2] << "\n";
-        }else if(odd.size() >= 1 && even.size() >= 2){
-            cout << "YES\n";
-            cout << odd[0] << " " << even[0] << " " << even[1] << "\n";
-        }else cout << "NO\n";
+        ll ans = 0;
+        for(int i=1;i<n;i++){
+            ans = max(ans, gcd(ps[i], ps[n] - ps[i]));
+        }
+        cout << ans << "\n";
     }
 }
