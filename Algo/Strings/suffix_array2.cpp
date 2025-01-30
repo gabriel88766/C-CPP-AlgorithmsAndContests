@@ -1,158 +1,66 @@
 //BASED ON Linear Suffix Array Construction by Almost Pure Induced-Sorting 
 //Ge Nong, Sen Zhang Wai, Hong Chan
-//NEED TO IMPROVE TO REAL O(n), but this O(n log n) is fast, anyway.
-const int N = 1e6+5; 
-int n;
+const int N = 1e7+5; 
 int hd[N], adv[N];
 
-vector<int> induced_sort(vector<int> &v, vector<bool> &type){
+//v is the values, sc is the characters
+vector<int> induced_sort(vector<int> &v, vector<int> &sc, vector<int> &gs, vector<bool> &type){
     int n = v.size();
-    vector<int> sc;
-    for(int i=1;i<n;i++){
-        if(type[i] == 1 && type[i-1] == 0){
-            sc.push_back(i);
-        }
-    }
     int c = *max_element(v.begin(), v.end());
-    assert(c < N);
-    vector<int> gs;
-    assert(sc.size() > 0);
-    if(sc.size() != 1){
-        vector<bool> ntp(sc.size());
-        vector<int> nv(sc.size());
-
-        vector<pair<vector<int>, int>> vx;
-        for(int i=0;i<sc.size();i++){
-            if(i == sc.size() - 1){
-                vx.push_back({{0}, i});
-            }else{
-                vector<int> vn;
-                for(int j=sc[i];j<=sc[i+1];j++) vn.push_back(v[j]);
-                vn.push_back(c+1);
-                vx.push_back({vn, i});
-            }
-        }
-        sort(vx.begin(), vx.end());
-        int p = -1;
-        for(int i=0;i<sc.size();i++){
-            if(i == 0 || vx[i].first != vx[i-1].first){
-                nv[vx[i].second] = ++p;
-            }else{
-                nv[vx[i].second] = p;
-            }
-        }
-        
-        ntp.back() = 1;
-        for(int i=nv.size()-1;i>=1;i--){
-            if(nv[i-1] != nv[i]){
-                if(nv[i-1] < nv[i]) ntp[i-1] = 1;
-                else ntp[i-1] = 0;
-            }else ntp[i-1] = ntp[i];
-        }
-
-        /*vector<int> val(c+1, 0);
-        for(auto &x : sc) val[v[x]] = 1;
-        int p = 0;
-        for(int i=0;i<=c;i++){
-            if(val[i]) val[i] = p++;
-        }
-        for(int i=sc.size() - 1;i>=0;i--){
-            if(i == sc.size() - 1) ntp[i] = 1;
-            else{
-                int p1 = sc[i], p2 = sc[i+1];
-                while(true){
-                    assert(p1 < v.size() && p2 < v.size());
-                    if(v[p1] != v[p2]){
-                        if(v[p1] < v[p2]) ntp[i] = 1;
-                        else ntp[i] = 0;
-                        break;
-                    }else if(type[p1] != type[p2]){
-                        
-                        if(type[p1] == 1) ntp[i] = 0;
-                        else ntp[i] = 1;
-                        break;
-                    }else{
-                        assert(i+2 < sc.size());
-                        if(p1 == sc[i+1] || p2 == sc[i+2]){
-                            assert(p1 == sc[i+1] && p2 == sc[i+2]);
-                            ntp[i] = ntp[i+1];
-                            break;
-                        }else p1++, p2++;
-                    }
-                }
-            }
-            nv[i] = val[v[sc[i]]];
-        }*/
-        gs = induced_sort(nv, ntp);
-    }else{
-        gs.push_back(0);
-    }
-    // gs = {3, 2, 1, 0};
-    vector<int> sa(v.size(), -1);
+    vector<int> sa(n, -1);
     
-    fill(hd, hd + c + 2, 0);
-    fill(adv, adv + c + 2, 0); //advance of head
+    fill(hd, hd + c + 2, 0); //head pointer
+    fill(adv, adv + c + 2, 0); //advance of head pointer
     for(int i=0;i<n;i++){
         hd[v[i] + 1]++;
     }
     for(int i=1;i<=(c+1);i++) hd[i] += hd[i-1];
-    assert(hd[c+1] == v.size());
-    vector<int> ax(gs.size());
-    for(int i=0;i<gs.size();i++) ax[gs[i]] = i;
     for(auto &x : sc){
         adv[v[x]]++;
     }
-    // priority_queue<int> pq;
-    priority_queue<int, vector<int>, greater<int>> pq;
     for(int i=0;i<gs.size();i++){
         auto &y = sc[gs[i]];
         int pl = hd[v[y] + 1] - adv[v[y]]--;
-        pq.push(pl);
         sa[pl] = y;
     }
-    while(pq.size()){
-        auto i = pq.top();
-        pq.pop();
-        if(sa[i] > 0){
-            if(type[sa[i]-1] == 0){
-                int pl = hd[v[sa[i] - 1]] + adv[v[sa[i] - 1]]++;
-                sa[pl] = sa[i] - 1;
-                pq.push(pl);
+    for(int i=0;i<n;i++){
+        int j = i;
+        if(sa[j] > 0){
+            while(j <= i){
+                if(sa[j] == 0) break;
+                if(type[sa[j] - 1] != 0) break;
+                int nj = hd[v[sa[i] - 1]] + adv[v[sa[i] - 1]]++;
+                sa[nj] = sa[j] - 1;
+                j = nj;
             }
         }
     }
-    // for(int i=0;i<sa.size();i++){
-        // if(sa[i] > 0){
-            // if(type[sa[i]-1] == 0){
-                // sa[hd[v[sa[i] - 1]] + adv[v[sa[i] - 1]]++] = sa[i] - 1;
-            // }
-        // }
-    // }
     fill(adv, adv + c + 2, 0);
-    priority_queue<int> pqq;
-    for(int i=0;i<n;i++){
-        int j = sa[i];
-        if(j > 0 && type[j] == 0) {pqq.push(i);}
+    for(int i=n-1;i>=0;i--){
+        int j = i;
+        if(sa[j] > 0){
+            while(j >= i){
+                if(sa[j] == 0) break;
+                if(type[sa[j] - 1] != 1) break;
+                int nj = hd[v[sa[i] - 1] + 1] - 1 - adv[v[sa[i] - 1]]++;
+                sa[nj] = sa[j] - 1;
+                j = nj;
+            }
+        }
     }
-    while(pqq.size()){
-        auto i = pqq.top();
-        pqq.pop();
-        if(sa[i] == 0) continue;
-        if(type[sa[i] - 1] != 1) continue;
-        int pl = hd[v[sa[i] - 1] + 1] - 1 - adv[v[sa[i] - 1]]++;
-        sa[pl] = sa[i] - 1;
-        pqq.push(pl);
-    }
-    // for(int i=sa.size()-1;i>=0;i--){
-        // if(type[sa[i] - 1] == 1){
-            // sa[hd[v[sa[i] - 1] + 1] - 1 - adv[v[sa[i] - 1]]++] = sa[i] - 1;
-        // }
-    // }
     return sa;
 }
 
+inline bool lms_ne(vector<int> &v, vector<bool> &type, int p1, int p2, int ed1){
+    for(;; p1++,p2++){
+        if(v[p1] != v[p2]) return true;
+        else if(type[p1] != type[p2]) return true;
+        else if(type[p1] == 1 && p1 == ed1) return false;
+    }
+}
+
 vector<int> suffix_array(vector<int> &v){
-    n = v.size();
+    int n = v.size();
     vector<bool> type(n);
     type[n-1] = 1;
     for(int i=n-2;i>=0;i--){
@@ -160,12 +68,52 @@ vector<int> suffix_array(vector<int> &v){
         else if(v[i] < v[i+1]) type[i] = 1;//small
         else type[i] = type[i+1]; //?!
     }
-    return induced_sort(v, type);
+    vector<int> sc;
+    for(int i=1;i<n;i++){
+        if(type[i] == 1 && type[i-1] == 0){
+            sc.push_back(i);
+        }
+    }
+    int c = *max_element(v.begin(), v.end());
+    vector<int> gs;
+    vector<int> nv(sc.size());
+    if(sc.size() != 1){
+        //do induced sort 
+        vector<int> gax(sc.size());
+        fill(hd, hd + c + 2, 0); 
+        fill(adv, adv + c + 2, 0); 
+        for(auto &i : sc){ //need values in sc
+            hd[v[i] + 1]++;
+        }
+        for(int i=1;i<=(c+1);i++) hd[i] += hd[i-1];
+        for(int j=0;j<sc.size();j++){ //need values in sc
+            auto &i = sc[j];
+            gax[j] = hd[v[i] + 1] - ++adv[v[i]];
+        }
+        auto aux = induced_sort(v, sc, gax, type); 
+        vector<int> us(n, -1);
+        for(int i=0;i<sc.size();i++) us[sc[i]] = i; //need positions in sc
+        vector<int> aux2;
+        for(auto &x : aux){
+            if(us[x] != -1) aux2.push_back(us[x]);
+        }
+        int p = -1;
+        for(int i=0;i<aux2.size();i++){
+            if(i == 0 || lms_ne(v, type, sc[aux2[i]], sc[aux2[i-1]], sc[aux2[i] + 1])) nv[aux2[i]] = ++p;
+            else nv[aux2[i]] = p;
+        }
+
+        gs = suffix_array(nv);
+    }else{
+        gs.push_back(0);
+    }
+    return induced_sort(v, sc, gs, type);
 }
+
 vector<int> suffix_array(string &s){
     int n = s.size();
     vector<int> cv(n);
-    vector<bool> is(26, false); // what is the alphabet? lowercase latin letters?
+    vector<bool> is(26, false); //lower bound latin letters
     for(int i=0;i<n;i++) is[s[i]-'a'] = true;
     vector<int> val(26, -1);
     int p = 0;
@@ -173,6 +121,6 @@ vector<int> suffix_array(string &s){
         if(is[i]) val[i] = ++p;
     }
     for(int i=0;i<n;i++) cv[i] = val[s[i]-'a'];
-    cv.push_back(0); //lower than anything?!
+    cv.push_back(0); //sentinel, lower than anything.
     return suffix_array(cv);
 }

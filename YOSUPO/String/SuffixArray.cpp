@@ -6,47 +6,131 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-const int N = 5e5+3; 
-int n, c;
-// n log n
-vector<int> suffix_array(string &s){
-    s += "$";
-    n = s.size(), c=-1;
-    vector<int> mp(n), cnt(max(n+1, 256)), mp2(256), aux(n); 
-    vector<pair<int,int>> cs(n); // class,class <int,int>
+//BASED ON Linear Suffix Array Construction by Almost Pure Induced-Sorting 
+//Ge Nong, Sen Zhang Wai, Hong Chan
+const int N = 5e5+5; 
+int hd[N], adv[N];
 
-    for(int i=0;i<n;i++) cnt[s[i]]++;
-    for(int i=0;i<256;i++){
-        if(cnt[i]) mp2[i] = ++c;
-        if(i) cnt[i] += cnt[i-1];
-    } 
-    for(int i=0;i<n;i++) mp[--cnt[s[i]]] = i; 
-    for(int i=0;i<n;i++) cs[i].first = mp2[s[i]];
-
-    for(int i=0;(1 << i) < n;i++){
-        fill(cnt.begin(), cnt.begin() + c + 2, 0);
-        int offset = 1 << i;
-        for(int j=0;j<n;j++){
-            int mindex = (j + offset) >= n ? j + offset - n : j + offset;
-            cs[j].second = cs[mindex].first;
-            cnt[cs[j].second + 1]++;
-        }
-        //begin raddix_sort of pair O(n)
-        for(int j=2; j<=(c+1); j++) cnt[j] += cnt[j-1];
-        for(int j=0; j<n; j++) aux[cnt[cs[j].second]++] = j;
-        fill(cnt.begin(), cnt.begin() + c + 2, 0);
-        for(int j=0; j<n; j++) cnt[cs[j].first+1]++; 
-        for(int j=2; j<=(c+1); j++) cnt[j] += cnt[j-1];
-        for(int j=0; j<n;j++) mp[cnt[cs[aux[j]].first]++] = aux[j]; 
-        //end raddix_sort
-        aux[mp[0]] = c = 0;
-        for(int j=1;j<n;j++){
-            if(cs[mp[j]] == cs[mp[j-1]]) aux[mp[j]] = c;
-            else aux[mp[j]] = ++c;
-        }
-        for(int j=0;j<n;j++) cs[j].first = aux[j];
+//v is the values, sc is the characters
+vector<int> induced_sort(vector<int> &v, vector<int> &sc, vector<int> &gs, vector<bool> &type){
+    int n = v.size();
+    int c = *max_element(v.begin(), v.end());
+    vector<int> sa(n, -1);
+    
+    fill(hd, hd + c + 2, 0); //head pointer
+    fill(adv, adv + c + 2, 0); //advance of head pointer
+    for(int i=0;i<n;i++){
+        hd[v[i] + 1]++;
     }
-    return mp;
+    for(int i=1;i<=(c+1);i++) hd[i] += hd[i-1];
+    for(auto &x : sc){
+        adv[v[x]]++;
+    }
+    for(int i=0;i<gs.size();i++){
+        auto &y = sc[gs[i]];
+        int pl = hd[v[y] + 1] - adv[v[y]]--;
+        sa[pl] = y;
+    }
+    for(int i=0;i<n;i++){
+        int j = i;
+        if(sa[j] > 0){
+            while(j <= i){
+                if(sa[j] == 0) break;
+                if(type[sa[j] - 1] != 0) break;
+                int nj = hd[v[sa[i] - 1]] + adv[v[sa[i] - 1]]++;
+                sa[nj] = sa[j] - 1;
+                j = nj;
+            }
+        }
+    }
+    fill(adv, adv + c + 2, 0);
+    for(int i=n-1;i>=0;i--){
+        int j = i;
+        if(sa[j] > 0){
+            while(j >= i){
+                if(sa[j] == 0) break;
+                if(type[sa[j] - 1] != 1) break;
+                int nj = hd[v[sa[i] - 1] + 1] - 1 - adv[v[sa[i] - 1]]++;
+                sa[nj] = sa[j] - 1;
+                j = nj;
+            }
+        }
+    }
+    return sa;
+}
+
+inline bool lms_ne(vector<int> &v, vector<bool> &type, int p1, int p2, int ed1){
+    for(;; p1++,p2++){
+        if(v[p1] != v[p2]) return true;
+        else if(type[p1] != type[p2]) return true;
+        else if(type[p1] == 1 && p1 == ed1) return false;
+    }
+}
+
+vector<int> suffix_array(vector<int> &v){
+    int n = v.size();
+    vector<bool> type(n);
+    type[n-1] = 1;
+    for(int i=n-2;i>=0;i--){
+        if(v[i] > v[i+1]) type[i] = 0;//large
+        else if(v[i] < v[i+1]) type[i] = 1;//small
+        else type[i] = type[i+1]; //?!
+    }
+    vector<int> sc;
+    for(int i=1;i<n;i++){
+        if(type[i] == 1 && type[i-1] == 0){
+            sc.push_back(i);
+        }
+    }
+    int c = *max_element(v.begin(), v.end());
+    vector<int> gs;
+    vector<int> nv(sc.size());
+    if(sc.size() != 1){
+        //do induced sort 
+        vector<int> gax(sc.size());
+        fill(hd, hd + c + 2, 0); 
+        fill(adv, adv + c + 2, 0); 
+        for(auto &i : sc){ //need values in sc
+            hd[v[i] + 1]++;
+        }
+        for(int i=1;i<=(c+1);i++) hd[i] += hd[i-1];
+        for(int j=0;j<sc.size();j++){ //need values in sc
+            auto &i = sc[j];
+            gax[j] = hd[v[i] + 1] - ++adv[v[i]];
+        }
+        auto aux = induced_sort(v, sc, gax, type); 
+        vector<int> us(n, -1);
+        for(int i=0;i<sc.size();i++) us[sc[i]] = i; //need positions in sc
+        vector<int> aux2;
+        for(auto &x : aux){
+            if(us[x] != -1) aux2.push_back(us[x]);
+        }
+        int p = -1;
+        for(int i=0;i<aux2.size();i++){
+            if(i == 0 || lms_ne(v, type, sc[aux2[i]], sc[aux2[i-1]], sc[aux2[i] + 1])) nv[aux2[i]] = ++p;
+            else nv[aux2[i]] = p;
+        }
+
+        gs = suffix_array(nv);
+    }else{
+        gs.push_back(0);
+    }
+    return induced_sort(v, sc, gs, type);
+}
+
+vector<int> suffix_array(string &s){
+    int n = s.size();
+    vector<int> cv(n);
+    vector<bool> is(26, false); //lower bound latin letters
+    for(int i=0;i<n;i++) is[s[i]-'a'] = true;
+    vector<int> val(26, -1);
+    int p = 0;
+    for(int i=0;i<26;i++){
+        if(is[i]) val[i] = ++p;
+    }
+    for(int i=0;i<n;i++) cv[i] = val[s[i]-'a'];
+    cv.push_back(0); //sentinel, lower than anything.
+    return suffix_array(cv);
 }
 
 //cout << fixed << setprecision(6)
@@ -56,6 +140,7 @@ int main(){
     //freopen("in", "r", stdin); //test input
     string s;
     cin >> s;
+    int n = s.size() + 1;
     auto ans = suffix_array(s);
     for(int i=1;i<n;i++) cout << ans[i] << " ";
 }
