@@ -112,6 +112,7 @@ vector<int> suffix_array(vector<int> &v){
 
 vector<int> suffix_array(string &s){
     int n = s.size();
+    s += '$'; //compatibility with lcp.
     vector<int> cv(n);
     vector<bool> is(26, false); //lower bound latin letters
     for(int i=0;i<n;i++) is[s[i]-'a'] = true;
