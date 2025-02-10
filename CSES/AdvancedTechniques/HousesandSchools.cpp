@@ -33,11 +33,11 @@ void solve(int n, int k){
     ll aux = 0;
     for(int i=1;i<=n;i++){
         aux += ps[i-1] - ps[0];
-        dp[0][i] = aux;
+        dp[1][i] = aux;
     }
     for(int i=2;i<=k;i++){
-        dcdp(1, n, i-1, n-1);
         dp[0] = dp[1];
+        dcdp(1, n, i-1, n-1);
     }
 }
 
