@@ -16,11 +16,14 @@ ll solve(string s){
             dp[i] += dp[j];
             if(s[i] == s[j]) break;
         }
+        if(dp[i] >= 1000000) break;
     }
     ll ans = 0;
     for(int i=1;i<=n;i++) ans += dp[i];
     return ans;
 }
+const int N = 1e6+1;
+bool has[N];
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
@@ -28,17 +31,21 @@ int main(){
     //freopen("in", "r", stdin); //test input
     int n;
     // cin >> n;
-    unordered_set<int> s;
     
-    for(int k=1;k<=25;k++){
+    for(int k=1;k<=27;k++){
         for(int i=0;i<(1 << k);i++){
             string cur;
             for(int j=0;j<k;j++){
                 if(i & (1 << j)) cur += '1';
                 else cur += '0';
             }
-            if(solve(cur) <= 1000000) s.insert(solve(cur));
+            ll val = solve(cur);
+            if(val <= 1000000){
+                has[val] = true;
+            }
         }
     }
-    cout << s.size() << "\n";
+    int sz = 0;
+    for(int i=1;i<=1000000;i++) if(has[i]) sz++;
+    cout << sz << "\n";
 }
