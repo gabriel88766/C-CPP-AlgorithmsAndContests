@@ -11,14 +11,14 @@ ll gcd_euclid(ll a, ll b, ll &x, ll &y){ //solves ax+by = g where g = gcd(a,b)
     return d;
 }
 
-bool find_xy(ll a, ll b, ll c, ll &x, ll &y){ //first solution for x > 0
+bool find_xy(ll a, ll b, ll c, ll &x, ll &y){ //first solution for x >= 0, if x > 0, make '<=' in the if.
     ll g = gcd_euclid(abs(a), abs(b), x, y);
     if(c % g) return false;
     if(a < 0) x = -x;
     if(b < 0) y = -y;
-    x = (x * c/g)  % (abs(b)/g); //mulmod  if risk of overflow
+    x = (x * c/g)  % (abs(b)/g); //if risk of overflow, make x positive (if(x < 0) x %= m, x += m;) and apply mulmod
     if(x < 0) x += abs(b)/g;
-    y = (c - a*x) / (b/g);
+    y = (c - a*x) / b;
     return true;
 }
 
