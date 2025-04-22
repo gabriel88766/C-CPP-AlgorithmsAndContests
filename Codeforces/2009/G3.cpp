@@ -6,132 +6,179 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-template<typename T, T (*op)(T, T), T (*nullel)()>
-struct SegmentTree{
-    vector<T> st;
-    int n;
-    SegmentTree(vector<T> &v){
-        n = v.size();
-        st.resize(2*n);
-        build(v);
+template<typename T>
+struct Deque{
+    T *dq = new T[1000005];
+    int l_ptr = 500002, r_ptr = 500001;
+    int szdq = 0;
+    inline void push_back(const T& p){
+        dq[++r_ptr] = p;
+        szdq++;
     }
-    SegmentTree(ll sz){
-        n = sz;
-        st.resize(2*n);
+
+    inline void pop_back(){
+        r_ptr--;
+        szdq--;
     }
-    void build(vector<T> &v){
-        for(int i=n;i<2*n;i++) st[i] = v[i-n];
-        for(int i=n-1;i>=1;i--) st[i] = op(st[2*i], st[2*i+1]); //merge op
+
+    inline void push_front(const T& p){
+        dq[--l_ptr] = p;
+        szdq++;
     }
-    T query(int l, int r){
-        T ans = nullel();
-        l += n, r += n;
-        while(l <= r){
-            int no = l, c = 1;
-            while(!(no & 1) && (r-l+1) >= (c << 1)){
-                c <<= 1;
-                no >>= 1;
-            }
-            ans = op(ans, st[no]); //merge op
-            l += c;
-        }
-        return ans;
+
+    inline void pop_front(){
+        l_ptr++;
+        szdq--;
     }
-    void update(int l, T val){
-        l += n;
-        st[l] += val; //assign or increment?
-        while(l > 1){
-            l >>= 1;
-            st[l] = op(st[2*l], st[2*l+1]); //merge op
-        }
+
+    inline T at(int pos) const {
+        return dq[l_ptr+pos];
+    }
+
+    T operator [](int i) const {
+        return dq[l_ptr+i];
+    }
+
+    T front() const {
+        return dq[l_ptr];
+    }
+
+    T back() const {
+        return dq[r_ptr];
+    }
+
+    int size() const {
+        return szdq;
+    }
+
+    void clear(){
+        l_ptr = 500002;
+        r_ptr = 500001;
+        szdq = 0;
     }
 };
 
-int op(int a, int b){
-    return max(a, b);
-}
+Deque<pair<ll, ll>> v1, v2, v3;
 
-int el(){
-    return 0;
-}
+const int N = 2e5+505;
+const int sqrtN = 500; //200000 = 500*400
+ll ansr[N];
+int n;
 
-int opm(int a, int b){
-    return min(a, b);
-}
-
-int elm(){
-    return INF_INT;
-}
-
-template<typename T, T (*op)(T, T), T (*nullel)()>
-struct SegmentTreeLazy{
-    vector<T> st, lz;
-    int n;
-    SegmentTreeLazy(vector<T> &v){
-        n = v.size();
-        st.resize(4*n);
-        lz.assign(4*n, 0);
-        build(v, 0, n-1, 1);
-    }
-    SegmentTreeLazy(ll sz){
-        n = sz;
-        st.assign(4*n, 0);
-        lz.assign(4*n, -1);
-    }
-    void build(vector<T> &v, int l, int r, int p){
-        if(l == r){ st[p] = v[l]; return; }
-        build(v, l, (l+r)/2, 2 * p);
-        build(v, (l+r)/2 + 1, r, 2 * p + 1);
-        st[p] = op(st[2 * p], st[2 * p + 1]); 
-    }
-
-    void push(int l, int r, int p){
-        if(lz[p] != -1){ //0 can be assigned? change!
-            st[p] = (ll)(r - l + 1) * lz[p]; //RMQ = lz, RSQ, = (r-l+1)*lz
-            if(l != r){
-                lz[2 * p] = lz[p]; // += increment = update
-                lz[2 * p + 1] = lz[p];
-            } 
-            lz[p] = -1;
-        }
-    }
-
-    ll query(int i, int j, int l, int r, int p){
-        push(l, r, p);
-        if(j < l || i > r) return nullel();
-        if(j >= r && i <= l) return st[p];
-        return op(query(i, j, l, (l + r)/2, 2 * p), query(i, j, (l + r)/2 + 1, r, 2 * p + 1)); 
-    }
-    T query(int i, int j){
-        return query(i, j, 0, n-1, 1);
-    }
-    void update(int i, int j, T val, int l, int r, int p){
-        push(l, r, p);
-        if(j < l || i > r) return;
-        if(l >= i && r <= j) {lz[p] = val; push(l, r, p); return;}
-        update(i, j, val, l, (l + r)/2, 2 * p);
-        update(i, j, val, (l + r)/2 + 1, r, 2 * p + 1);
-        st[p] = op(st[2 * p], st[2 * p + 1]); 
-    }
-    void update(int i, int j, T val){
-        update(i, j, val, 0, n-1, 1);
-    }
-};
-
-ll op2(ll a, ll b){
-    return a + b;
-}
-
-ll el2(){
-    return 0LL;
-}
+pair<ll, ll> ops[N];
+int opcnt = 0;
 
 struct Query{
-    int l, r, j;
-    bool operator< (const Query &q) const{
-        return r > q.r;
+    int l, r, i;
+    //MO G3
+    bool operator< (const Query u) const {
+        if(l/sqrtN != u.l/sqrtN) return l/sqrtN < u.l/sqrtN;
+        else return r < u.r;
     }
 };
+
+ll ans[N];
+// ll  ps[N];
+vector<Query> vq;
+//Key idea,
+//Process queries that begin in block 1, then block 2, and so on...
+//build array with the right position while the right position grow.
+void Mo(){ //This is an example, function need to be changed, but idea remains.
+    ll blk = -1, r = 0, cur = 0, sum = 0, cur2 = 0;
+    for(auto x : vq){
+        if((x.l/sqrtN)*sqrtN != blk){
+            cur = cur2 = sum = 0;
+            v1.clear();
+            v2.clear();
+            blk = r = (x.l/sqrtN)*sqrtN; //first element of block
+            r += sqrtN;
+        }
+        if(x.r < blk+sqrtN){
+            //Solve O(sqrtN);
+            assert(v1.size() == 0);
+            ll sum = 0, cur = 0;
+            for(int i=x.l;i<=x.r;i++){
+                while(v1.size() && ansr[i] <= v1.back().first){
+                    int px = v1.size() - 1;
+                    if(v1.size() == 1){
+                        cur -= (v1[px].second - x.l + 1) * v1[px].first;
+                    }else{
+                        cur -= (v1[px].second - v1[px-1].second) * v1[px].first;
+                    }
+                    v1.pop_back();
+                }
+                v1.push_back({ansr[i], i});
+                int px = v1.size() - 1;
+                if(v1.size() == 1){
+                    cur += (v1[px].second - x.l + 1) * v1[px].first;
+                }else{
+                    cur += (v1[px].second - v1[px-1].second) * v1[px].first;
+                }
+                sum += cur;
+            }
+            v1.clear();
+            ans[x.i] = sum;
+            continue;
+        }
+        while(r <= x.r){ //from 0 to n, sqrt(N) times
+            while(v1.size() && ansr[r] <= v1.back().first){
+                int px = v1.size() - 1;
+                if(v1.size() == 1){
+                    cur -= (v1[px].second - blk - sqrtN + 1) * v1[px].first;
+                }else{
+                    cur -= (v1[px].second - v1[px-1].second) * v1[px].first;
+                }
+                v1.pop_back();
+            }
+            if(v2.size() && v2.back().first > ansr[r]) v2.push_back({ansr[r], r});
+            else if(!v2.size()) v2.push_back({ansr[r], r});
+            cur2 += v2.back().first;
+            v1.push_back({ansr[r], r});
+            int px = v1.size() - 1;
+            if(v1.size() == 1){
+                cur += (v1[px].second - blk - sqrtN + 1) * v1[px].first;
+            }else{
+                cur += (v1[px].second - v1[px-1].second) * v1[px].first;
+            }
+            sum += cur;
+            r++;
+        }
+        ans[x.i] = sum;
+        //min queue with rollback...
+        //this is O(sqrtN) because there is at most 1 pop each time, the value can't
+        //increase or decrease more than 1
+        // vector<tuple<int, int, int>> ops;//1 insert, 2 remove 
+        ll aux = cur2;
+        ll pn = 0;  
+        for(int i=blk+sqrtN-1;i>=x.l;i--){
+            while(v2.size() && v2.front().first >= ansr[i]){
+                if(v2.size() == 1){
+                    aux -= (x.r - v2.front().second + 1) * v2.front().first;
+                }else{
+                    aux -= (v2[1].second - v2.front().second) * v2.front().first;
+                }
+                v3.push_back(v2.front());
+                v2.pop_front();
+            }
+            v2.push_front({ansr[i], i});
+            v3.push_back({-1, -1}); //doesn't matter, its remove
+            if(v2.size() == 1){
+                aux += (x.r - v2.front().second + 1) * v2.front().first;
+            }else{
+                aux += (v2[1].second - v2.front().second) * v2.front().first;
+            }
+            ans[x.i] += aux;
+        }
+        while(v3.size()){
+            auto [a, b] = v3.back();
+            v3.pop_back();
+            if(a == -1) v2.pop_front();
+            else v2.push_front({a, b});
+        }
+        
+    }
+}
+
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
@@ -140,78 +187,40 @@ int main(){
     int t;
     cin >> t;
     while(t--){
-        int n, k, q;
+        int k, q;
         cin >> n >> k >> q;
         vector<int> v(n+1);
-        for(int i=1;i<=n;i++) cin >> v[i];
-
-        vector<int> val(n+1);
-        vector<ll> ans(n+1);
         for(int i=1;i<=n;i++){
-            val[i] = v[i] - i + n;
+            cin >> v[i];
+            v[i] += n-i;
         }
-        SegmentTree<int, op, el> st(2*n+5);
+        vector<int> mp(2*n, 0);
+        vector<int> cnt(n+1, 0);
+        cnt[0] = 2*n;
+        int mx = 0;
         for(int i=1;i<=n;i++){
-            st.update(val[i], 1);
-            if(i > k) st.update(val[i-k], -1);
-            if(i >= k) ans[i] = k-st.query(1, 2*n-1);
-            else ans[i] = INF_INT;
-        }
-        SegmentTree<int, opm, elm> st2(ans);
-        vector<pair<int,int>> rel(n+1);
-        set<pair<ll, ll>> sax;
-        for(ll i=k;i<=n;i++){
-            int x = i;
-            for(int j=n/2;j>=1;j>>=1){
-                while(x-j >= k && st2.query(x-j, i-1) > ans[i]) x -= j;
+            cnt[mp[v[i]]]--;
+            cnt[++mp[v[i]]]++;
+            if(i > k){ 
+                cnt[mp[v[i-k]]]--;
+                cnt[--mp[v[i-k]]]++;
             }
-            int y = i;
-            for(int j=n/2;j>=1;j>>=1){
-                while(y+j <= n && st2.query(i, y+j) >= ans[i]) y += j;
-            }
-            rel[i] = {x, y};
-            ans[i] *= (i-x+1);
-            /*auto it = sax.lower_bound({y, 0});
-            if(it != sax.end() && it->first == y){
-                auto p = *sax;
-                sax.erase(it);
-                p->second += 
-            }*/
+            if(mx != n && cnt[mx+1] != 0) mx++;
+            else if(cnt[mx] == 0) mx--;
+            if(i >= k){
+                ansr[i] = k-mx;
+            }else ansr[i] = 0;
         }
-        
-    
-        // hs between 1 and 2*n-1
-        //-4 = -3,-2,-1,0,1
-        //0 = 1,2,3,4,5
-        //4 = 5,6,7,8,9
-        vector<Query> vq(q);
-        vector<ll> ansq(q);
+        //G3! MO!
         for(int i=0;i<q;i++){
-            cin >> vq[i].l >> vq[i].r;
-            vq[i].j = i;
+            int l, r;
+            cin >> l >> r;
+            vq.push_back({l+k-1, r, i});
         }
         sort(vq.begin(), vq.end());
-        int p = 0;
-        /*SegmentTreeLazy<ll, op2, el2> st2(n+1);
-
-
-
-        for(int i=n;i>=k;i--){
-            // for x:[i + k - 1, n],  a[x] = min(val, a[x])
-            //for queries, ans[j] = st.query(l+k-1, r);
-            
-            int x = i + k - 1;
-            ll val = ans[x];
-            for(int y=n/2;y>=1;y>>=1){
-                while(x + y <= n && st2.query(x+y, x+y) >= val) x += y;
-            }
-            st2.update(i+k-1, x, val);
-            while(p < q && vq[p].r == i){
-                ansq[vq[p].j] = st2.query(vq[p].l+k-1, vq[p].r);
-                p++;
-            }
-        }
-        for(int i=0;i<q;i++) cout << ansq[i] << "\n";*/
-
+        Mo();
+        for(int i=0;i<q;i++) cout << ans[i] << "\n";
+        vq.clear();
+        for(int i=1;i<=n;i++) ansr[i] = 0;
     }
 }

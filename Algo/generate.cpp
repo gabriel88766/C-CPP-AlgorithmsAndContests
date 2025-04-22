@@ -43,6 +43,15 @@ string gen_str(int n){
     return ans;
 }
 
+vector<int> gen_vec(int n, int M){
+    vector<int> v;
+    for(int i=0;i<n;i++){
+        int c = uniform_int_distribution<int>(1,M)(rng);
+        v.push_back(c);
+    }
+    return v;
+}
+
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
