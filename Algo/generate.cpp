@@ -52,6 +52,28 @@ vector<int> gen_vec(int n, int M){
     return v;
 }
 
+vector<int> gen_perm(int l, int r){
+    vector<int> ans;
+    for(int i=l;i<=r;i++) ans.push_back(i);
+    shuffle(ans.begin(), ans.end(), rng);
+    return ans;
+}
+
+vector<pair<int, int>> gen_tree(int n, bool rand = false){
+    vector<pair<int, int>> ans;
+    for(int i=2;i<=n;i++){
+        int val = uniform_int_distribution<int>(1,i-1)(rng);
+        ans.push_back({val, i});
+    }
+    if(rand == true){
+        vector<int> aux = gen_perm(1, n);
+        for(auto &[a, b] : ans){
+            a = aux[a];
+            b = aux[b];
+        }
+    }
+    return ans;
+}
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
