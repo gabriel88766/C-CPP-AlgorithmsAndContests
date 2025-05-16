@@ -106,3 +106,26 @@ ll el(){
     return 0LL;
 }
 
+//FOR subarray maxsum
+struct Node{
+    ll pr, su, mid, sum;
+    Node(ll val){
+        pr = su = mid = sum = val;
+    }
+    Node(){
+        pr = su = mid = sum = 0;
+    }
+};
+Node op(Node a, Node b){
+    Node ans;
+    ans.pr = max(a.pr, a.sum + b.pr);
+    ans.sum = a.sum + b.sum;
+    ans.su = max(b.su, a.su + b.sum);
+    ans.mid = max({a.mid, b.mid, a.su + b.pr});
+    return ans;
+}
+
+Node el(){
+    Node null;
+    return null;
+}
