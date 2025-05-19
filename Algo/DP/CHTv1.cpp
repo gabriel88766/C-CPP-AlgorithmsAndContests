@@ -17,7 +17,7 @@ struct Line{
 //Hint: above the curve: maximization; below the curve: minimization
 struct ConvexHull{
     vector<Line> lines;
-    void add(ll x, ll C){
+    void add(ll x, ll C){ //x is the slope (y1-y0)/(x1-x0) and C is the initial point at x = 0
         Frac beg = {0, 1};
         while(lines.size()){
             auto l = lines.back(); 

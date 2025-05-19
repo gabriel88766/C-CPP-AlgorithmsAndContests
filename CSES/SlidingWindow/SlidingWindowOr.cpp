@@ -6,6 +6,8 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
+int v[20000001];
+int ans[10000001];
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
@@ -15,20 +17,26 @@ int main(){
     cin >> n >> k;
     ll x, a, b, c;
     cin >> x >> a >> b >> c;
-    vector<int> v = {(int)x};
-    while(v.size() < n){
+    int p = 1;
+    v[0] = x;
+    while(p < n){
         x = a*x + b;
         x %= c;
-        v.push_back(x);
+        v[p++] = x;
     }
-    int ans = 0, xs = 0;
-    for(int i=0;i<n;i++){
-        xs ^= v[i];
-        if(i >= k-1){
-            ans ^= xs;
-            // cout << xs << "\n";
-            xs ^= v[i-k+1];
+    for(int j=0;j<=23;j++){
+        if(k < 2*(1 << j)){
+            for(int i=0;i<n;i++) ans[i] = v[i] | v[i+k - (1 << j)];
+            break;
+        }
+        for(int i=0;i<n;i++){
+            v[i] |= (v[i + (1 << j)]);
         }
     }
-    cout << ans << "\n";
+    int rans = 0;
+    for(int i=0;i<n-k+1;i++){
+        rans ^= ans[i];
+    }
+        
+    cout << rans << "\n";
 }

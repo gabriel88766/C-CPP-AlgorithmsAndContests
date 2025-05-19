@@ -133,17 +133,37 @@ int main(){
 }
 
 
-//THIS CAN GENERATE ALL PARTITIONS (stirling) 
+//THIS CAN GENERATE ALL PARTITIONS (stirling) and return the count
+vector<int> part;
 ll query(int n, int k, int m = 0){
     int mss = ((1 << n) - 1) ^ m;
     if(__builtin_popcount(mss) < k) return 0;
-    if(k == 1) return 1;
+    if(k == 1) {
+        //TODO something with part
+        //example:
+        part.push_back(mss);
+        cout << "{";
+        for(int i=0;i<part.size();i++){
+            cout << "{";
+            for(int j=0;j<n;j++){
+                if(part[i] & (1 << j)){
+                    cout << j << ",}"[j == 31 - __builtin_clz(part[i])];//part[i] != 0
+                }
+            }
+            cout << ",}"[i + 1 == part.size()];
+        }
+        part.pop_back();
+        cout << "\n";
+        return 1;
+    }
 
     ll ans = 0;
     int fb = 1 << __builtin_ctz(~m);
     mss ^= fb;
     for (int s=mss; ; s=(s-1)&mss){ 
+        part.push_back(s | fb);
         ans += query(n, k-1, s | fb | m);
+        part.pop_back();
         if(s == 0) break;
     }
     return ans;

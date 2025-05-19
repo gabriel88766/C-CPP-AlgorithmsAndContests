@@ -8,20 +8,21 @@ using namespace std;
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-struct nodeT{
-    int ind;
+//parent commented, but maybe it is right. need more tests! tested on Reversal Sorting
+struct nodeT{//1-indexed!
     ll sum;
     ll val;
     int Hv;
     int sz;
     bool rev;
     nodeT *l, *r;
-    nodeT(int index, int value){
-        ind = index;
+    // nodeT *par;
+    nodeT(int value){
         sum = val = value;
         Hv = rng();
         l = nullptr;
         r = nullptr;
+        // par = nullptr;
         rev = false;
         sz = 1;
     }
@@ -76,6 +77,8 @@ void merge(pnode &rt, pnode l, pnode r){
     else merge(r->l, l, r->l), rt = r;
     upd_sz(rt);
     updsum(rt);
+    // if(rt->l) rt->l->par = rt;
+    // if(rt->r) rt->r->par = rt;
 }
 
 //inserT and eraseT are apparently buggy in implicit treaps
@@ -104,17 +107,19 @@ void eraseT(pnode &rt, int val){
 //Cut and Paste CSES
 //implicit treap!
 //useful split
-void split2(pnode rt, pnode &l, pnode &r, int sz){
+void split(pnode rt, pnode &l, pnode &r, int sz){
     push(rt);
     if(!rt) return void(l = r = nullptr);
     int szl = getsz(rt->l);
     if(szl >= sz){
-        split2(rt->l, l, rt->l, sz);
+        split(rt->l, l, rt->l, sz);
         r = rt;
     }else{
-        split2(rt->r, rt->r, r, sz - szl - 1);
+        split(rt->r, rt->r, r, sz - szl - 1);
         l = rt;
     }
+    // if(rt->l) rt->l->par = rt;
+    // if(rt->r) rt->r->par = rt;
     upd_sz(rt);
     updsum(rt);
 }
@@ -122,16 +127,16 @@ void split2(pnode rt, pnode &l, pnode &r, int sz){
 //cut l, r and insert in end
 void cut(pnode &rt, int l, int r){
     pnode t1, t2, t3;
-    split2(rt, t1, t2, l-1);
-    split2(t2, t2, t3, r-l+1);
+    split(rt, t1, t2, l-1);
+    split(t2, t2, t3, r-l+1);
     merge(rt, t1, t3);
     merge(rt, rt, t2);
 }
 
 void reverse (pnode rt, int l, int r) {
     pnode t1, t2, t3;
-    split2 (rt, t1, t2, l-1);
-    split2 (t2, t2, t3, r-l+1);
+    split (rt, t1, t2, l-1);
+    split (t2, t2, t3, r-l+1);
     t2->rev ^= true;
     merge (rt, t1, t2);
     merge (rt, rt, t3);
@@ -139,8 +144,8 @@ void reverse (pnode rt, int l, int r) {
 
 ll getsum(pnode rt, int l, int r){
     pnode t1, t2, t3;
-    split2 (rt, t1, t2, l-1);
-    split2 (t2, t2, t3, r-l+1);
+    split (rt, t1, t2, l-1);
+    split (t2, t2, t3, r-l+1);
     ll ans = getsum(t2);
     merge(rt, t1, t2);
     merge(rt, rt, t3);
@@ -156,6 +161,27 @@ void dfsbst(pnode rt){
     if(rt->r) dfsbst(rt->r);
 }
 
+// need par implemented
+// int get_pos(pnode rt){
+//     vector<pnode> path = {rt};
+//     while(rt->par != nullptr){
+//         assert(rt->par->l == rt || rt->par->r == rt);
+//         rt = rt->par;
+//         path.push_back(rt);
+//     }
+//     int ans = 0;
+//     for(int i=path.size()-1;i>=0;i--) push(path[i]);
+//     while(path.size()){
+//         auto u = path.back();
+//         path.pop_back();
+//         if(path.size()){
+//             if(path.back() == u->r) {ans += 1 + getsz(u->l);}
+//         }else{
+//             ans += getsz(u->l) + 1;
+//         }
+//     }
+//     return ans;
+// }
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
