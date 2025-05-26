@@ -6,6 +6,9 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
+const int N = 1e6+1;
+int has[N];
+
 ll solve(string s){
     int n = s.size();
     vector<ll> dp(s.size() + 1);
@@ -22,8 +25,18 @@ ll solve(string s){
     for(int i=1;i<=n;i++) ans += dp[i];
     return ans;
 }
-const int N = 1e6+1;
-bool has[N];
+void test(const string &s){
+    if(s.size() >= 26) return;
+    ll tt = solve(s);
+    if(tt > 1000000){
+        return;
+    }else{
+        if(has[tt] == false || has[tt] > s.size()) has[tt] = s.size();
+    }
+    test(s + '0');
+    test(s + '1');
+}
+
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
@@ -31,21 +44,9 @@ int main(){
     //freopen("in", "r", stdin); //test input
     int n;
     // cin >> n;
-    
-    for(int k=1;k<=27;k++){
-        for(int i=0;i<(1 << k);i++){
-            string cur;
-            for(int j=0;j<k;j++){
-                if(i & (1 << j)) cur += '1';
-                else cur += '0';
-            }
-            ll val = solve(cur);
-            if(val <= 1000000){
-                has[val] = true;
-            }
-        }
-    }
-    int sz = 0;
-    for(int i=1;i<=1000000;i++) if(has[i]) sz++;
-    cout << sz << "\n";
+    cout << solve("10101010 10101 01010 10101 01010") << "\n";
+    // test("0");
+    // int sz = 0;
+    // for(int i=1;i<=1000000;i++) if(has[i]) sz++;
+    // cout << sz << "\n"; //will print 1000000, but I need over 2 min to check all these 2^29 binary strings(yeah half because I cut all mirrored)
 }
