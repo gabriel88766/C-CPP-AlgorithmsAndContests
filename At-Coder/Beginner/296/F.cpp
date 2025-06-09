@@ -26,40 +26,35 @@ int main(){
         if(sz == n){
             //greedy...
             vector<int> orda(n+1), ordb(n+1);
-            vector<bool> oki(n+1);
             for(int i=0;i<n;i++) orda[a[i]] = i, ordb[b[i]] = i;
-            for(int i=0;i<n;i++) if(a[i] == b[i]) oki[a[i]] = true;
-            set<int> nok;
-            for(int i=1;i<=n;i++) {if(!oki[i]) nok.insert(i);}
-            
-                for(int i=0;i<n;i++){
-                    if(oki[a[i]]) continue;
-                    else{
-                        auto x = nok.begin();
-                        if(*x == a[i] || *x == b[i]) x++;
-                        if(*x == a[i] || *x == b[i]) x++;
-                        if(x == nok.end()){
-                            ok = false;
-                            break;
-                        }
-                        cout << *x << " ";
-                        int v = orda[*x], u = ordb[*x];
-                        swap(orda[a[i]], orda[*x]);
-                        swap(orda[b[i]], orda[*x]);
-                        swap(a[v], a[i]);
-                        
-                        swap(b[u], b[i]);
-                        oki[*x] = true;
-                        nok.erase(x);
-                    }
+            set<int> nus;
+            for(int i=1;i<=n;i++) nus.insert(i);
+            for(int i=0;i<n-2;i++){
+                if(a[i] == b[i]){
+                    nus.erase(a[i]);
+                    continue;
                 }
-                cout << "\n";
-                for(auto x: a) cout << x << " ";
-                cout << "\n";
-                for(auto x : b) cout << x << " ";
+                assert(nus.size() >= 3);
+                int e = *nus.begin(), d = *next(nus.begin()), c = *next(next(nus.begin()));
+                int ch;
+                if(e != a[i] && e != b[i]){
+                    ch = e;
+                }else if(d != a[i] && d != b[i]){
+                    ch = d;
+                }else{
+                    ch = c;
+                }
+                nus.erase(ch);
+                int oa = a[i], ob = b[i];
+                swap(a[orda[ch]], a[i]);
+                swap(b[ordb[ch]], b[i]);
+                swap(orda[ch], orda[oa]);
+                swap(ordb[ch], ordb[ob]);
+            }
+            if(a != b) ok = false;
             
         }
-    }
+    }   
     if(ok) cout << "Yes\n";
     else cout << "No\n";
 }
