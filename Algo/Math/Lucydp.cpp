@@ -21,11 +21,9 @@ void sieve(int n){
 
 //S(v, p) is the sum of integers up to v, when sieve until p.
 //S(v, p) = S(v, p-1) - p*(S(v, p-1) - S(p-1, p-1));
-map<ll, map<ll, __int128>> dp;
 __int128 calc(__int128 n, ll p = 2e7){
     if(n == 1) return 0;
-    if(dp.count(n) && dp[n].count(p)) return dp[n][p];
-    if(p*p >= n && n < N) return dp[n][p] = sum[n];
+    if(p*p >= n && n < N) return sum[n];
     __int128 ans = (n * (n+1)) / 2;
     ans -= 1;
     ll sqt = sqrt(n);
@@ -36,7 +34,7 @@ __int128 calc(__int128 n, ll p = 2e7){
             ans -= i * (calc(n/i, i-1) - sum[i-1]);
         }
     }
-    return dp[n][p] = ans;
+    return ans;
 }
 //cout << fixed << setprecision(6)
 int main(){
