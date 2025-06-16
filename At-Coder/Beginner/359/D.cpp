@@ -38,6 +38,7 @@ struct Mint{
     }
 };
 
+Mint dp[512], ndp[512];
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
@@ -47,11 +48,61 @@ int main(){
     cin >> n >> k;
     string s;
     cin >> s;
-    Mint tt = 1;
-    for(int i=0;i<n;i++){
-        if(s[i] == '?') tt *= 2;
-    }
-    for(int i=k-1;i<n;i++){ //end of first palin
+    //find all possibilities for the first k-1 letters.
+    for(int i=0;i<1 <<(k-1);i++){
+        bool cok = true;
+        for(int j=0;j<k-1;j++){
+            if(s[k-j-2] == '?') continue;
+            if(i & (1 << j)){
+                if(s[k-j-2] == 'A') cok = false;
+            }else{
+                if(s[k-j-2] == 'B') cok = false;
+            }
+        }
+        if(cok) dp[i] = 1;
+        
 
     }
+    int msk = 0;
+    for(int i=0;i<k-2;i++) msk |= (1 << i);
+    for(int i=k-1;i<n;i++){
+        for(int u=0;u<1 << (k-1); u++) ndp[u] = 0;
+        for(int u=0;u<1 << (k-1); u++){
+            string cur;
+            for(int j=0;j<(k-1);j++){
+                if(u & (1 << j)) cur += 'B';
+                else cur += 'A';
+            }
+            reverse(cur.begin(), cur.end());
+            // if(dp[u].v != 0) cout << u << " " << cur << " " << ((u & msk)) << " - "; 
+            if(s[i] == '?'){
+                cur += 'A';
+                auto rev = cur;
+                reverse(rev.begin(), rev.end());
+                if(cur != rev){
+                    ndp[((u & msk) << 1)] += dp[u];
+                }
+                cur.pop_back();
+                cur += 'B';
+                rev = cur;
+                reverse(rev.begin(), rev.end());
+                assert(cur.size() == k);
+                if(cur != rev){
+                    ndp[((u & msk) << 1) + 1] += dp[u];
+                }
+            }else{
+                cur += s[i];
+                auto rev = cur;
+                reverse(rev.begin(), rev.end());
+                if(cur != rev){
+                    ndp[((u & msk) << 1) + (s[i]-'A')] += dp[u];
+                }
+            }
+        }
+
+        for(int u=0;u<1 << (k-1); u++) dp[u] = ndp[u];
+    }
+    Mint ans = 0;
+    for(int u=0;u<1 << (k-1); u++) ans += dp[u];
+    cout << ans << "\n";
 }
