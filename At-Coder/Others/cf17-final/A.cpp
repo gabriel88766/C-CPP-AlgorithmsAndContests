@@ -11,9 +11,15 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    double d = 0;
-    for(int i=1001;i<=1'000'000'000;i++){
-        d += 1'000'000'000.00/i;
+    string s;
+    cin >> s;
+    string pat = "AKIHABARA";
+    int p = 0;
+    bool ok = true;
+    for(auto &c : pat){
+        if(p < s.size() && s[p] == c) p++;
+        else if(c != 'A') ok = false;
     }
-    cout << d << "\n";
+    if(p == s.size() && ok) cout << "YES\n";
+    else cout << "NO\n";
 }
