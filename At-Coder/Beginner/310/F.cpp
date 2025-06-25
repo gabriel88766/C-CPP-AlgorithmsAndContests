@@ -1,11 +1,10 @@
 #include <bits/stdc++.h>
 typedef long long int ll;
 typedef unsigned long long int ull;
-const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 1e9+7; //1e9+7
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
 const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
-
 
 struct Mint{
     ll v;
@@ -54,56 +53,39 @@ struct Mint{
     }
 };
 
-const int N = 60001;
-Mint dp2[N];
-map<int, Mint> dp;
-Mint mtp;
-int n;
-Mint inv;
-
-Mint solve(int m){  
-    if(m < N) return dp2[m];
-    if(dp.count(m)) return dp[m];
-    Mint cur = 1;
-    int v1 = 2;
-    while(v1 <= min(m, n)){
-        int d = (m + v1 - 1)/v1, v2;
-        if(d == 1) v2 = min(m, n);
-        else{
-            v2 = (m-1) / (d-1);
-            v2 = min(v2, n);
-        }
-        cur += (v2 - v1 + 1) * solve((m + v1 - 1) / v1) * inv;
-        v1 = v2 + 1;
-    }
-    return dp[m] = cur * mtp;
-}
+const int N = 11;
+Mint dp[1 << N], ndp[1 << N];
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int m;
-    cin >> n >> m;
-    mtp = Mint(n) / (n-1);
-    inv = Mint(1)/n;
-    dp[1] = 0;
-    m++;
-    for(int i=2;i<N;i++){
-        Mint cur = 1;
-        int v1 = 2;
-        while(v1 <= min(i, n)){
-            int d = (i + v1 - 1)/v1, v2;
-            if(d == 1) v2 = min(i, n);
-            else{
-                v2 = (i-1) / (d-1);
-                v2 = min(v2, n);
+    dp[1] = 1;
+    int n;
+    cin >> n;
+    int msk = (1 << N) - 1;
+    for(int i=1;i<=n;i++){
+        int x;
+        cin >> x;
+        Mint inv = Mint(1) / x;
+        for(int j=1;j<(1 << N);j++) ndp[j] = 0;
+        for(int i=1;i<=min(x, 10); i++){
+            for(int j=1;j<(1<<N);j++){
+                int nj = j | (j << i);
+                nj &= msk;
+                ndp[nj] += dp[j] * inv;
             }
-            
-            cur += (v2 - v1 + 1) * dp2[(i + v1 - 1) / v1] * inv;
-            v1 = v2 + 1;
         }
-        dp2[i] = mtp * cur;
+        if(x > 10){
+            for(int j=1;j<(1<<N);j++){
+                ndp[j] += (dp[j] * inv)*(x-10);
+            }
+        }
+        for(int j=1;j<(1 << N);j++) dp[j] = ndp[j];
     }
-    cout << solve(m) << "\n";
+    Mint p = 0;
+    for(int j=0;j<(1<< N);j++){
+        if(j & (1 << 10)) p += dp[j];
+    }
+    cout << p << "\n";
 }
