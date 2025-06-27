@@ -6,6 +6,7 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
+
 struct Mint{
     ll v;
     //static const int MOD = MOD_val;
@@ -53,50 +54,41 @@ struct Mint{
     }
 };
 
-vector<string> v;
-const int N = 5e5+3;
-//Using Mint
+const int N = 1002*1002; //substrings of a string of len 1505
 
-Mint ans[N];
-Mint inv = 1/Mint(2);
-void solve(int l, int r, const int c){
-    if(l == r) return;
-    if(c == v[l].size()){
-        for(int j=l+1;j<=r;j++) ans[j] += 1;
-        l++;
-        if(l == r) return;
-    }
-    char lc = v[l][c], cl = 0;
-    vector<int> ql;
-    for(int j=l;j<=r;j++){
-        if(v[j][c] == lc) cl++;
-        else{
-            ql.push_back(cl);
-            cl = 1;
-            lc = v[j][c];
-        }
-    }
-    ql.push_back(cl);
-    if(ql.size() == 1) {
-        solve(l, r, c+1);
-        return;
-    }
-    Mint aux = 0;
-    for(int i=0;i<ql.size();i++){
-        aux += ql[i] * inv;
-    }
-    for(int i=0;i<ql.size();i++){
-        aux -= ql[i] * inv;
-        for(int j=l;j<l + ql[i]; j++){
-            ans[j] += aux;
-        }
-        solve(l, l + ql[i] - 1, c + 1);
-        l += ql[i];
-        aux += ql[i] * inv;
-    }
-    assert(l == r + 1);
+int cntn = 0;
+int trie[N][26];
+int c1[N], c2[N];
+int rc1[N], rc2[N];
+
+int add(int node, char c){
+    c -= 'a';
+    if(trie[node][c]) return trie[node][c];
+    else return trie[node][c] = ++cntn;
 }
 
+//example add string
+void add(string s){
+    int curn = 0;
+    for(auto c : s){
+        curn = add(curn, c);
+        c1[curn]++;
+    }
+    c2[curn]++;
+}
+
+void get(string s, int j){
+    int curn = 0;
+    int cur = 0;
+    for(auto c : s){
+        curn = trie[curn][c-'a'];
+        if(c2[curn]) cur++;
+    }
+    rc1[j] = cur; //is my prefix;
+    rc2[j] = c1[curn]; //i'm prefix of
+}
+
+Mint inv = 1/Mint(2);
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
@@ -104,18 +96,16 @@ int main(){
     //freopen("in", "r", stdin); //test input
     int n;
     cin >> n;
-    v.resize(n+1);
-    vector<int> ord(n+1);
-    for(int i=1;i<=n;i++) cin >> v[i];
-    iota(ord.begin(), ord.end(), 0);
-    sort(ord.begin(), ord.end(), [&](int a, int b){
-        return v[a] < v[b];
-    });
-    vector<int> invord(n+1);
-    for(int i=1;i<=n;i++) invord[ord[i]] = i;
-    sort(v.begin(), v.end());
-    solve(1, n, 0);
-
-
-    for(int i=1;i<=n;i++) cout << ans[invord[i]]+1 << "\n";
+    vector<string> v(n+1);
+    for(int i=1;i<=n;i++){
+        cin >> v[i];
+        add(v[i]);
+    }
+    for(int i=1;i<=n;i++){
+        get(v[i], i);
+        // cout << i << " " << rc1[i] << " " << rc2[i] << "\n";
+        Mint cans = rc1[i];
+        cans += (n + 1 - rc1[i] - rc2[i]) * inv;
+        cout << cans << "\n";
+    }
 }
