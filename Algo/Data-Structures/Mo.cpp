@@ -80,3 +80,69 @@ int main(){
     Mo();
     for(int i=0;i<q;i++) cout << ans[i] << "\n";
 }
+
+
+//BELOW A new Mo template
+constexpr int BLOCK = 500;
+struct Query{
+    int l, r, i;
+    bool operator< (const Query u) const {
+        if(l/BLOCK != u.l/BLOCK) return l/BLOCK < u.l/BLOCK;
+        else return r < u.r;
+    }
+};
+
+template<typename T, void (*erase)(), void (*insert)(int), void (*remove)(int), T (*get)(int)>
+struct Mo{
+    vector<Query> vq;
+    vector<T> ans;
+    static constexpr int sqrtN = BLOCK; //adjust accordingly with Q value. Compile time to increase performance
+    Mo(vector<Query> &allq){ 
+        vq = allq;
+        sort(vq.begin(), vq.end());
+        ans.resize(allq.size());
+    }
+    void solve(){ 
+        int blk = -1, p = 0;
+        ll cur = 0;
+        for(auto x : vq){
+            if((x.l/sqrtN)*sqrtN != blk){
+                cur = 0;
+                blk = p = (x.l/sqrtN)*sqrtN; //first element of block
+                erase(); //once each block O(N * sqrtN) overall
+            }
+            while(p <= x.r){ //from 0 to n, sqrt(N) times
+                insert(p++); //insert information about p;
+            }
+            for(int i=blk;i<x.l;i++){ //O(sqrt(N))
+                remove(i);
+            }
+            ans[x.i] = get(x.i);
+            for(int i=blk;i<x.l;i++){ //O(sqrt(N))
+                insert(i);
+            }      
+        }
+    }
+};  
+
+//These functions must be changed.
+vector<Query> vx;
+// int v[N], cnt[N]; //data stored
+
+void erase(){
+    //erase the whole DS; must be O(n) most of times
+}
+void insert(int p){
+    //insert index p, must be O(1) most of times
+}
+
+void remove(int p){
+    //remove index p, must be O(1) most of times
+}
+
+//must be same return type
+int get(int j){
+    //LOGIC to get the answer to determined index.
+    //Up to O(sqrt(n))
+    
+}

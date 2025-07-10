@@ -33,3 +33,7 @@ for(int i=1;i<=2000;i++){
         str[i][j] = str[i-1][j-1] + str[i-1][j] * j;
     }
 }
+
+//link to generating functions:
+//https://www.adamponting.com/some-basic-sequences-generating-functions-and-closed-forms/
+//saved in Extra.
