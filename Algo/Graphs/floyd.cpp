@@ -17,3 +17,13 @@ void floyd(){
 }
 
 //remember to set adj[i][j] to INF, if i and j is not adjacent nodes.
+
+void add_edge(int u, int v, ll w){
+    if(w > dist[u][v]) return;
+    dist[u][v] = w;
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            dist[i][j] = min(dist[i][j], dist[i][u] + dist[u][v] + dist[v][j]);
+        }
+    }
+}

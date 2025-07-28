@@ -113,7 +113,8 @@ struct Node{
         pr = su = mid = sum = val;
     }
     Node(){
-        pr = su = mid = sum = 0;
+        pr = su = mid = -INF_LL; //to allow negative maximum
+        sum = 0;
     }
 };
 Node op(Node a, Node b){

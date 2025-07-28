@@ -27,13 +27,13 @@ int main(){
     vector<vector<vector<pair<int, int>>>> d(2, vector<vector<pair<int, int>>>(h+2,  vector<pair<int, int>>(w+2, make_pair(INF_INT, INF_INT))));
     d[0][x1][y1] = d[1][x1][y1] = {0, 0};
     priority_queue<tuple<int, int, int, int, int>, vector<tuple<int, int, int, int, int>>, greater<tuple<int, int, int, int, int>>> pq;
-    pq.push({x1, y1, 0, 0, 0}); //0 move dy
-    pq.push({x1, y1, 1, 0, 0}); //1 move dx
+    pq.push({0, 0, 0, x1, y1}); //0 move dy
+    pq.push({0, 0, 1, x1, y1}); //1 move dx
     int ttn = 0;
     while(!pq.empty()){
         ttn++;
         assert(ttn <= 10000000);
-        auto [x, y, tp, dxx, kx] = pq.top();
+        auto [dxx, kx, tp, x, y] = pq.top();
         pq.pop();
         if(d[tp][x][y] != make_pair(dxx, kx)) continue;
         if(kx != 0){
@@ -43,7 +43,7 @@ int main(){
                 if(gr[nx][ny] != '.') continue;
                 if(d[tp][nx][ny] > make_pair(d[tp][x][y].first, d[tp][x][y].second+1)){
                     d[tp][nx][ny] = make_pair(d[tp][x][y].first, d[tp][x][y].second+1);
-                    pq.push({nx, ny, tp, d[tp][nx][ny].first, d[tp][nx][ny].second});
+                    pq.push({d[tp][nx][ny].first, d[tp][nx][ny].second, tp, nx, ny});
                 }
             }
         }
@@ -53,7 +53,7 @@ int main(){
             if(gr[nx][ny] != '.') continue;
             if(d[j/2][nx][ny] > make_pair(d[tp][x][y].first + 1, -k+1)){
                 d[j/2][nx][ny] = make_pair(d[tp][x][y].first + 1, -k+1);
-                pq.push({nx, ny, j/2, d[j/2][nx][ny].first, d[j/2][nx][ny].second});
+                pq.push({d[j/2][nx][ny].first, d[j/2][nx][ny].second, j/2, nx, ny});
             }
         }
     }

@@ -1,9 +1,13 @@
 //version 2
 int n;
 struct Mint{
-    ll v;
+    int v;
+    //static const int MOD = MOD_val;
     Mint(){ v = 0;}
-    Mint(ll u){ v = (u >= 0 ? u % MOD : u % MOD + MOD);}
+    Mint(int u){ 
+        v = u % MOD;
+        if (v < 0) v += MOD;
+    }
     Mint pow(ll u){
         Mint ans = 1;
         Mint aux = *this;
@@ -18,12 +22,12 @@ struct Mint{
     friend Mint operator/ (Mint a, Mint const &b){ return a /= b;}
     friend Mint operator+ (Mint a, Mint const &b){ return a += b;}
     friend Mint operator- (Mint a, Mint const &b){ return a -= b;}
-    Mint operator*= (Mint u){ v = (u.v * v) % MOD; return *this;}
+    Mint operator*= (Mint u){ v = ((ll)u.v * v) % MOD; return *this;}
     Mint operator+= (Mint u){ v = (v+u.v >= MOD ? v+u.v-MOD : v+u.v); return *this;}
     Mint operator-= (Mint u){ v = (v-u.v < 0 ? v-u.v+MOD : v-u.v); return *this;}
     Mint operator/= (Mint u){ (*this) *= u.pow(MOD-2); return *this;}
-    bool operator== (Mint u){ return v == u.v;}
-    bool operator!= (Mint u){ return v != u.v;}
+    bool operator== (const Mint u) const { return v == u.v;}
+    bool operator!= (const Mint u) const { return v != u.v;}
     friend ostream& operator<<(ostream& os, const Mint& num){
         os << num.v;
         return os;
@@ -60,7 +64,8 @@ void multiply(vector<Mint> &a, vector<Mint> &b) {
     ntt(b,n,1);
     for (int i = 0; i < n; i++) a[i] *= b[i];
     ntt(a,n,-1);
-    for (int i = 0; i < n; i++) a[i] /= n;
+    Mint inv  = Mint(1)/n;
+    for (int i = 0; i < n; i++) a[i] *= inv;
 }
 
 vector<Mint> multiply2(vector<Mint> a, vector<Mint> b) {
@@ -72,7 +77,8 @@ vector<Mint> multiply2(vector<Mint> a, vector<Mint> b) {
     ntt(b,n,1);
     for (int i = 0; i < n; i++) a[i] *= b[i];
     ntt(a,n,-1);
-    for (int i = 0; i < n; i++) a[i] /= n;
+    Mint inv  = Mint(1)/n;
+    for (int i = 0; i < n; i++) a[i] *= inv;
     while(a.back() == 0) a.pop_back();
     return a;
 }
