@@ -15,7 +15,7 @@ void sieve(){
 }
 //linear, https://cp-algorithms.com/algebra/prime-sieve-linear.html
 const int N = 10000000;
-vector<int> lp(N+1);
+int lp[N+1];
 vector<int> pr;
 
 for (int i=2; i <= N; ++i) {
