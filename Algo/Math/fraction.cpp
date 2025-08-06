@@ -12,12 +12,13 @@ struct Frac{
     }
     Frac() : a(0), b(1) {}
     bool operator< (const Frac &f) const{
+        // return (__int128)a * f.b < (__int128)b * f.a; //if necessary
         return a * f.b < b * f.a;
     }
     bool operator== (const Frac &f) const{
         return a == f.a && b == f.b;
     }
-    Frac& operator+= (const Frac &f) {
+    Frac& operator+= (const Frac &f) { //Use only if you know it won't overflow denominators.
         a = a * f.b + b * f.a;
         b *= f.b;
         ll g = gcd(a, b);
