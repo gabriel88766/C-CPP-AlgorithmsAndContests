@@ -1,15 +1,7 @@
 #include <bits/stdc++.h>
-typedef long long int ll;
-typedef unsigned long long int ull;
-const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
-const int INF_INT = 0x3f3f3f3f;
-const long double PI = acosl(-1.), EPS = 1e-9; 
+
 using namespace std;
 
-//Trying to make a template really strong 
-//covering "all" cases
-// const double PI = acos(-1.);
-//T must be double / long double here
 typedef double type;
 bool ge(type a, type b){
     return a + EPS >= b;
@@ -21,7 +13,6 @@ bool eq(type a, type b){
     return ge(a,b) && le(a,b);
 }
 
-
 template<typename T>
 struct Point{
     T x, y;
@@ -32,7 +23,6 @@ struct Point{
     Point operator +(Point p) { return Point(x + p.x, y + p.y);}
     Point operator *(T d){ return Point(x * d, y * d);}
     Point operator /(T d){ return Point(x/d, y/d);} //integer division, maybe not what you want.
-
     bool operator ==(Point p){
         if(std::is_floating_point<T>::value){
             return eq(x, p.x) && eq(y, p.y);
@@ -40,13 +30,11 @@ struct Point{
             return x == p.x && y == p.y;
         }
     }
-
     double abs() {return sqrt(x*x+y*y); } //remove sqrt and use long long for more precision 
     double dist(Point p){ return (*this-p).abs();} //long long too
     double arg() { return atan2l(y, x); }
     T abs2() {return x*x + y*y;} //for integers
     T dist2(Point p) {return (*this-p).abs2(); } //integers too
-
     Point rot(type g){// g degrees, don't use if type is long long
         static_assert(std::is_floating_point<T>::value);
         g *= PI/180;
@@ -55,12 +43,9 @@ struct Point{
     Point rot90(){ 
         return Point(-y, x);
     }
-
     type cross(Point p){ return x*p.y - y*p.x;}
     type dot(Point p){ return x*p.x + y*p.y;}
 };
-
-
 
 template<typename T>
 struct Line{
@@ -93,8 +78,6 @@ struct Line{
     }
 };
 
-
-
 template<typename T>
 struct Circle{
     T R; //radius
@@ -125,8 +108,14 @@ struct Circle{
         return ans;
     }
     vector<Point<T>> intersectCircle(Circle<T> cx){
-        Line lx(2*(cx.C.x - C.x), 2*(cx.C.y - C.y), -R*R + cx.R*cx.R - cx.C.abs2() + C.abs2());
+        auto tr = C;
+        cx.C = cx.C - tr;
+        C = C - tr;
+        Line lx(2*cx.C.x, 2*cx.C.y, -R*R + cx.R*cx.R - cx.C.abs2());
         auto inter = intersectLine(lx);
+        for(auto &x : inter) x = x + tr; //translate back;
+        cx.C = cx.C + tr;
+        C = C + tr;
         return inter;
     }
     bool operator== (Circle c){
@@ -142,90 +131,19 @@ bool onSeg(Point<T> a, Point<T> b, Point<T> c){ //check if point on seg AB
     return ge(c.x, min(a.x, b.x)) && le(c.x, max(a.x, b.x)) && ge(c.y, min(a.y, b.y)) && le(c.y, max(a.y, b.y));
 }
 
-//circle of apollonius...
-template<typename T>
-Circle<T> find_circle(Circle<T> c1, Circle<T> c2){
-    if(c1.R > c2.R) swap(c1, c2);
-    Point<T> p1 = c1.C;
-    Point<T> dir = c2.C - c1.C;
-    T dist = dir.abs();
-    dir = dir / dist;
-    Point<T> nd = c1.C + dir * (dist * (c1.R) / (c1.R + c2.R));
-    Point<T> an = c1.C - dir * (dist * c1.R/(c2.R - c1.R));
-    Circle<T> ans((an+nd)/2, an.dist(nd)/2);
-    return ans;
-}
-
-
-//cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    //freopen("in", "r", stdin); //test input
-    int x, y, R;
-    cin >> x >> y >> R;
-    Circle<double> c1(Point<double>(x, y), R);
-    cin >> x >> y >> R;
-    Circle<double> c2(Point<double>(x, y), R);
-    cin >> x >> y >> R;
-    Circle<double> c3(Point<double>(x, y), R);
-    cout << fixed << setprecision(5);
-    Point<double> ans;
-
-    auto solveTwo = [&](Circle<double> nc1, Circle<double> nc2){
-        auto inter = nc1.intersectCircle(nc2);
-        if(inter.size() == 0) return false;
-        if(inter.size() == 1) ans = inter[0];
-        if(inter[0].dist(c1.C) < inter[1].dist(c1.C)) ans = inter[0];
-        else ans = inter[1];
-        return true;
-    };
-
-
-    if(c1.R != c2.R && c1.R != c3.R && c2.R != c3.R){
-        //all radius different. need a 3 circles 
-        auto nc1 = find_circle(c1, c3);
-        auto nc2 = find_circle(c2, c3);
-        if(!solveTwo(nc1,nc2)) return 0;
-    }else if(c1.R == c2.R && c1.R == c3.R){
-        //all equal
-        //three perpendicular bisectors = circumcenter
-        auto av1 = (c1.C + c2.C)/2;
-        auto av2 = (c1.C + c3.C)/2;
-        auto dir1 = (c2.C - c1.C).rot90();
-        auto dir2 = (c3.C - c1.C).rot90();
-        Line<double> l1(av1, dir1);
-        Line<double> l2(av2, dir2);
-        //they are not in same line, so there is intersection
-        auto inter = l1.intersectLines(l2);
-        ans = inter;
-    }else{
-        //two circles equal
-        if(c1.R == c3.R) swap(c2, c3);
-        if(c2.R == c3.R) swap(c1, c3);
-        assert(c1.R == c2.R);
-        auto nc1 = find_circle(c1, c3);
-        auto nc2 = find_circle(c2, c3);
-        auto av1 = (c1.C + c2.C)/2;
-        auto dir1 = (c2.C - c1.C).rot90();
-        auto line = Line<double>(av1, dir1);
-        auto inter = nc1.intersectCircle(nc2);
-        if(inter.size() == 2){
-            if(line.onLine(inter[0]) && line.onLine(inter[1])){
-                if(inter[0].dist(c1.C) < inter[1].dist(c1.C)) ans = inter[0];
-                else ans = inter[1];
-            }else if(line.onLine(inter[0])){
-                ans = inter[0];
-            }else if(line.onLine(inter[1])){
-                ans = inter[1];
-            }else return 0;
-        }else if(inter.size() == 1){
-            if(line.onLine(inter[0])) ans = inter[0];
-            else return 0;
-        }else return 0;
-        
-    }
-    ans.x += EPS;
-    ans.y += EPS;
-    cout << ans.x << " " << ans.y << "\n";
+    int x, y;
+    cin >> x >> y;
+    Point A(x, y);
+    cin >> x >> y;
+    Point B(x, y);
+    cin >> x >> y;
+    Point C(x, y);
+    cin >> x >> y;
+    Point D(x, y);
+    cout << fixed << setprecision(15);
+    cout << (C-A).abs() << "\n";
+    
 }
