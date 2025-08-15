@@ -32,7 +32,12 @@ struct Point{
     }
     double abs() {return sqrt(x*x+y*y); } //remove sqrt and use long long for more precision 
     double dist(Point p){ return (*this-p).abs();} //long long too
-    double arg() { return atan2l(y, x); }
+    // returns arg ∈ [0, 2π)
+    double arg() { 
+        double ang = atan2l(y, x);
+        if(ang < 0) ang += 2*PI;
+        return ang;
+    }
     T abs2() {return x*x + y*y;} //for integers
     T dist2(Point p) {return (*this-p).abs2(); } //integers too
     Point rot(type g){// g degrees, don't use if type is long long

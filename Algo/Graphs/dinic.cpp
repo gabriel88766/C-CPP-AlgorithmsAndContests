@@ -82,7 +82,7 @@ int src, snk, h[N], ptr[N];
 vector<edge> edgs;
 vector<int> g[N];
 
-void add_edge (int u, int v, int c) {
+void add_edge (int u, int v, ll c) {
     int k = edgs.size();
     edgs.push_back({v, c, 0});
     edgs.push_back({u, 0, 0});
