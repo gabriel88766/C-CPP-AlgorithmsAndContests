@@ -47,19 +47,19 @@ Mint sum[N];
 //O(k log MOD)
 Mint sumpow(ll n, ll k){
     sum[0] = 0;
-    for(int i=1;i<=k+2;i++){
-        sum[i] = sum[i-1] + Mint(i).pow(k);
+    for(int i=1;i<=(k+2);i++){
+        sum[i] = sum[i-1] + Mint(i).pow(k); //JUST AN EXAMPLE!!
     }
-    if(n <= k+2) return sum[n];
+    if(n <= (k+1)) return sum[n];
     else{
         //https://en.wikipedia.org/wiki/Lagrange_polynomial
-        // ym = sum[m], k+1 points
+        // ym = sum[m], k+2 points and poly is dg k+1, you may need replace "k+2" by "k+1"
         Mint ans = 0;
         Mint prod = 1;
-        for(int i=1;i<=k+2;i++) prod *= (n - i);
-        for(int i=1;i<=k+2;i++){
-            if((k+2-i) % 2) ans -= sum[i] * prod / (fat[k+2-i]*fat[i-1] * (n - i));
-            else ans += sum[i] * prod / (fat[k+2-i]*fat[i-1] * (n - i));
+        for(int i=1;i<=(k+2);i++) prod *= (n - i);
+        for(int i=1;i<=(k+2);i++){ //PLEASE, FOR GOD SAKES, DON'T USE I = 0 HERE
+            if(((k+2)-i) % 2) ans -= sum[i] * prod / (fat[(k+2)-i]*fat[i-1] * (n - i));
+            else ans += sum[i] * prod / (fat[(k+2)-i]*fat[i-1] * (n - i));
         }
         return ans;
     }
