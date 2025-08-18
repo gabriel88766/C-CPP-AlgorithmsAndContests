@@ -68,39 +68,101 @@ ll MCMF(int flow){
     return -1;
 }
 
-struct Cell{
-    int i, j, c;
-};
+void clear(){ 
+    for(int i=0;i<=snk;i++){ g[i].clear();}
+    
+    edgs.clear(); 
+}
+
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    //freopen("in", "r", stdin); //test input
-    int h, w, n;
-    cin >> h >> w >> n;
-    vector<vector<bool>> used(h+1, vector<bool>(w+1, false));
-    vector<Cell> v(n+1);
-    for(int i=1;i<=n;i++){
-        cin >> v[i].i >> v[i].j >> v[i].c;
-        used[v[i].i][v[i].j] = true;
+    // freopen("in", "r", stdin); //test input
+    int h, w, m;
+    cin >> h >> w >> m;
+    vector<vector<ll>> cv(h+1, vector<ll>(w+1, INF_LL));
+    for(int i=1;i<=m;i++){
+        int x, y, c;
+        cin >> x >> y >> c;
+        cv[x][y] = c;
     }
-    vector<bool> row(h+1), col(w+1);
+    vector<int> ch(h+1), cw(w+1);
     for(int i=1;i<=h;i++){
-        row[i] = true;
-        for(int j=1;j<=w;j++) if(!used[i][j]) row[i] = false;
+        for(int j=1;j<=w;j++){
+            if(cv[i][j] != INF_LL){
+                ch[i]++;
+                cw[j]++;
+            }
+        }
+    }
+    set<int> sh, sw;
+    for(int i=1;i<=h;i++) sh.insert(i);
+    for(int i=1;i<=w;i++) sw.insert(i);
+    ll cst = 0;
+    for(int i=1;i<=h;i++){
+        if(ch[i] == 1){
+            for(int j=1;j<=w;j++){
+                if(cv[i][j] != INF_LL){
+                    cst += cv[i][j];
+                    sh.erase(i);
+                    sw.erase(j);
+                }
+            }
+        }
     }
     for(int j=1;j<=w;j++){
-        col[j] = true;
-        for(int i=1;i<=h;i++) if(!used[i][j]) col[j] = false;
+        if(cw[j] == 1){
+            for(int i=1;i<=h;i++){
+                if(cv[i][j] != INF_LL && ch[i] != 1){
+                    cst += cv[i][j];
+                    sh.erase(i);
+                    sw.erase(j);
+                }
+            }
+        }
     }
-    src = 0, snk = 4003; //magic numbers...
-    int ofs = 2000; //col = i, row = 1000 + i
-    int flw = 0;
-    for(int i=1;i<=h;i++){
-        if(row[i]) add_edge(src, i, 1, 0), flw++;
-    }
-    for(int i=1;i<=n;i++){
+    //now work on sh and sw;
+    vector<int> x, y;
+    for(auto xx : sh) x.push_back(xx);
+    for(auto xx : sw) y.push_back(xx);
 
+    int tt = x.size() + y.size();
+    src = 0, n = snk = tt + 3;
+    int i1 = tt + 1, i2 = tt + 2;
+    ll ans = INF_LL;   
+    
+    for(int i=max(x.size(),y.size());i<=tt;i++){
+        clear();
+        add_edge(src, i1, max(0, (int)y.size() - (int)x.size()) + i - max(y.size(), x.size()), 0); 
+        for(int j=0; j < y.size();j++){
+            add_edge(x.size() + j + 1, snk, 1, 0);
+            ll mn = INF_LL;
+            for(int i=1;i<=h;i++) mn = min(mn, cv[i][y[j]]);    
+            add_edge(i1, x.size() + j + 1, 1, mn);
+        }
+        add_edge(i2, snk, max(0, (int)x.size() - (int)y.size()) + i - max(y.size(), x.size()), 0);
+        for(int i=0;i<x.size();i++){
+            add_edge(src, i + 1, 1, 0);
+            ll mn = INF_LL;
+            for(int j=1;j<=w;j++) mn = min(mn, cv[x[i]][j]);
+            add_edge(i + 1, i2, 1, mn);
+        }
+
+
+
+        for(int i=0;i<x.size();i++){
+            for(int j=0;j<y.size();j++){
+                add_edge(i + 1, x.size() + j + 1, 1, cv[x[i]][y[j]]);
+            }
+        }
+        ll cur = MCMF(i);
+        if(cur >= ans) break;
+        ans = min(ans, cur);
     }
+    cout << ans + cst << "\n";
+    
+
+
 
 }
