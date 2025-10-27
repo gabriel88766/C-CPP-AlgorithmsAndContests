@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
+using namespace std;
+
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); //test input
+    int t;
+    cin >> t;
+    while(t--){
+        ll n, k;
+        cin >> n >> k;
+        ll lo = 2, hi = 2'000'000'000;
+        while(lo != hi){
+            ll mid = lo + (hi - lo) / 2;
+            ll cur = mid, sum = 0;
+            for(int i=2;i<=n;i++){
+                sum += cur - 1;
+                cur += (cur - 1);
+                if(sum >= k) break;
+            }
+            if(sum >= k) hi = mid;
+            else lo = mid + 1;
+        }
+        cout << lo << " ";
+        for(int i=2;i<=n;i++){
+            ll cur = lo - 1;
+            if(cur <= k){
+                lo += cur;
+                k -= cur;
+            }else{
+                lo += k;
+                k = 0;
+            }
+            cout << lo << " ";
+        }
+        cout << "\n";
+    }
+}       

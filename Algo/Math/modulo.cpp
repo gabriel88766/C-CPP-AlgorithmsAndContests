@@ -83,7 +83,7 @@ struct Mint{
     int v;
     // static const int MOD = MOD_val;
     Mint(){ v = 0;}
-    Mint(int u){ 
+    Mint(ll u){ 
         v = u % MOD;
         if (v < 0) v += MOD;
     }
