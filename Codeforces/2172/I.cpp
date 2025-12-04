@@ -1,7 +1,11 @@
-//Trying to make a template really strong 
-//covering "all" cases
-// const double PI = acos(-1.);
-//T must be double / long double here
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
+const int INF_INT = 0x3f3f3f3f;
+const double PI = acosl(-1.), EPS = 1e-9; 
+using namespace std;
+
 typedef double float_type; //floating point type
 
 template<typename T>
@@ -54,14 +58,10 @@ struct Point{
     }
     T abs2() {return x*x + y*y;} //for integers
     T dist2(Point p) {return (*this-p).abs2(); } //integers too
-    Point rot_dg(float_type g){// g degrees, don't use if type is long long
+    Point rot(float_type g){// g degrees, don't use if type is long long
         static_assert(std::is_floating_point<T>::value);
         g *= PI/180;
         return Point(x * cos(g) - y * sin(g), x * sin(g) + y * cos(g)); 
-    }
-    Point rot(float_type rad){// rad is [0, 2pi], don't use if type is long long
-        static_assert(std::is_floating_point<T>::value);
-        return Point(x * cos(rad) - y * sin(rad), x * sin(rad) + y * cos(rad)); 
     }
     Point rot90(){ 
         return Point(-y, x);
@@ -150,7 +150,6 @@ bool onSeg(Point<T> a, Point<T> b, Point<T> c){ //check if point on seg AB
     return ge(c.x, min(a.x, b.x)) && le(c.x, max(a.x, b.x)) && ge(c.y, min(a.y, b.y)) && le(c.y, max(a.y, b.y));
 }
 
-//not sure yet if works good with doubles
 template<typename T>
 vector<Point<T>> convex_hull(vector<Point<T>> &p){ //at least 2 points
     T zr = 0; //double or long long
@@ -188,4 +187,50 @@ vector<Point<T>> convex_hull(vector<Point<T>> &p){ //at least 2 points
     //this convex hull is working, but it doesn't contain some colinear points.
     //to fix it, change < to <= and add points colinear to hull[0] and hull.back() manually (O(n))
     return hull;
+}
+
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); //test input
+    ll n;
+    double r;
+    cin >> n >> r;
+    vector<Point<ll>> px(n);
+    for(int i=0;i<n;i++){
+        cin >> px[i].x >> px[i].y;
+    }
+    double mang = 0;
+    if(n <= 2){
+        mang = PI;
+        cout << fixed << setprecision(10) << (r * r * mang - r * r * sin(mang))/2 << "\n";
+        return 0;
+    }
+    vector<double> args;
+    for(int j=0;j < n; j++) args.push_back(px[j].arg());
+    sort(args.begin(), args.end());
+    for(int j=1;j < n; j++){
+        if(ge(args[j] - args[j-1], PI)) mang = PI;
+    }
+    if(ge(2*PI - args[n-1] + args[0], PI)) mang = PI;
+
+
+    auto hullx = convex_hull(px);
+    vector<Point<double>> hull(hullx.size());
+    for(int i=0;i<hull.size();i++){
+        hull[i].x = hullx[i].x;
+        hull[i].y = hullx[i].y;
+    }
+    for(int i=0;i<hull.size();i++){
+        auto p1 = hull[i];
+        auto p2 = hull[(i+1) % hull.size()];
+        Line line =  Line<double>::from_Points(p1, p2);
+        Circle cir(Point<double>(0, 0), r);
+        auto vx = cir.intersectLine(line);
+        assert(vx.size() == 2);
+        double ang = 2 * asin(vx[0].dist(vx[1])/(2*r));
+        mang = max(mang, ang);
+    }
+    cout << fixed << setprecision(10) << (r * r * mang - r * r * sin(mang))/2 << "\n";
 }
