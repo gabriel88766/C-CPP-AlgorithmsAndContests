@@ -11,8 +11,20 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    string s;
-    cin >> s;
-    if(s[0] == s[1] || s[1] == s[2] || s[2] == s[3]) cout << "Bad\n";
-    else cout << "Good\n";
+    int l, r;
+    cin >> l >> r;
+    int ans = INF_INT;
+    int ln = (r / 2019) * 2019;
+    // assert(ln <= r);
+    if(ln >= l && ln <= r) cout << "0\n";
+    else{
+        assert(r - l <= 2020);
+        for(ll i=l;i<=r;i++){
+            for(ll j=i+1;j<=r;j++){
+                ll rem = (i * j) % 2019;
+                ans = min(ans, (int)rem);
+            }
+        }
+        cout << ans << "\n";
+    }
 }

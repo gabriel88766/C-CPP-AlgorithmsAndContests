@@ -10,9 +10,13 @@ using namespace std;
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    //freopen("in", "r", stdin); //test input
-    string s;
-    cin >> s;
-    if(s[0] == s[1] || s[1] == s[2] || s[2] == s[3]) cout << "Bad\n";
-    else cout << "Good\n";
+    //freopen("in", "r",    stdin); //test input
+    ll a, b, c, d;
+    cin >> a >> b >> c >> d;
+    ll a1 = b/c + b/d - b/lcm(c,d);
+    a--;
+    ll a2 = a/c + a/d - a/lcm(c,d);
+    ll ans = b - a;
+    ans -= a1 - a2;
+    cout << ans << "\n";
 }

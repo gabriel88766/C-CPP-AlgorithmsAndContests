@@ -113,12 +113,12 @@ int main(){
     bg[n] = vs.size();
     auto sa = suffix_array(vs);
     auto lc = lcp(vs, sa);
-    vector<pair<int, int>> vx;
+    vector<pair<ll, ll>> vx;
     int q;
     cin >> q;
     vector<tuple<int, int, int>> ans(q+1);
     for(int i=1;i<=q;i++){
-        int x;
+        ll x;
         cin >> x;
         vx.push_back({x, i});
     }
@@ -134,22 +134,26 @@ int main(){
         int len = *it- sa[i] - 1;
         int idx = it - bg.begin();
         int l = sa[i] - *prev(it) + 1;
-        for(int j = cv + 1; j <= lc[i]; j++){
+        ++cv;
+        while(cv <= lc[i]){
             //TODO, solve
             int k = i;
-            for(int jmp = n; jmp >= 1; jmp >>= 1){
-                while(k + jmp < lc.size() && query(i, k + jmp) >= j) k += jmp;
+            for(int jmp = lc.size(); jmp >= 1; jmp >>= 1){
+                while(k + jmp < lc.size() && query(i, k + jmp) >= cv) k += jmp;
             }
-            tt += (k - i + 2);
-
-            //END
-            while(px < q && tt >= vx[px].first){
-                int r = l + j - 1;
+            ll nv = query(i, k);
+            ll dif = nv - cv + 1;
+            // tt += (k - i + 2);
+            while(px < q && (tt + (k - i + 2) * dif) >= vx[px].first){
+                int r = l + cv - 1;
+                r += (vx[px].first - tt - 1) / (k - i + 2);
                 ans[vx[px].second] = {idx, l, r};
                 px++;
             }
-            cv = j;
+            tt += (k - i + 2) * dif;
+            cv = nv + 1;
         }
+        --cv;
         while(px < q && len - cv + tt >= vx[px].first){
             int r = l + cv + (vx[px].first - tt) - 1;
             ans[vx[px].second] = {idx, l, r};

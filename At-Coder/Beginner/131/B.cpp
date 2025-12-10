@@ -11,8 +11,14 @@ int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    string s;
-    cin >> s;
-    if(s[0] == s[1] || s[1] == s[2] || s[2] == s[3]) cout << "Bad\n";
-    else cout << "Good\n";
+    int n, l;
+    cin >> n >> l;
+    int ans = 0, ch = INF_INT;
+    for(int i=1;i<=n;i++){
+        ans += l + i - 1;
+        int nabs = abs(l + i - 1);
+        if(nabs < abs(ch)) ch = l + i - 1;
+    }
+    ans -= ch;
+    cout << ans << "\n";
 }
