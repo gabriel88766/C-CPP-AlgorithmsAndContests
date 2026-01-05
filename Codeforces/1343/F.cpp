@@ -1,5 +1,3 @@
-//TOTAL TRASHHHHHHHHH!
-
 #include <bits/stdc++.h>
 typedef long long int ll;
 typedef unsigned long long int ull;
@@ -9,11 +7,13 @@ const long double PI = acosl(-1.), EPS = 1e-9;
 using namespace std;
 
 int n;
-vector<int> solve(vector<vector<int>> &v, int beg, int lst){
-    vector<int> ans;
-    vector<bool> us(n, false);
-    int ind;
-    for(int i=1;i<n;i++){
+vector<int> ans;
+
+bool solve(vector<vector<int>> &v, int beg, int lst = -1){
+    vector<int> cans;
+    vector<bool> us(v.size(), false);
+    int ind = -1;
+    for(int i=1;i<v.size();i++){
         for(int j=0;j<v[i].size();j++){
             if(v[i][j] == beg){
                 ind = i;
@@ -22,90 +22,65 @@ vector<int> solve(vector<vector<int>> &v, int beg, int lst){
         }
     }
     us[ind] = true;
-    ans.push_back(beg);
-    for(int u=2;u<n;u++){
+    cans.push_back(beg);
+    for(int u=2;u<v.size();u++){
         vector<int> pos1;
         vector<int> cnt(n+1, 0);
-        for(int i=1;i<n;i++){
+        for(int i=1;i<v.size();i++){
             if(us[i]) continue;
             for(int j=0;j<v[i].size();j++){
                 cnt[v[i][j]]++;
             }
         }
-        for(int i=1;i<=n;i++) if(cnt[i] == 1) pos1.push_back(i);
-        vector<int> pos;
-        for(int j=0;j<v[ind].size();j++){
-            for(auto x : pos1){
-                if(v[ind][j] == x) pos.push_back(x);
-            }
-        }
-        if(pos.size() == 0) break;
-        for(int i=1;i<n;i++){
-            if(us[i]) continue;
-            for(int j=0;j<v[i].size();j++){
-                if(v[i][j] == pos[0]){
-                    ind = i;
+        for(int i=1;i<=n;i++) if(cnt[i] == 1 && i != lst) pos1.push_back(i);
+        int val;
+        if(pos1.size() == 0) return false;
+        if(pos1.size() == 2){
+            assert(lst == -1);
+            vector<int> cc(2);
+            for(int i=1;i<v.size();i++){
+                for(int j=0;j<v[i].size();j++){
+                    if(v[i][j] == pos1[0]){
+                        cc[0]++;
+                    }
+                    if(v[i][j] == pos1[1]){
+                        cc[1]++;
+                    }
                 }
             }
-        }
-        ans.push_back(pos[0]);
-        us[ind] = true;
-    }
-    ans.push_back(lst);
-    return ans;
-}
-
-vector<int> solve2(vector<vector<int>> &v, int beg){
-    vector<int> ans;
-    vector<bool> us(n, false);
-    int ind;
-    for(int i=1;i<n;i++){
-        for(int j=0;j<v[i].size();j++){
-            if(v[i][j] == beg){
-                ind = i;
+            if(cc[0] > cc[1]){
+                val = pos1[0];
+                lst = pos1[1];
+            }else if(cc[1] > cc[0]){
+                val = pos1[1];
+                lst = pos1[0];
+            }else{
+                vector<vector<int>> cv(1);
+                for(int i=1;i<v.size();i++){
+                    if(!us[i]) cv.push_back(v[i]);
+                }
+                if(!solve(cv, pos1[0], pos1[1])) solve(cv, pos1[1], pos1[0]);
+                for(auto x : ans) cans.push_back(x);
                 break;
             }
-        }
-    }
-    us[ind] = true;
-    ans.push_back(beg);
-    for(int u=2;u<n;u++){
-        vector<int> pos1;
-        vector<int> cnt(n+1, 0);
-        for(int i=1;i<n;i++){
+        }else val = pos1[0];
+
+        for(int i=1;i<v.size();i++){
             if(us[i]) continue;
             for(int j=0;j<v[i].size();j++){
-                cnt[v[i][j]]++;
-            }
-        }
-        for(int i=1;i<=n;i++) if(cnt[i] == 1) pos1.push_back(i);
-        vector<int> pos;
-        for(int j=0;j<v[ind].size();j++){
-            for(auto x : pos1){
-                if(v[ind][j] == x) pos.push_back(x);
-            }
-        }
-        for(int i=1;i<n;i++){
-            if(us[i]) continue;
-            for(int j=0;j<v[i].size();j++){
-                if(v[i][j] == pos[0]){
+                if(v[i][j] == val){
                     ind = i;
                 }
             }
         }
-        ans.push_back(pos[0]);
+        cans.push_back(val);
         us[ind] = true;
     }
-
-    for(int i=1;i<=n;i++){
-        bool ok = false;
-        for(int j=0;j<ans.size();j++){
-            if(ans[j] == i) ok = true;
-        }
-        if(!ok) ans.push_back(i);
-    }
-    return ans;
+    if(lst != -1) cans.push_back(lst);
+    ans = cans;
+    return true;
 }
+
 
 //cout << fixed << setprecision(6)
 int main(){
@@ -117,7 +92,6 @@ int main(){
     while(t--){
         cin >> n;
         vector<vector<int>> v(n);
-        vector<int> ans[2];
         vector<int> cnt(n+1, 0);
         for(int i=1;i<n;i++){
             int k;
@@ -136,29 +110,15 @@ int main(){
         }
         assert(pos.size() <= 2);
         if(pos.size() == 1){
-            ans[0] = solve2(v, pos[0]);
-            reverse(ans[0].begin(), ans[0].end());
-            for(int i=1;i<n;i++){
-                int a = ans[0][0], b = ans[0][1];
-                bool ok1 = false, ok2 = false;
-                for(int j=0;j<v[i].size();j++){
-                    if(v[i][j] == a) ok1 = true;
-                    if(v[i][j] == b) ok2 = true;
-                }       
-                if(ok1 && !ok2){
-                    swap(ans[0][0], ans[0][1]);
-                    break;
-                }
-            }
+            solve(v, pos[0]);
+            reverse(ans.begin(), ans.end());
         }else{
-            ans[0] = solve(v, pos[0], pos[1]);
-            ans[1] = solve(v, pos[1], pos[0]);
-            if(ans[0].size() != n) swap(ans[0], ans[1]);
-            reverse(ans[0].begin(), ans[0].end());
+            if(!solve(v, pos[0], pos[1])) solve(v, pos[1], pos[0]);
+            reverse(ans.begin(), ans.end());
         }
         
         
-        for(auto x : ans[0]) cout << x << " ";
+        for(auto x : ans) cout << x << " ";
         cout << "\n";
     }
 }
