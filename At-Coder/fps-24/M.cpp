@@ -40,32 +40,42 @@ struct Mint{
     }
 };
 
-const int N = 5005;
-Mint dp[N];
-Mint ps[N];
+const int N = 5e5+3; //O(N) preprocessing, O(1) query
+
+//Using Mint
+Mint fat[N], invfat[N];
+void init(){ //MOD must be prime
+    fat[0] = invfat[N-1] = 1;
+    for(int i=1;i<N;i++){
+        fat[i] = fat[i-1]*i;
+    }
+    invfat[N-1] = 1/fat[N-1];
+    for(int i=N-2;i>=0;i--) invfat[i] = invfat[i+1] * (i + 1);
+}
+Mint nCr(ll a, ll b){
+    assert(a >= b); //catch silly bugs
+    return fat[a]*invfat[a-b]*invfat[b];
+}
+
+Mint mt[200005];
+Mint f[200005];
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    int n, m, l;
-    cin >> n >> m >> l;
-    int ml = m - l + 1;
-    dp[0] = 1;
-    for(int i=1;i<=m;i++){
-        for(int j=0;j<=n;j++){
-            ps[j] = dp[j];
-            if(j >= i) ps[j] += ps[j-i];
-        }
-        for(int j=0;j<=n;j++) dp[j] = ps[j];
-        if(i >= l){
-            cout << dp[n] << "\n";
-            int cx = i - l + 1;
-            for(int j=n;j>=cx;j--){
-                dp[j] -= dp[j-cx];
-            }
-        } 
-        
+    init();
+    ll m;
+    cin >> m;
+    for(ll n = 1; n <= m; n++){
+        mt[n] = Mint(2).pow((n * (n-1))/2);
     }
-
+    for(ll n = 1; n <= m; n++ ){
+        f[n] = mt[n];
+        for(ll i = n-1; i >= 1; i--){
+            f[n] -= mt[i] * nCr(n-1, n-1-i) * f[n - i];
+        }
+        cout << n << " " << f[n] << endl;
+    }
+    // cout << ans << "\n";
 }
