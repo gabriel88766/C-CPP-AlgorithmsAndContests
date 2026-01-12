@@ -1,4 +1,11 @@
-//version 2
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
+using namespace std;
+
 int n;
 struct Mint{
     int v;
@@ -81,4 +88,40 @@ vector<Mint> multiply2(vector<Mint> a, vector<Mint> b) {
     for (int i = 0; i < n; i++) a[i] *= inv;
     while(a.size() > 1 && a.back() == 0) a.pop_back();
     return a;
+}
+
+const int N = 5e5+3; //O(N) preprocessing, O(1) query
+
+//Using Mint
+Mint fat[N], invfat[N];
+void init(){ //MOD must be prime
+    fat[0] = invfat[N-1] = 1;
+    for(int i=1;i<N;i++){
+        fat[i] = fat[i-1]*i;
+    }
+    invfat[N-1] = 1/fat[N-1];
+    for(int i=N-2;i>=0;i--) invfat[i] = invfat[i+1] * (i + 1);
+}
+Mint nCr(ll a, ll b){
+    assert(a >= b); //catch silly bugs
+    return fat[a]*invfat[a-b]*invfat[b];
+}
+
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); //test input
+    init();
+    int n;
+    cin >> n;
+    vector<Mint> a(n+1), b(n+1);
+    for(int j=0;j<=n;j++) a[j] = Mint(j).pow(n) * invfat[j];
+    for(int j=0;j<=n;j++) {
+        if(j % 2) b[j] = -invfat[j].v;
+        else b[j] = invfat[j];
+    }
+    auto ans = multiply2(a, b);
+    for(int j=0;j<=n;j++) cout << ans[j] << " ";
+    cout << "\n";
 }

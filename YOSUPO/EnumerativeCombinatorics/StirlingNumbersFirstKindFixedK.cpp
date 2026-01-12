@@ -6,6 +6,7 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
+
 /*
 If you need to use this is any other modulo instead of 998244353
 then you need to change some lines
@@ -339,8 +340,7 @@ namespace poly{
 }
 
 using namespace poly;
-
-const int N = 5e5+3; //O(N) preprocessing, O(1) query
+const int N = 5e5+2; //O(N) preprocessing, O(1) query
 
 //Using Mint
 Mint fat[N], invfat[N];
@@ -364,18 +364,17 @@ int main(){
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
     init();
-    int n;
-    cin >> n;
-    vector<Mint> gf(n+1);
-    for(ll i=1;i<=n;i++){
-        gf[i] = Mint(2).pow((i*(i-1))/2) * invfat[i];
+    int n, k;
+    cin >> n >> k;
+    vector<Mint> v(n+1);
+    for(int i=1;i<=n;i++) v[i] = Mint(1)/i;
+    auto x = Poly(v).pow(n+1, k);
+    // for(int j=0;j<=n;j++) x.vec[j] *= invfat[k];
+    for(int j=k;j<=n;j++){
+        
+        Mint ans = x.size() > j ? x.vec[j] * fat[j] * invfat[k] : 0;
+        if((j - k) % 2 == 0) cout << ans << " ";
+        else cout << Mint(-ans.v) << " ";
     }
-    Poly p1(gf); //g
-    auto p2 = Poly(Mint(1)) + p1; //1+g
-    auto p3 = p2.inv(n+1); //(1+g)^-1
-    auto p4 = p1.deriv1(); //g'
-    auto ans = p4 * p3; // g' * (1+g)^-1
-    ans = ans.integr1();
-    ans.resize(n+1);
-    cout << ans.vec[n] * fat[n] << "\n";
-}
+    cout << "\n";
+}       

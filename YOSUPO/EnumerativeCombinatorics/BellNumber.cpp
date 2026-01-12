@@ -168,9 +168,8 @@ namespace poly{
         }
         Poly deriv1(){
             Poly ans(*this);
-            if(ans.size() == 1) return Poly(Mint(0));
-            for(int j=0;j<ans.vec.size()-1;j++) ans.vec[j] = (j+1) * vec[j+1];
             ans.vec.pop_back();
+            for(int j=0;j<ans.vec.size();j++) ans.vec[j] = (j+1) * vec[j+1];
             normalize();
             return ans; 
         }
@@ -357,25 +356,20 @@ Mint nCr(ll a, ll b){
     return fat[a]*invfat[a-b]*invfat[b];
 }
 
-
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    init();
     int n;
     cin >> n;
-    vector<Mint> gf(n+1);
-    for(ll i=1;i<=n;i++){
-        gf[i] = Mint(2).pow((i*(i-1))/2) * invfat[i];
-    }
-    Poly p1(gf); //g
-    auto p2 = Poly(Mint(1)) + p1; //1+g
-    auto p3 = p2.inv(n+1); //(1+g)^-1
-    auto p4 = p1.deriv1(); //g'
-    auto ans = p4 * p3; // g' * (1+g)^-1
-    ans = ans.integr1();
+    init();
+    vector<Mint> pl(n+1);
+    for(int i=1;i<=n;i++) pl[i] = invfat[i];
+    pl[1] = 1;
+    Poly ans(pl);
+    ans = ans.exp(n+1);
     ans.resize(n+1);
-    cout << ans.vec[n] * fat[n] << "\n";
+    for(int j=0;j<=n;j++) cout << ans.vec[j]*fat[j] << " ";
+    cout << "\n";
 }

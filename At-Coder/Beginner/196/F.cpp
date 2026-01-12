@@ -1,5 +1,11 @@
-//version 2
-int n;
+#include <bits/stdc++.h>
+typedef long long int ll;
+typedef unsigned long long int ull;
+const ll INF_LL = 0x3f3f3f3f3f3f3f3f, MOD = 998244353; //1e9+7
+const int INF_INT = 0x3f3f3f3f;
+const long double PI = acosl(-1.), EPS = 1e-9; 
+using namespace std;
+
 struct Mint{
     int v;
     //static const int MOD = MOD_val;
@@ -59,16 +65,7 @@ void ntt(vector<Mint> &a, int n, int s) { //31^(2^23) == 1 (mod 998244353), so, 
     }
 }
 
-void multiply(vector<Mint> &a, vector<Mint> &b) {
-    ntt(a,n,1);
-    ntt(b,n,1);
-    for (int i = 0; i < n; i++) a[i] *= b[i];
-    ntt(a,n,-1);
-    Mint inv  = Mint(1)/n;
-    for (int i = 0; i < n; i++) a[i] *= inv;
-}
-
-vector<Mint> multiply2(vector<Mint> a, vector<Mint> b) {
+vector<Mint> multiply(vector<Mint> a, vector<Mint> b) {
     int n = 1;
     while(n < a.size() + b.size() - 1) n *= 2;
     a.resize(n);
@@ -81,4 +78,31 @@ vector<Mint> multiply2(vector<Mint> a, vector<Mint> b) {
     for (int i = 0; i < n; i++) a[i] *= inv;
     while(a.size() > 1 && a.back() == 0) a.pop_back();
     return a;
+}
+
+//cout << fixed << setprecision(6)
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    //freopen("in", "r", stdin); //test input
+    string s, t;
+    cin >> s >> t;
+    int mn = t.size() - 1;
+    int mx = s.size() - 1;
+    vector<Mint> a1(s.size()), a2(s.size()), b1(t.size()), b2(t.size());
+    for(int i=0;i<s.size();i++){
+        if(s[i] == '1') a1[i] = 1;
+        else a2[i] = 1;
+    }
+    for(int i=0;i<t.size();i++){
+        if(t[i] == '1') b1[i] = 1;
+        else b2[i] = 1;
+    }
+    reverse(b1.begin(), b1.end());
+    reverse(b2.begin(), b2.end());
+    auto m1 = multiply(a1, b1);
+    auto m2 = multiply(a2, b2);
+    int ans = 0;
+    for(int i=mn;i<=mx;i++) ans = max(ans, m1[i].v + m2[i].v);
+    cout << t.size() - ans << "\n";
 }

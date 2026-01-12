@@ -357,25 +357,24 @@ Mint nCr(ll a, ll b){
     return fat[a]*invfat[a-b]*invfat[b];
 }
 
-
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
+    int n, k;
+    cin >> n >> k;
     init();
-    int n;
-    cin >> n;
-    vector<Mint> gf(n+1);
-    for(ll i=1;i<=n;i++){
-        gf[i] = Mint(2).pow((i*(i-1))/2) * invfat[i];
-    }
-    Poly p1(gf); //g
-    auto p2 = Poly(Mint(1)) + p1; //1+g
-    auto p3 = p2.inv(n+1); //(1+g)^-1
-    auto p4 = p1.deriv1(); //g'
-    auto ans = p4 * p3; // g' * (1+g)^-1
-    ans = ans.integr1();
+    vector<Mint> pl(n+1);
+    for(int i=1;i<=n;i++) pl[i] = invfat[i];
+    Poly ans(pl);
+    ans = ans.pow(n+1, k);
     ans.resize(n+1);
-    cout << ans.vec[n] * fat[n] << "\n";
+    for(int i=0;i<=n;i++) ans.vec[i] *= invfat[k]; 
+
+
+    
+ 
+    for(int j=k;j<=n;j++) cout << ans.vec[j]*fat[j] << " ";
+    cout << "\n";
 }

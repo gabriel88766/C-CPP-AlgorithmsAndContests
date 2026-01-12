@@ -159,6 +159,9 @@ namespace poly{
         size_t size(){
             return vec.size();
         }
+        void negate(){
+            for(int j=0;j<vec.size();j++) vec[j] = -(vec[j]).v;
+        }
         Poly mod_xk(int k){
             int x = min((int)this->vec.size(), k);
             Poly ans(x);
@@ -337,45 +340,22 @@ namespace poly{
     };
     
 }
-
 using namespace poly;
-
-const int N = 5e5+3; //O(N) preprocessing, O(1) query
-
-//Using Mint
-Mint fat[N], invfat[N];
-void init(){ //MOD must be prime
-    fat[0] = invfat[N-1] = 1;
-    for(int i=1;i<N;i++){
-        fat[i] = fat[i-1]*i;
-    }
-    invfat[N-1] = 1/fat[N-1];
-    for(int i=N-2;i>=0;i--) invfat[i] = invfat[i+1] * (i + 1);
-}
-Mint nCr(ll a, ll b){
-    assert(a >= b); //catch silly bugs
-    return fat[a]*invfat[a-b]*invfat[b];
-}
-
 
 //cout << fixed << setprecision(6)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
-    init();
     int n;
     cin >> n;
-    vector<Mint> gf(n+1);
-    for(ll i=1;i<=n;i++){
-        gf[i] = Mint(2).pow((i*(i-1))/2) * invfat[i];
+    vector<Mint> v(n+1);
+    Mint fat = 1;
+    for(int i=2;i<=n;i++) fat *= i;
+    for(int i=3;i<=n;i++){
+        v[i] = (Mint(1)/i).v;
     }
-    Poly p1(gf); //g
-    auto p2 = Poly(Mint(1)) + p1; //1+g
-    auto p3 = p2.inv(n+1); //(1+g)^-1
-    auto p4 = p1.deriv1(); //g'
-    auto ans = p4 * p3; // g' * (1+g)^-1
-    ans = ans.integr1();
-    ans.resize(n+1);
-    cout << ans.vec[n] * fat[n] << "\n";
-}
+    Poly g(v);
+    g = g.exp(n+1);
+    cout << g.vec[n] * fat << "\n";
+}   

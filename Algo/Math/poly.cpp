@@ -2,7 +2,7 @@
 If you need to use this is any other modulo instead of 998244353
 then you need to change some lines
 line 100 assumes 31 is a such that 31^(2^23) == 1 mod MOD
-line 282 assumes 3^(MOD - 1) == 1 mod MOD
+line 311 assumes 3^(MOD - 1) == 1 mod MOD
 
 
 */
@@ -142,6 +142,9 @@ namespace poly{
         void normalize(){
             while(vec.size() > 1 && vec.back().v == 0) vec.pop_back();
         }
+        void reverse(){
+            std::reverse(vec.begin(), vec.end());
+        }
         void resize(int n){
             vec.resize(n);
         }
@@ -157,8 +160,9 @@ namespace poly{
         }
         Poly deriv1(){
             Poly ans(*this);
+            if(ans.size() == 1) return Poly(Mint(0));
+            for(int j=0;j<ans.vec.size()-1;j++) ans.vec[j] = (j+1) * vec[j+1];
             ans.vec.pop_back();
-            for(int j=0;j<ans.vec.size();j++) ans.vec[j] = (j+1) * vec[j+1];
             normalize();
             return ans; 
         }
@@ -186,6 +190,7 @@ namespace poly{
             ans.resize(n);
             return ans;
         }
+       
         Poly& operator+= (const Poly &pl){
             vec.resize(max(vec.size(), pl.vec.size()));
             for(int j=0;j<pl.vec.size();j++) vec[j] += pl.vec[j];
@@ -203,7 +208,31 @@ namespace poly{
             normalize();
             return *this;
         }
+        //returns {0} if deg(A) < deg(B) in A/B
+        //Don't divide by 0!!
+        Poly& operator/= (Poly pl){
+            if(this->size() == 0) return *this = Poly(Mint(0));
+            pl.normalize();
+            assert(pl.size() != 0 && (pl.size() != 1 || pl.vec[0] != 0)); //PLEASE DON'T DIVIDE BY 0!!!
+            int n = this->size() - 1;
+            int m = pl.size() - 1;
+            if(n < m) return *this = Poly(Mint(0));
+            this->reverse();
+            pl.reverse();
+            pl = pl.inv(n - m + 1);
+            *this *= pl;
+            this->resize(n - m + 1); //needed for reverse op.
+            this->reverse();
+            normalize();
+            return *this;
+        }
+        Poly& operator%= (Poly pl){
+            Poly d = *this / pl;
+            return *this = *this - d * pl;
+        }
         Poly operator* (const Poly &t) const {return Poly(*this) *= t;}
+        Poly operator/ (const Poly &t) const {return Poly(*this) /= t;}
+        Poly operator% (const Poly &t) const {return Poly(*this) %= t;}
         Poly operator+ (const Poly &t) const {return Poly(*this) += t;}
         Poly operator- (const Poly &t) const {return Poly(*this) -= t;}
         Poly inv(int n){
@@ -300,3 +329,5 @@ namespace poly{
     };
     
 }
+
+using namespace poly;
