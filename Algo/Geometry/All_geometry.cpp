@@ -189,3 +189,51 @@ vector<Point<T>> convex_hull(vector<Point<T>> &p){ //at least 2 points
     //to fix it, change < to <= and add points colinear to hull[0] and hull.back() manually (O(n))
     return hull;
 }
+
+//untested minkowski sum (only for integers, but can be expanded)
+auto find_quadrant = [](const Point<ll> &p) {
+    if(p.x > 0 && p.y >= 0) return 0; //[0, 90)
+    else if(p.x <= 0 && p.y > 0) return 1;//[90, 180)
+    else if(p.x < 0 && p.y <= 0) return 2;//[180, 270]
+    else return 3;//[270, 360)
+};
+
+auto compare = [](Point<ll> &p1, Point<ll> &p2){
+    int q1 = find_quadrant(p1), q2 = find_quadrant(p2);
+    if(q1 != q2) return q1 < q2;
+    else return p1.cross(p2) > 0;
+};
+
+
+void reorder(vector<Point<ll>> &vp){
+    int pbeg = 0;
+    for(int i=1;i<vp.size();i++){
+        if(vp[i].y < vp[pbeg].y){
+            pbeg = i;
+        }else if(vp[i].y == vp[pbeg].y && vp[i].x < vp[pbeg].y){
+            pbeg = i;
+        }
+    }
+    if(pbeg != 0) rotate(vp.begin(), vp.begin() + pbeg, vp.end());
+}
+
+vector<Point<ll>> minkowski(vector<Point<ll>> &a, vector<Point<ll>> &b){
+    int n = a.size();
+    int m = b.size();
+    reorder(a);
+    reorder(b);
+    a.push_back(a[0]);
+    a.push_back(a[1]);
+    b.push_back(b[0]);
+    b.push_back(b[1]);
+    int pa = 0, pb = 0;
+    vector<Point<ll>> ans;
+    while(pa < n || pb < m){
+        ans.push_back(a[pa] + b[pb]);
+        Point<ll> d1 = a[pa+1] - a[pa];
+        Point<ll> d2 = a[pb+1] - a[pb];
+        if((!compare(d1, d2)) && pa < n) pa++;//d1 >= d2
+        if((!compare(d2, d1)) && pb < m) pb++;
+    }
+    return ans;
+}

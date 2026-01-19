@@ -88,6 +88,7 @@ struct Mint{
         if (v < 0) v += MOD;
     }
     Mint pow(ll u) const{
+        if(u < 0) return (Mint(1)/v).pow(-u);
         Mint ans = 1;
         Mint aux = *this;
         while(u){
