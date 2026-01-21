@@ -113,3 +113,49 @@ struct Mint{
         return os;
     }
 };
+
+//Montgomery
+//How to use?
+//example multiplication and retrieve result
+// Montgomery ms(MOD);
+// u32 x1_mt = ms.init(53);
+// u32 x2_mt = ms.init(37);
+// u32 res_mt = ms.mult(x1_mt, x2_mt);
+// u32 res = ms.reduce(res_mt);
+using u32 = uint32_t; 
+using u64 = uint64_t;
+using i32 = int32_t;
+//this is the first step, montgomery MOD
+struct Montgomery{
+    u32 mod;
+    u32 inv; ///inv * mod == 1 (mod 2^32)
+    u32 r;
+    u32 r2;
+    Montgomery(u32 n) : mod(n), inv(1) {
+        for (int i = 0; i < 5; i++) 
+            inv *= 2 - n * inv;
+        r = (u64(1) << 32) % mod; 
+        r2 = u64(r) * r % mod;
+    }
+    u32 init(u32 x){
+        return mult(x, r2);
+    }
+    u32 reduce(u64 num){
+        u32 q = num * inv;
+        i32 a = (num - u64(q) * mod) >> 32;
+        if(a < 0) a += mod;
+        return a;
+    }
+    u32 mult(u32 a, u32 b){
+        return reduce(u64(a) * b);
+    }
+    u32 pow(u32 a, u32 b){
+        u32 ans = init(1);
+        while(b){
+            if(b & 1) ans = mult(ans, a);
+            a = mult(a, a);
+            b >>= 1;
+        }
+        return ans;
+    }
+};
