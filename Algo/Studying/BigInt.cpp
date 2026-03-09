@@ -10,7 +10,6 @@ const int INF_INT = 0x3f3f3f3f;
 const long double PI = acosl(-1.), EPS = 1e-9; 
 using namespace std;
 
-
 struct Complex {
     long double x, y;
     Complex() : x(0), y(0) {}
@@ -75,6 +74,11 @@ struct BigNum{
             cfs[i/LEN_EACH] = cur;
         }
     }
+    BigNum negate(){
+        BigNum ans = *this;
+        ans.s = ans.s == 1 ? -1 : 1;
+        return ans;
+    }
     void print(){
         if(s == -1) cout << "-";
         if(cfs.size()){
@@ -86,7 +90,7 @@ struct BigNum{
         }
     }
     //compare modulo
-    bool operator< (BigNum &b){
+    bool operator< (BigNum b){
         if(cfs.size() != b.cfs.size()){
             return cfs.size() < b.cfs.size();
         }else{
@@ -106,8 +110,8 @@ struct BigNum{
         }
     }
     //dont call this.
-    //call add instead
-    BigNum sub(BigNum &b){
+    //call add instead => a.sub(b) = a.add(b.negate());
+    BigNum sub(BigNum b){
         BigNum &a = *this;
         if(a == b){
             BigNum ans("0");
@@ -163,7 +167,7 @@ struct BigNum{
         }else ans = a.sub(b);
         return ans; 
     }
-    BigNum multiply(BigNum &b){
+    BigNum multiply(BigNum b){
         BigNum ans;
         BigNum &a = *this;
         ans.s = s * b.s;
@@ -189,7 +193,7 @@ struct BigNum{
             ans.cfs.push_back(carry % MAX_INT);
             carry /= MAX_INT;
         }
-        while(ans.cfs.back() == 0) ans.cfs.pop_back();
+        while(ans.cfs.size() && ans.cfs.back() == 0) ans.cfs.pop_back();
         if(ans.cfs.size() == 0){
             ans.cfs.push_back(0);
             ans.s = 1;
@@ -207,6 +211,24 @@ struct BigNum{
         return ans;
     }
 };
+
+
+
+struct Frac{
+    BigNum a, b;
+    Frac(BigNum a, BigNum b){
+        this->a = a;
+        this->b = b;
+    }
+    Frac operator+ (Frac v){
+        Frac res = Frac(a.multiply(v.b).add(b.multiply(v.a)), b.multiply(v.b));
+        return res;
+    }
+    bool operator< (Frac v){
+        return a.multiply(v.b).sub(b.multiply(v.a)) < BigNum("0");
+    }
+};
+
 
 
 //cout << fixed << setprecision(6)
