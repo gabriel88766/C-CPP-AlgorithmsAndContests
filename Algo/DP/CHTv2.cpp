@@ -1,9 +1,10 @@
 //Using Li Chao Tree..
+//OUTDATED, USE DataStructures/LiChaoTree.cpp instead.
 struct Line{
     ll a, b;//make int128 if needed ax+b;
     Line(){
-        this->a = INF_INT; //inf to min, -inf to max 
-        this->b = INF_INT; 
+        this->a = 0; //inf to min, -inf to max //BUG! 0 / INFLL it was INF_INT, INF_INT
+        this->b = INF_LL; 
     }
     Line(ll a, ll b){
         this->a = a; 

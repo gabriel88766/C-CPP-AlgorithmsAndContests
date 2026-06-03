@@ -9,6 +9,8 @@ using namespace std;
 const ll N = 101;
 ll P[N];
 //O(N sqrt(N))
+//There are easier way than proving euler pentagonal number theorem
+//just use dp, commented.
 void calc(int n = N-1){
     P[0] = 1;
     for(int i=1;i<=n;i++){
@@ -28,5 +30,18 @@ int main(){
     cin.tie(NULL);
     //freopen("in", "r", stdin); //test input
     calc();
-    cout << P[100] << "\n";
+    cout << P[100] - 1 << "\n";
+
+    // O(n² log n), can be improved to O(n²) using prefix sums.
+    // ll dp[101];
+    // memset(dp, 0, sizeof(dp));
+    // dp[0] = 1;
+    // for(int i=1;i<=99;i++){
+    //     for(int j=100;j>=i;j--){
+    //         for(int u = 1; u*i <= j; u++){
+    //             dp[j] += dp[j - u * i];
+    //         }
+    //     }
+    // }
+    // cout << dp[100] << "\n";
 }

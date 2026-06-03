@@ -64,3 +64,10 @@ ll to_int(string s){
     b >> ans;
     return ans;
 }
+
+//read string using cin
+string data_ = "anything 1 2 3";
+istringstream iss(data_);
+string a;
+int b, c, d;
+iss >> a >> b >> c >> d;

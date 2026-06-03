@@ -20,7 +20,7 @@ void sieve(int n){
 }
 
 //S(v, p) is the sum of integers up to v, when sieve until p.
-//S(v, p) = S(v, p-1) - p*(S(v, p-1) - S(p-1, p-1));
+//S(v, p) = S(v, p-1) - p*(S(v/p, p-1) - S(p-1, p-1));
 __int128 calc(__int128 n, ll p = 2e7){
     if(n == 1) return 0;
     if(p*p >= n && n < N) return sum[n];

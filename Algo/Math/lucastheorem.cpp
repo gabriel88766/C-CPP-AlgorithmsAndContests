@@ -1,3 +1,6 @@
+//WORTH if modulo p is small and N, K are big.
+//(n, k) = prod (ni, ki) mod p, ni, ki are from n = n0 + n1*p + n2*p^2 + .. and k = k0 + k * p + ...
+//if ki > ni, then 0;
 #include <bits/stdc++.h>
 typedef long long int ll;
 typedef unsigned long long int ull;

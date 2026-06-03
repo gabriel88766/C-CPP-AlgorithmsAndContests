@@ -34,7 +34,9 @@ bool crt_auxiliar(ll a, ll b, ll m1, ll m2, ll &ans){
 
 // find ans such that ans = a[i] mod b[i] for all 0 <= i < n or return false if not possible
 // ans + k * lcm(b[i]) are also solutions
-bool crt(int n, ll a[], ll b[], ll &ans){
+bool crt(vector<ll> a, vector<ll> b, ll &ans){
+    int n = a.size();
+    assert(a.size() == b.size() && "size of a isn't equal size of b in CRT"); 
     if(!b[0]) return false;
     ans = a[0] % b[0];
     ll l = b[0];
