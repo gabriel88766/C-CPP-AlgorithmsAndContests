@@ -14,13 +14,15 @@ ll binpow(ll a, ll b, ll m){
 
 // a^((p-1)/2) mod p;
 int legendrex(ll a, ll p){
-    if(a < 0) a = (a % p) + p;
+    a %= p;
+    if(a < 0) a += p;
     ll val = binpow(a, (p-1)/2, p);
     return val > 1 ? -1 : val;
 }
 
 //finds n, n^2 == x mod p
 ll cipolla(ll x, ll p){
+    if(x == 0) return 0;
     if(legendrex(x, p) == -1) return -1; //not a quadratic residue
     ll fn = -1;
     for(ll i=1; i < p;i++){ //this is fast

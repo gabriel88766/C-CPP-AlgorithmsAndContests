@@ -41,7 +41,7 @@ bool crt(vector<ll> a, vector<ll> b, ll &ans){
     ans = a[0] % b[0];
     ll l = b[0];
     for(int i = 1; i < n; i++){
-    if(!b[i]) return false;
+        if(!b[i]) return false;
         if(!crt_auxiliar(ans, a[i] % b[i], l, b[i], ans)) return false;
         l *= (b[i] / __gcd(b[i], l));
     }
