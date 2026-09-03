@@ -169,7 +169,7 @@ vector<Point<T>> convex_hull(vector<Point<T>> &p){ //at least 2 points
         Point<T> a1 = u - p[0];
         Point<T> a2 = v - p[0];
         if(eq(a1.cross(a2), zr)){
-            return a1.abs() < a2.abs();
+            return a1.abs2() < a2.abs2();
         }else return a1.cross(a2) > 0;
     });
     vector<Point<T>> hull;

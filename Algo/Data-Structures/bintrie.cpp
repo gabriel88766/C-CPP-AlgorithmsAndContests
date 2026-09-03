@@ -1,6 +1,7 @@
 //Make some xor related problems much easier
 //can be used as ordered set too
 //1895D 1658D2
+//M >= log aMax, N >= M * Q (Q is the number of inserts)
 const int N = 3800005, M = 19; // log aMax * Q (2e5 * 19, for example)
 int cnt = 0;
 int trie[N][2];
@@ -131,6 +132,7 @@ int findxor(int mv, int num, int lv = M-1, int cx=0, int p=0){
 
 
 //THIS TRIE BELOW CAN BE MERGED
+//however, can't have more than 1 occurence of each number.
 struct Trie{
     vector<pair<int, int>> trie;
     vector<int> nums;

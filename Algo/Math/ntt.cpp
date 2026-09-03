@@ -1,5 +1,4 @@
-//version 2
-int n;
+//version 3
 struct Mint{
     int v;
     //static const int MOD = MOD_val;
@@ -34,32 +33,54 @@ struct Mint{
     }
 };
 
-// if MOD 786433, w = 5 and change to 1 << 18
-void ntt(vector<Mint> &a, int n, int s) { //31^(2^23) == 1 (mod 998244353), so, for example, if n = 2^16, w1 = 31^(2^7)
-    Mint w1 = 31;
-    for(int i = n; i < (1 << 23); i <<= 1) w1 *= w1;
-    for (int i=0, j=0; i<n; i++) {
-        if (i>j) swap(a[i], a[j]);
-        for (int l=n/2; (j^=l) < l; l>>=1);
-    }
-    //w1^n = 1
-    for(int i = 1; (1<<i) <= n; i++){
-        int M = 1 << i;
-        int K = M >> 1;
-        Mint wn = w1.pow( n + s*(n/M)); 
-        for(int j = 0; j < n; j += M) {
-            Mint w = 1;
-            for(int l = j; l < K + j; ++l){
-                Mint t = w*a[l + K];
-                a[l + K] = a[l] - t;
-                a[l] = a[l] + t;
-                w *= wn;
+/*
+*   NTT, number theoretical transform (MOD default 998244353) based on FFT
+*   also needs the definition of Mint (struct to modular arithmetics)
+*   as input a vector<Mint> a(n), int n, int s;
+*   
+*   a(n) is the array in x = 0, 1, 2 ..., n-1.
+*   n is a power of 2 <= 2^23
+*   s is the direction, 1 is forward, anything else backwads.   
+*
+*   MOD must be 2^x * m + 1 and 2^x >= n.
+*   you must replace 31 by y^m and 128805723 by y^{-m} being y some primitive root.
+*   if MOD 786433, w = 5 and change to 1 << 18
+*   use MOD 9223372037190320129 and w = 1927755973360576764 for more precision (2^26 * m + 1);
+*   see also multiply
+*/
+
+void ntt(vector<Mint> &a, int n, int s){ //31^(2^23) == 1 (mod 998244353), so, for example, if n = 2^16, w1 = 31^(2^7)
+    Mint w = s == 1 ? 31 : 128805723;
+    for(int i = n; i < (1 << 23); i <<= 1) w *= w;
+    int hf = n/2;
+    vector<Mint> aux(a.size());
+    for(int j = 2; j <= n; j *= 2){
+        Mint cw = w.pow(n/j);
+        int jmp = n/j;
+        aux.swap(a);
+        //now transform {0, jmp, 2*jmp, ...} {1, jmp + 1, ...} ... combining results with jmp = 2jmp 
+        Mint wx = 1;
+        for(int k = 0; k < j/2; k++){
+            for(int i = 0; i < jmp; i++){ //access is more contiguous using i as inner loop.
+                Mint t1 = aux[i + 2 * k * jmp];
+                Mint t2 = aux[i + (2 * k + 1) * jmp];
+                a[i + k * jmp] = t1 + wx * t2;
+                a[i + k * jmp + hf] = t1 - wx * t2;
             }
+            wx = wx * cw;
         }
     }
 }
 
+/*
+*   Convolutions, here is why NTT exists.
+*   calculate c[k] sum of ai*bj such that i + j = k.
+*   multiply 1 rely on already expanded arrays, multiply 2 expand and shrink the array. 
+*   multiply 1 also writes the answer in array a.
+*/
+
 void multiply(vector<Mint> &a, vector<Mint> &b) {
+    int n = a.size();
     ntt(a,n,1);
     ntt(b,n,1);
     for (int i = 0; i < n; i++) a[i] *= b[i];
